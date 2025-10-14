@@ -1,8 +1,8 @@
 # 7 Навыков высокоэффективных людей - Стивен Кови
 
-8 Принципов - https://muhammadislom99.github.io/8prinsips
-Навык 1 - https://muhammadislom99.github.io/habbit1.html
-Навык 2 - https://muhammadislom99.github.io/habbit2.html
+ <a href ="https://muhammadislom99.github.io/8prinsips">8 Принципов</a>
+ <a href ="https://muhammadislom99.github.io/habbit1.html">Навык 1 </a>
+ <a href ="https://muhammadislom99.github.io/habbit2.html">Навык 2 </a>
 
 Образовательный мини-гид по личной зрелости и эффективности. Материалы помогают перейти от реактивного поведения к проактивному, укрепить внутреннюю целостность и выстроить здоровые отношения и результаты.
 ## Цели проекта
