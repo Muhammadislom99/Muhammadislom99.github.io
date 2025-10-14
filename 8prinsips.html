@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Скрытые принципы зрелости по Стивену Кови</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -250px;
+            right: -250px;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 1;
+            padding: 40px;
+        }
+
+        h1 {
+            font-size: 4.5em;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -2px;
+        }
+
+        .subtitle {
+            font-size: 1.4em;
+            color: #9ca3af;
+            font-weight: 300;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .principles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2px;
+            background: #1a1a2e;
+            margin: 0;
+        }
+
+        .principle-item {
+            background: #0a0a0a;
+            padding: 60px 40px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: none;
+        }
+
+        .principle-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .principle-item:hover::before {
+            transform: scaleX(1);
+        }
+
+        .principle-item:hover {
+            background: #12121f;
+            transform: translateY(-5px);
+        }
+
+        .principle-number {
+            font-size: 5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .principle-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .principle-visual {
+            margin: 30px 0;
+            height: 120px;
+            position: relative;
+        }
+
+        .stats-section {
+            background: #0a0a0a;
+            padding: 100px 40px;
+            text-align: center;
+        }
+
+        .stats-title {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 60px;
+            color: #fff;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16162a 100%);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.1);
+        }
+
+        .stat-number {
+            font-size: 3.5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .implementation-section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0a 100%);
+            padding: 100px 40px;
+        }
+
+        .implementation-title {
+            font-size: 2.5em;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 60px;
+            color: #fff;
+        }
+
+        .implementation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .impl-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 35px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .impl-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(1.02);
+        }
+
+        .impl-number {
+            font-size: 1.3em;
+            color: #6366f1;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .impl-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        .impl-desc {
+            font-size: 0.95em;
+            color: #9ca3af;
+            line-height: 1.6;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 10px;
+            animation: fillProgress 2s ease-out forwards;
+        }
+
+        @keyframes fillProgress {
+            from { width: 0; }
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 100%;
+            gap: 8px;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(180deg, #6366f1, #8b5cf6);
+            border-radius: 4px 4px 0 0;
+            animation: growBar 1s ease-out forwards;
+            transform-origin: bottom;
+            opacity: 0.8;
+        }
+
+        @keyframes growBar {
+            from { transform: scaleY(0); }
+            to { transform: scaleY(1); }
+        }
+
+        .circle-chart {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+        }
+
+        .arrow-path {
+            stroke: #6366f1;
+            stroke-width: 3;
+            fill: none;
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            animation: drawArrow 2s ease-out forwards;
+        }
+
+        @keyframes drawArrow {
+            to { stroke-dashoffset: 0; }
+        }
+
+        .deep-dive-section {
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+            padding: 100px 40px;
+        }
+
+        .deep-dive-title {
+            font-size: 3em;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .deep-dive-intro {
+            text-align: center;
+            font-size: 1.2em;
+            color: #9ca3af;
+            margin-bottom: 60px;
+            font-weight: 300;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .theme-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .theme-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 24px;
+            padding: 50px;
+            transition: all 0.4s ease;
+        }
+
+        .theme-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateX(10px);
+        }
+
+        .theme-icon {
+            margin-bottom: 25px;
+            opacity: 0.8;
+        }
+
+        .theme-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .theme-desc {
+            font-size: 1.05em;
+            line-height: 1.8;
+            color: #cbd5e1;
+            margin-bottom: 30px;
+        }
+
+        .theme-visual {
+            margin-top: 30px;
+        }
+
+        .transition-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 12px;
+        }
+
+        .point {
+            font-size: 1.1em;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 8px;
+        }
+
+        .point.start {
+            background: rgba(99, 102, 241, 0.2);
+            color: #9ca3af;
+        }
+
+        .point.end {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+        }
+
+        .arrow-flow {
+            flex: 1;
+            height: 3px;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.3), #8b5cf6);
+            position: relative;
+        }
+
+        .arrow-flow::after {
+            content: '→';
+            position: absolute;
+            right: -10px;
+            top: -12px;
+            font-size: 1.5em;
+            color: #8b5cf6;
+        }
+
+        .comparison-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .comp-bar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .bar-label {
+            min-width: 150px;
+            font-size: 0.95em;
+            color: #9ca3af;
+        }
+
+        .bar-fill {
+            height: 12px;
+            border-radius: 6px;
+            animation: growWidth 1.5s ease-out forwards;
+        }
+
+        @keyframes growWidth {
+            from { width: 0; }
+        }
+
+        .stages {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stage {
+            padding: 15px 25px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 10px;
+            font-weight: 600;
+            color: #9ca3af;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .stage.highlight {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            border: none;
+        }
+
+        .stage-arrow {
+            font-size: 1.5em;
+            color: #6366f1;
+        }
+
+        .mindset-compare {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            gap: 30px;
+        }
+
+        .mindset-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 30px;
+            border-radius: 16px;
+            flex: 1;
+        }
+
+        .mindset-item.scarcity {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .mindset-item.abundance {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            border: 1px solid rgba(139, 92, 246, 0.4);
+        }
+
+        .mindset-label {
+            font-weight: 600;
+            color: #9ca3af;
+        }
+
+        .mindset-icon {
+            font-size: 3em;
+            color: #6366f1;
+        }
+
+        .vs {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #6366f1;
+        }
+
+        .balance-meter {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .meter-negative, .meter-positive {
+            flex: 1;
+        }
+
+        .meter-negative span, .meter-positive span {
+            display: block;
+            font-size: 0.9em;
+            color: #9ca3af;
+            margin-bottom: 10px;
+        }
+
+        .meter-bar {
+            height: 30px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .meter-bar.negative {
+            background: rgba(239, 68, 68, 0.2);
+            width: 40%;
+        }
+
+        .meter-bar.positive {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            width: 85%;
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .circles-diagram {
+            display: flex;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .outer-circle {
+            width: 300px;
+            height: 300px;
+            border: 3px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .circle-label {
+            position: absolute;
+            top: 20px;
+            font-size: 0.9em;
+            color: #9ca3af;
+        }
+
+        .inner-circle {
+            width: 180px;
+            height: 180px;
+            border: 3px solid #8b5cf6;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .circle-label-inner {
+            font-size: 0.9em;
+            color: #fff;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            background: rgba(99, 102, 241, 0.2);
+            padding: 2px;
+            border-radius: 12px;
+        }
+
+        .matrix-quadrant {
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .q1 {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .q2 {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3));
+            border: 2px solid #8b5cf6;
+        }
+
+        .q3 {
+            background: rgba(245, 158, 11, 0.2);
+        }
+
+        .q4 {
+            background: rgba(107, 114, 128, 0.2);
+        }
+
+        .q-label {
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .q-desc {
+            font-size: 0.9em;
+            color: #9ca3af;
+        }
+
+        .paradigm-shift {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .paradigm {
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .old-p {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .new-p {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            border: 2px solid #8b5cf6;
+        }
+
+        .p-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .p-text {
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        .shift-arrow {
+            font-size: 2.5em;
+            color: #6366f1;
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .synergy-formula {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .formula-part {
+            text-align: center;
+        }
+
+        .value {
+            font-size: 3em;
+            font-weight: 900;
+            color: #6366f1;
+            margin-bottom: 5px;
+        }
+
+        .formula-part.result .value {
+            color: #8b5cf6;
+            font-size: 4em;
+        }
+
+        .label {
+            font-size: 0.9em;
+            color: #9ca3af;
+        }
+
+        .plus, .equals {
+            font-size: 2.5em;
+            color: #6366f1;
+            font-weight: 300;
+        }
+
+        .four-dimensions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .dimension {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .dimension:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: #8b5cf6;
+            transform: scale(1.05);
+        }
+
+        .dim-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .dim-name {
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        .listening-levels {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .level {
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            width: 80%;
+            text-align: center;
+        }
+
+        .level.low {
+            background: rgba(239, 68, 68, 0.2);
+            color: #9ca3af;
+        }
+
+        .level.medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #cbd5e1;
+        }
+
+        .level.high {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            font-size: 1.1em;
+        }
+
+        .level-arrow {
+            color: #6366f1;
+            font-size: 1.5em;
+        }
+
+        .win-matrix {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .win-option {
+            padding: 20px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .win-option.lose {
+            background: rgba(239, 68, 68, 0.2);
+            color: #9ca3af;
+        }
+
+        .win-option.neutral {
+            background: rgba(245, 158, 11, 0.2);
+            color: #cbd5e1;
+        }
+
+        .win-option.win {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            font-size: 1.1em;
+            border: 2px solid #8b5cf6;
+        }
+
+        .center-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .center-item {
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .center-item.unstable {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: #9ca3af;
+        }
+
+        .center-item.stable {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .center-label {
+            font-size: 1em;
+        }
+
+        .victory-path {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .victory-stage {
+            background: rgba(99, 102, 241, 0.1);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 180px;
+            transition: all 0.3s ease;
+        }
+
+        .victory-stage:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: #8b5cf6;
+            transform: scale(1.05);
+        }
+
+        .stage-num {
+            font-size: 2em;
+            font-weight: 900;
+            color: #6366f1;
+            margin-bottom: 8px;
+        }
+
+        .stage-name {
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .stage-desc {
+            font-size: 0.9em;
+            color: #9ca3af;
+        }
+
+        .path-arrow {
+            font-size: 2em;
+            color: #6366f1;
+        }
+
+        .principles-vs-values {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .pvv-column {
+            flex: 1;
+            max-width: 200px;
+            background: rgba(99, 102, 241, 0.05);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .pvv-column.highlight {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            border: 2px solid #8b5cf6;
+        }
+
+        .pvv-header {
+            font-size: 1.2em;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .pvv-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.95em;
+            color: #cbd5e1;
+        }
+
+        .pvv-divider {
+            display: flex;
+            align-items: center;
+            font-size: 2em;
+            color: #6366f1;
+        }
+
+        @keyframes fillCircle {
+            from { stroke-dashoffset: 251.2; }
+            to { stroke-dashoffset: 62.8; }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5em; }
+            .subtitle { font-size: 1.1em; }
+            .principle-item { padding: 40px 30px; }
+            .principle-title { font-size: 1.4em; }
+            
+            .theme-card {
+                padding: 30px;
+            }
+            
+            .transition-line {
+                flex-direction: column;
+            }
+            
+            .stages {
+                flex-direction: column;
+            }
+            
+            .mindset-compare {
+                flex-direction: column;
+            }
+
+            .balance-meter {
+                flex-direction: column;
+            }
+
+            .outer-circle {
+                width: 250px;
+                height: 250px;
+            }
+
+            .inner-circle {
+                width: 150px;
+                height: 150px;
+            }
+
+            .paradigm-shift {
+                flex-direction: column;
+            }
+
+            .synergy-formula {
+                flex-direction: column;
+            }
+
+            .victory-path {
+                flex-direction: column;
+            }
+
+            .principles-vs-values {
+                flex-direction: column;
+            }
+
+            .pvv-column {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="hero-content">
+            <h1>8 Принципов Зрелости</h1>
+            <p class="subtitle">Скрытые законы из книги Стивена Кови «7 навыков высокоэффективных людей»</p>
+        </div>
+    </div>
+
+    <div class="principles-grid">
+        <div class="principle-item">
+            <div class="principle-number">01</div>
+            <div class="principle-title">Внутренний локус контроля</div>
+            <div class="principle-visual">
+                <div class="bar-chart">
+                    <div class="bar" style="height: 45%; animation-delay: 0s;"></div>
+                    <div class="bar" style="height: 70%; animation-delay: 0.1s;"></div>
+                    <div class="bar" style="height: 55%; animation-delay: 0.2s;"></div>
+                    <div class="bar" style="height: 85%; animation-delay: 0.3s;"></div>
+                    <div class="bar" style="height: 95%; animation-delay: 0.4s;"></div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 90%;"></div>
+            </div>
+        </div>
+
+        <div class="principle-item">
+            <div class="principle-number">02</div>
+            <div class="principle-title">Безоценочное понимание</div>
+            <div class="principle-visual">
+                <svg class="circle-chart" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(99, 102, 241, 0.2)" stroke-width="8"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#6366f1" stroke-width="8"
+                            stroke-dasharray="251.2" stroke-dashoffset="62.8"
+                            transform="rotate(-90 50 50)"
+                            style="animation: fillCircle 2s ease-out forwards;">
+                    </circle>
+                </svg>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 75%;"></div>
+            </div>
+        </div>
+
+        <div class="principle-item">
+            <div class="principle-number">03</div>
+            <div class="principle-title">Признание несовершенства</div>
+            <div class="principle-visual">
+                <div class="bar-chart">
+                    <div class="bar" style="height: 30%; animation-delay: 0s;"></div>
+                    <div class="bar" style="height: 50%; animation-delay: 0.1s;"></div>
+                    <div class="bar" style="height: 75%; animation-delay: 0.2s;"></div>
+                    <div class="bar" style="height: 90%; animation-delay: 0.3s;"></div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 85%;"></div>
+            </div>
+        </div>
+
+        <div class="principle-item">
+            <div class="principle-number">04</div>
+            <div class="principle-title">Прямая коммуникация</div>
+            <div class="principle-visual">
+                <svg width="100%" height="120" viewBox="0 0 200 120">
+                    <path class="arrow-path" d="M 20 60 L 180 60 M 165 45 L 180 60 L 165 75" 
+                          style="animation-delay: 0.5s;"/>
+                </svg>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 80%;"></div>
+            </div>
+        </div>
+
+        <div class="principle-item">
+            <div class="principle-number">05</div>
+            <div class="principle-title">Эмоциональная саморегуляция</div>
+            <div class="principle-visual">
+                <svg class="circle-chart" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(99, 102, 241, 0.2)" stroke-width="8"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#8b5cf6" stroke-width="8"
+                            stroke-dasharray="251.2" stroke-dashoffset="50.24"
+                            transform="rotate(-90 50 50)"
+                            style="animation: fillCircle 2s ease-out forwards;">
+                    </circle>
+                </svg>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 88%;"></div>
+            </div>
+        </div>
+
+        <div class="principle-item">
+            <div class="principle-number">06</div>
+            <div class="principle-title">Этика характера</div>
+            <div class="principle-visual">
+                <div class="bar-chart">
+                    <div class="bar" style="height: 60%; animation-delay: 0s;"></div>
+                    <div class="bar" style="height: 80%; animation-delay: 0.1s;"></div>
+                    <div class="bar" style="height: 70%; animation-delay: 0.2s;"></div>
+                    <div class="bar" style="height: 95%; animation-delay: 0.3s;"></div>
+                    <div class="bar" style="height: 85%; animation-delay: 0.4s;"></div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 92%;"></div>
+            </div>
+        </div>
+
+        <div class="principle-item">
+            <div class="principle-number">07</div>
+            <div class="principle-title">Уважительная дистанция</div>
+            <div class="principle-visual">
+                <svg class="circle-chart" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(99, 102, 241, 0.2)" stroke-width="8"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="#6366f1" stroke-width="8"
+                            stroke-dasharray="251.2" stroke-dashoffset="75.36"
+                            transform="rotate(-90 50 50)"
+                            style="animation: fillCircle 2s ease-out forwards;">
+                    </circle>
+                </svg>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 70%;"></div>
+            </div>
+        </div>
+
+        <div class="principle-item">
+            <div class="principle-number">08</div>
+            <div class="principle-title">Личный пример</div>
+            <div class="principle-visual">
+                <div class="bar-chart">
+                    <div class="bar" style="height: 40%; animation-delay: 0s;"></div>
+                    <div class="bar" style="height: 65%; animation-delay: 0.1s;"></div>
+                    <div class="bar" style="height: 80%; animation-delay: 0.2s;"></div>
+                    <div class="bar" style="height: 100%; animation-delay: 0.3s;"></div>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 95%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <h2 class="stats-title">Влияние на эффективность</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">3x</div>
+                <div class="stat-label">Рост продуктивности команды</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">85%</div>
+                <div class="stat-label">Снижение конфликтов</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2.5x</div>
+                <div class="stat-label">Ускорение принятия решений</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">92%</div>
+                <div class="stat-label">Уровень доверия в команде</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="implementation-section">
+        <h2 class="implementation-title">Внедрение в корпоративную культуру</h2>
+        <div class="implementation-grid">
+            <div class="impl-card">
+                <div class="impl-number">→ 01</div>
+                <div class="impl-title">Язык ответственности</div>
+                <div class="impl-desc">Замена "они заставили" на "я выбрал"</div>
+            </div>
+
+            <div class="impl-card">
+                <div class="impl-number">→ 02</div>
+                <div class="impl-title">Прямая коммуникация</div>
+                <div class="impl-desc">Проблемы решаются напрямую, без посредников</div>
+            </div>
+
+            <div class="impl-card">
+                <div class="impl-number">→ 03</div>
+                <div class="impl-title">Культура ошибок</div>
+                <div class="impl-desc">Открытое признание как точка роста</div>
+            </div>
+
+            <div class="impl-card">
+                <div class="impl-number">→ 04</div>
+                <div class="impl-title">Практика паузы</div>
+                <div class="impl-desc">24 часа перед важными решениями</div>
+            </div>
+
+            <div class="impl-card">
+                <div class="impl-number">→ 05</div>
+                <div class="impl-title">Оценка по делам</div>
+                <div class="impl-desc">Последовательность важнее красноречия</div>
+            </div>
+
+            <div class="impl-card">
+                <div class="impl-number">→ 06</div>
+                <div class="impl-title">Культура понимания</div>
+                <div class="impl-desc">Вопросы перед суждениями</div>
+            </div>
+
+            <div class="impl-card">
+                <div class="impl-number">→ 07</div>
+                <div class="impl-title">Ритуалы уважения</div>
+                <div class="impl-desc">Видимые примеры каждый день</div>
+            </div>
+
+            <div class="impl-card">
+                <div class="impl-number">→ 08</div>
+                <div class="impl-title">Найм по ценностям</div>
+                <div class="impl-desc">Характер важнее резюме</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="deep-dive-section">
+        <h2 class="deep-dive-title">Глубинные темы книги</h2>
+        <p class="deep-dive-intro">Принципы, проходящие невидимой нитью через всё произведение Кови</p>
+        
+        <div class="theme-container">
+            <div class="theme-card">
+                <div class="theme-icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <circle cx="30" cy="30" r="25" fill="none" stroke="#6366f1" stroke-width="3" opacity="0.3"/>
+                        <circle cx="30" cy="30" r="15" fill="none" stroke="#8b5cf6" stroke-width="3"/>
+                        <circle cx="30" cy="30" r="5" fill="#6366f1"/>
+                    </svg>
+                </div>
+                <h3 class="theme-title">От реактивности к проактивности</h3>
+                <p class="theme-desc">Незрелый человек реагирует на мир автоматически — его эмоции, слова и поступки определяются внешними раздражителями. Зрелый человек осознаёт пространство между стимулом и реакцией и использует его для выбора. Это не подавление эмоций, а владение собой. Не равнодушие, а суверенитет.</p>
+                <div class="theme-visual">
+                    <div class="transition-line">
+                        <div class="point start">Реактивность</div>
+                        <div class="arrow-flow"></div>
+                        <div class="point end">Проактивность</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card">
+                <div class="theme-icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <rect x="10" y="25" width="15" height="25" fill="#6366f1" opacity="0.3"/>
+                        <rect x="30" y="15" width="15" height="35" fill="#8b5cf6"/>
+                    </svg>
+                </div>
+                <h3 class="theme-title">Этика характера vs этика личности</h3>
+                <p class="theme-desc">Последние 50 лет культура сместилась с этики характера (честность, смирение, верность, мужество) на этику личности (техники влияния, позитивное мышление, имидж). Кови возвращает фокус на фундамент: внешний успех невозможен без внутренней целостности. Вы не можете долго казаться тем, кем не являетесь.</p>
+                <div class="theme-visual">
+                    <div class="comparison-bars">
+                        <div class="comp-bar">
+                            <div class="bar-label">Внешний образ</div>
+                            <div class="bar-fill" style="width: 40%; background: rgba(99, 102, 241, 0.3);"></div>
+                        </div>
+                        <div class="comp-bar">
+                            <div class="bar-label">Внутренний характер</div>
+                            <div class="bar-fill" style="width: 95%; background: #8b5cf6;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card">
+                <div class="theme-icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <path d="M 15 45 Q 30 15 45 45" fill="none" stroke="#6366f1" stroke-width="3"/>
+                        <circle cx="30" cy="23" r="4" fill="#8b5cf6"/>
+                    </svg>
+                </div>
+                <h3 class="theme-title">Зависимость → Независимость → Взаимозависимость</h3>
+                <p class="theme-desc">Зрелость — это путь через три стадии. Зависимость: "ты заботишься обо мне". Независимость: "я могу сам". Взаимозависимость: "мы можем вместе создать то, что невозможно поодиночке". Большинство застревает на второй стадии, принимая независимость за финал. Истинная зрелость — выбор взаимозависимости из позиции силы, а не слабости.</p>
+                <div class="theme-visual">
+                    <div class="stages">
+                        <div class="stage">Зависимость</div>
+                        <div class="stage-arrow">→</div>
+                        <div class="stage">Независимость</div>
+                        <div class="stage-arrow">→</div>
+                        <div class="stage highlight">Взаимозависимость</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card">
+                <div class="theme-icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <circle cx="20" cy="30" r="12" fill="none" stroke="#6366f1" stroke-width="2"/>
+                        <circle cx="40" cy="30" r="12" fill="none" stroke="#8b5cf6" stroke-width="2"/>
+                        <circle cx="30" cy="30" r="8" fill="#6366f1" opacity="0.5"/>
+                    </svg>
+                </div>
+                <h3 class="theme-title">Изобилие vs дефицит мышления</h3>
+                <p class="theme-desc">Мышление дефицита: если кто-то выигрывает, я проигрываю. Успех другого — угроза мне. Мышление изобилия: успеха хватит на всех, чужая победа не умаляет мою. Это не наивный оптимизм, а глубокое понимание: мир не торт, который нужно делить. Зрелость радуется чужим достижениям, потому что не видит в них угрозу себе.</p>
+                <div class="theme-visual">
+                    <div class="mindset-compare">
+                        <div class="mindset-item scarcity">
+                            <div class="mindset-label">Дефицит</div>
+                            <div class="mindset-icon">⊖</div>
+                        </div>
+                        <div class="vs">vs</div>
+                        <div class="mindset-item abundance">
+                            <div class="mindset-label">Изобилие</div>
+                            <div class="mindset-icon">⊕</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card">
+                <div class="theme-icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <line x1="10" y1="50" x2="50" y2="10" stroke="#6366f1" stroke-width="3"/>
+                        <circle cx="50" cy="10" r="5" fill="#8b5cf6"/>
+                    </svg>
+                </div>
+                <h3 class="theme-title">Принцип эмоционального банковского счёта</h3>
+                <p class="theme-desc">Каждое взаимодействие — это вклад или снятие с эмоционального счёта отношений. Вежливость, выполнение обещаний, внимание — вклады. Грубость, пренебрежение, обман — снятия. Большинство пытается решать проблемы при отрицательном балансе, когда доверия уже нет. Зрелость понимает: отношения требуют постоянных инвестиций, а не разовых жестов.</p>
+                <div class="theme-visual">
+                    <div class="balance-meter">
+                        <div class="meter-negative">
+                            <span>Дефицит доверия</span>
+                            <div class="meter-bar negative"></div>
+                        </div>
+                        <div class="meter-positive">
+                            <span>Резерв доверия</span>
+                            <div class="meter-bar positive"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card">
+                <div class="theme-icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <path d="M 30 10 L 30 50 M 10 30 L 50 30" stroke="#6366f1" stroke-width="3"/>
+                        <circle cx="30" cy="30" r="20" fill="none" stroke="#8b5cf6" stroke-width="2" opacity="0.3"/>
+                    </svg>
+                </div>
+                <h3 class="theme-title">Круг влияния vs круг заботы</h3>
+                <p class="theme-desc">Незрелость фокусируется на круге заботы — всё, что нас беспокоит, но на что мы не влияем (погода, прошлое, чужие мнения). Зрелость концентрируется на круге влияния — том, что мы реально можем изменить. Проактивные люди расширяют круг влияния, работая в нём. Реактивные сжимают его, теряя энергию на круг заботы.</p>
+                <div class="theme-visual">
+                    <div class="circles-diagram">
+                        <div class="outer-circle">
+                            <span class="circle-label">Круг заботы</span>
+                            <div class="inner-circle">
+                                <span class="circle-label-inner">Круг влияния</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card">
+                <div class="theme-icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <path d="M 15 30 L 45 30" stroke="#6366f1" stroke-width="3"/>
+                        <path d="M 30 15 L 30 45" stroke="#8b5cf6" stroke-width="3"/>
+                        <circle cx="30" cy="30" r="3" fill="#fff"/>
+                    </svg>
+                </div>
+                <h3 class="theme-title">Важное vs срочное: матрица управления временем</h3>
+                <p class="theme-desc">Большинство живёт в квадранте срочного — тушат пожары, реагируют на кризисы. Эффективные люди живут в квадранте важного, но не срочного — профилактика, планирование, развитие отношений, обучение. Зрелость — это способность сказать "нет" срочному, но неважному, чтобы инвестировать время в важное, пока оно не стало срочным.</p>
+                <div class="theme-visual">
+                    <div class="matrix">
+                        <div class="matrix-quadrant q1">
+                            <div class="q-label">I. Кризисы</div>
+                            <div class="q-desc">Срочно + Важно</div>
+                        </div>
+                        <div class="matrix-quadrant q2">
+                            <div class="q-label">II. Развитие</div>
+                            <div class="q-desc">Важно, но не срочно</div>
+                        </div>
+                        <div class="matrix-quadrant q3">
+                            <div class="q-label">III. Отвлечения</div>
+                            <div class="q-desc">Срочно, но не важно</div>
+                        </div>
+                        <div class="matrix-quadrant q4">
+                            <div class="q-label">IV. Потери времени</div>
+                            <div class="q-desc">Не срочно + Не важно</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card">
+                <div class="theme-icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <path d="M 15 50 Q 30 10 50 50" fill="none" stroke="#6366f1" stroke-width="3"/>
+                        <circle cx="30" cy="25" r="4" fill="#8b5cf6"/>
+                        <path d="M 20 35 L 40 35" stroke="#8b5cf6" stroke-width="2" opacity="0.5"/>
+                    </svg>
+                </div>
+                <h3 class="theme-title">Парадигмы: карты vs территория</h3>
+                <p class="theme-desc">Мы видим мир не таким, каков он есть, а такими, каковы мы сами. Наши парадигмы — это линзы, через которые мы интерпретируем реальность. Незрелость защищает свою карту, даже когда она не соответствует территории. Зрелость готова менять карту, когда обнаруживает несоответствие. Самые глубокие изменения — это не техники, а смена парадигм.</p>
+                <div class="theme-visual">
+                    <div class="paradigm-shift">
+                        <div class="paradigm old-p">
+                            <div class="p-icon">🗺️</div>
+                            <div class="p-text">Старая карта</div>
+                        </div>
+                        <div class="shift-arrow">⟲</div>
+                        <div class="paradigm new-p">
+                            <div class="p-icon">🧭</div>
+                            <div class="p-text">Новая парадигма</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card">
+                <div class="theme-icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <rect x="5" y="20" width="20" height="20" fill="#6366f1" opacity="0.3"/>
+                        <rect x="20" y="20" width="20" height="20" fill="#8b5cf6" opacity="0.6"/>
+                        <rect x="35" y="20" width="20" height="20" fill="#8b5cf6"/>
+                    </svg>
+                </div>
+                <h3 class="theme-title">Синергия: 1 + 1 = 3</h3>
+                <p class="theme-desc">Синергия — это не компромисс и не консенсус. Это создание третьей альтернативы, которая лучше обеих начальных позиций. Но синергия возможна только при высоком уровне доверия и готовности ценить различия, а не бороться с ними. Большинство останавливается на компромиссе, теряя энергию идей. Зрелость использует различия как топливо для инноваций.</p>
+                <div class="theme-visual">
+                    <div class="synergy-formula">
+                        <div class="formula-part">
+                            <div class="value">1</div>
+                            <div class="label">Твоя идея</div>
+                        </div>
+                        <div class="plus">+</div>
+                        <div class="formula-part">
+                            <div class="value">1</div>
+                            <div class="label">Моя идея</div>
+                        </div>
+                        <div class="equals">=</div>
+                        <div class="formula-part result">
+                            <div class="value">3</div>
+                            <div class="label">Синергия</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card">
+                <div class="theme-icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <path d="M 30 15 L 30 45 M 25 20 L 30 15 L 35 20" stroke="#6366f1" stroke-width="3"/>
+                        <circle cx="30" cy="45" r="3" fill="#8b5cf6"/>
+                    </svg>
+                </div>
+                <h3 class="theme-title">Затачивание пилы: обновление четырёх измерений</h3>
+                <p class="theme-desc">Эффективность требует постоянного обновления в четырёх измерениях: физическом (здоровье, энергия), духовном (ценности, смысл), интеллектуальном (обучение, мышление), социально-эмоциональном (отношения, служение). Большинство живёт на истощение, не инвестируя в восстановление. Зрелость понимает: время на заточку пилы — не роскошь, а необходимость для устойчивой продуктивности.</p>
+                <div class="theme-visual">
+                    <div class="four-dimensions">
+                        <div class="dimension">
+                            <div class="dim-icon">💪</div>
+                            <div class="dim-name">Физическое</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dim-icon">🧠</div>
+                            <div class="dim-name">Интеллектуальное</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dim-icon">❤️</div>
+                            <div class="dim-name">Эмоциональное</div>
+                        </div>
+                        <div class="dimension">
+                            <div class="dim-icon">✨</div>
+                            <div class="dim-name">Духовное</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card">
+                <div class="theme-icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <rect x="15" y="15" width="30" height="30" fill="none" stroke="#6366f1" stroke-width="3"/>
+                        <circle cx="30" cy="30" r="8" fill="#8b5cf6"/>
+                    </svg>
+                </div>
+                <h3 class="theme-title">Сначала поймите: эмпатическое слушание</h3>
+                <p class="theme-desc">Большинство слушает не с намерением понять, а с намерением ответить. Мы оцениваем, советуем, интерпретируем, пока человек ещё не закончил говорить. Эмпатическое слушание — это входить в систему координат другого, видеть мир его глазами, чувствовать его сердцем. Это не согласие, а глубокое понимание. Только после того, как человек чувствует, что его поняли, он готов слушать вас. Диагноз должен предшествовать рецепту.</p>
+                <div class="theme-visual">
+                    <div class="listening-levels">
+                        <div class="level low">1. Игнорирование</div>
+                        <div class="level-arrow">↓</div>
+                        <div class="level low">2. Притворное слушание</div>
+                        <div class="level-arrow">↓</div>
+                        <div class="level medium">3. Избирательное слушание</div>
+                        <div class="level-arrow">↓</div>
+                        <div class="level medium">4. Внимательное слушание</div>
+                        <div class="level-arrow">↓</div>
+                        <div class="level high">5. Эмпатическое слушание</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card">
+                <div class="theme-icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <path d="M 15 30 L 30 15 L 45 30 L 30 45 Z" fill="none" stroke="#6366f1" stroke-width="3"/>
+                        <circle cx="30" cy="30" r="5" fill="#8b5cf6"/>
+                    </svg>
+                </div>
+                <h3 class="theme-title">Мышление "Выиграл/Выиграл"</h3>
+                <p class="theme-desc">Большинство живёт в парадигме "Выиграл/Проиграл" — чтобы я победил, кто-то должен проиграть. Это дух конкуренции, а не кооперации. Зрелость понимает: настоящий успех приходит, когда все выигрывают. "Выиграл/Выиграл" — это не техника, это философия, основанная на изобилии. Если решение "Выиграл/Выиграл" невозможно, лучший вариант — "Нет сделки". Компромисс (оба немного проиграли) — это не "Выиграл/Выиграл", это "Проиграл/Проиграл".</p>
+                <div class="theme-visual">
+                    <div class="win-matrix">
+                        <div class="win-option lose">Проиграл/Проиграл</div>
+                        <div class="win-option neutral">Проиграл/Выиграл</div>
+                        <div class="win-option neutral">Выиграл/Проиграл</div>
+                        <div class="win-option win">Выиграл/Выиграл</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card">
+                <div class="theme-icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <circle cx="30" cy="30" r="20" fill="none" stroke="#6366f1" stroke-width="3"/>
+                        <circle cx="30" cy="30" r="10" fill="none" stroke="#8b5cf6" stroke-width="3"/>
+                        <circle cx="30" cy="30" r="3" fill="#8b5cf6"/>
+                    </svg>
+                </div>
+                <h3 class="theme-title">Центр стабильности</h3>
+                <p class="theme-desc">То, что находится в центре нашей жизни, определяет нашу безопасность, мудрость, силу и руководство. Большинство центрируется на нестабильных вещах: деньгах, работе, отношениях, врагах, удовольствиях. Когда центр меняется, меняется и вся жизнь. Единственный стабильный центр — это принципы. Они не меняются, не предают, не исчезают. Центрированность на принципах даёт внутреннюю безопасность, независящую от внешних обстоятельств.</p>
+                <div class="theme-visual">
+                    <div class="center-types">
+                        <div class="center-item unstable">Деньги</div>
+                        <div class="center-item unstable">Работа</div>
+                        <div class="center-item unstable">Семья</div>
+                        <div class="center-item unstable">Враг</div>
+                        <div class="center-item unstable">Удовольствие</div>
+                        <div class="center-item stable">Принципы</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card">
+                <div class="theme-icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <path d="M 10 50 L 20 30 L 30 40 L 40 20 L 50 10" fill="none" stroke="#6366f1" stroke-width="3"/>
+                        <circle cx="50" cy="10" r="4" fill="#8b5cf6"/>
+                    </svg>
+                </div>
+                <h3 class="theme-title">Путь к частной победе, затем публичной</h3>
+                <p class="theme-desc">Навыки 1-3 (Будь проактивным, Начинай с конца, Первое главное) — это частная победа, победа над собой. Навыки 4-6 (Выиграл/Выиграл, Сначала поймите, Синергия) — публичная победа, успех с другими. Навык 7 (Затачивание пилы) — постоянное обновление. Большинство хочет публичной победы без частной. Но невозможно эффективно работать с другими, если не научился управлять собой. Последовательность критична: независимость предшествует взаимозависимости.</p>
+                <div class="theme-visual">
+                    <div class="victory-path">
+                        <div class="victory-stage">
+                            <div class="stage-num">1-3</div>
+                            <div class="stage-name">Частная победа</div>
+                            <div class="stage-desc">Независимость</div>
+                        </div>
+                        <div class="path-arrow">→</div>
+                        <div class="victory-stage">
+                            <div class="stage-num">4-6</div>
+                            <div class="stage-name">Публичная победа</div>
+                            <div class="stage-desc">Взаимозависимость</div>
+                        </div>
+                        <div class="path-arrow">→</div>
+                        <div class="victory-stage">
+                            <div class="stage-num">7</div>
+                            <div class="stage-name">Обновление</div>
+                            <div class="stage-desc">Непрерывный рост</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theme-card">
+                <div class="theme-icon">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <rect x="10" y="20" width="18" height="20" fill="#6366f1" opacity="0.5"/>
+                        <rect x="32" y="15" width="18" height="30" fill="#8b5cf6"/>
+                    </svg>
+                </div>
+                <h3 class="theme-title">Принципы vs ценности</h3>
+                <p class="theme-desc">Ценности субъективны — у каждого свои. Принципы объективны — они работают независимо от того, верите вы в них или нет. Гравитация — это принцип, не ценность. Честность, справедливость, служение — это принципы, не придуманные людьми правила. Зрелость строит жизнь на принципах, а не на настроениях, трендах или мнениях. Принципы — это законы природы в человеческом измерении. Их можно игнорировать, но невозможно избежать последствий.</p>
+                <div class="theme-visual">
+                    <div class="principles-vs-values">
+                        <div class="pvv-column">
+                            <div class="pvv-header">Ценности</div>
+                            <div class="pvv-item">Субъективны</div>
+                            <div class="pvv-item">Меняются</div>
+                            <div class="pvv-item">Личные</div>
+                        </div>
+                        <div class="pvv-divider">≠</div>
+                        <div class="pvv-column highlight">
+                            <div class="pvv-header">Принципы</div>
+                            <div class="pvv-item">Объективны</div>
+                            <div class="pvv-item">Вечны</div>
+                            <div class="pvv-item">Универсальны</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Анимации при скролле
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.theme-card, .principle-item, .stat-card, .impl-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
