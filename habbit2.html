@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Навык 2: Начинайте, представляя конечную цель</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0a 100%);
+            position: relative;
+            padding: 40px 20px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -200px;
+            left: -200px;
+            animation: pulse 6s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .hero-content {
+            max-width: 900px;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .habit-number {
+            font-size: 8em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5em;
+            color: #9ca3af;
+            margin-bottom: 40px;
+        }
+
+        .hero-quote {
+            font-size: 1.3em;
+            font-style: italic;
+            color: #cbd5e1;
+            padding: 30px;
+            background: rgba(139, 92, 246, 0.1);
+            border-left: 4px solid #8b5cf6;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+
+        .section {
+            padding: 100px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-dark {
+            background: #0a0a0a;
+        }
+
+        .section-light {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16162a 100%);
+        }
+
+        .section-title {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .section-subtitle {
+            font-size: 1.2em;
+            color: #9ca3af;
+            margin-bottom: 60px;
+            line-height: 1.8;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .concept-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .concept-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(139, 92, 246, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .concept-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .concept-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .concept-desc {
+            color: #9ca3af;
+            line-height: 1.8;
+        }
+
+        .creation-phases {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 40px;
+            align-items: center;
+            margin: 60px 0;
+        }
+
+        .phase-box {
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .mental-creation {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(167, 139, 250, 0.2));
+            border: 2px solid #8b5cf6;
+        }
+
+        .physical-creation {
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .phase-number {
+            font-size: 3em;
+            font-weight: 900;
+            color: #8b5cf6;
+            margin-bottom: 10px;
+        }
+
+        .phase-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .phase-desc {
+            color: #9ca3af;
+        }
+
+        .arrow-right {
+            font-size: 3em;
+            color: #8b5cf6;
+        }
+
+        .leadership-management {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .lm-card {
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid;
+        }
+
+        .leadership-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(167, 139, 250, 0.2));
+            border-color: #8b5cf6;
+        }
+
+        .management-card {
+            background: rgba(139, 92, 246, 0.05);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .lm-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .lm-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .lm-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+        }
+
+        .lm-list li:last-child {
+            border-bottom: none;
+        }
+
+        .mission-builder {
+            background: rgba(139, 92, 246, 0.05);
+            padding: 50px;
+            border-radius: 20px;
+            margin-top: 40px;
+        }
+
+        .mission-steps {
+            display: grid;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .mission-step {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 16px;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .mission-step-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #8b5cf6;
+        }
+
+        .mission-step-desc {
+            color: #9ca3af;
+            line-height: 1.8;
+        }
+
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .role-card {
+            background: rgba(139, 92, 246, 0.1);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .role-card:hover {
+            background: rgba(139, 92, 246, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .role-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .role-name {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .visualization {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.1));
+            padding: 50px;
+            border-radius: 20px;
+            margin-top: 40px;
+        }
+
+        .viz-title {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .viz-steps {
+            display: grid;
+            gap: 25px;
+        }
+
+        .viz-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+        }
+
+        .viz-number {
+            font-size: 2em;
+            font-weight: 900;
+            color: #8b5cf6;
+            min-width: 50px;
+        }
+
+        .viz-content {
+            flex: 1;
+        }
+
+        .viz-step-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .viz-step-desc {
+            color: #9ca3af;
+        }
+
+        .quote-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.1));
+            padding: 40px;
+            border-left: 4px solid #8b5cf6;
+            border-radius: 8px;
+            margin: 40px 0;
+        }
+
+        .quote-text {
+            font-size: 1.3em;
+            font-style: italic;
+            color: #cbd5e1;
+            line-height: 1.8;
+        }
+
+        .quote-author {
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #9ca3af;
+            text-align: right;
+        }
+
+        .exercise-card {
+            background: linear-gradient(135deg, #1a1a2e, #16162a);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .exercise-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #8b5cf6;
+        }
+
+        .exercise-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .exercise-list li {
+            padding: 15px 0 15px 40px;
+            position: relative;
+            color: #cbd5e1;
+        }
+
+        .exercise-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #8b5cf6;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .center-principles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .principle-item {
+            background: rgba(139, 92, 246, 0.05);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            text-align: center;
+        }
+
+        .principle-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .principle-name {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .principle-desc {
+            font-size: 0.95em;
+            color: #9ca3af;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2em; }
+            .habit-number { font-size: 4em; }
+            .creation-phases { grid-template-columns: 1fr; }
+            .arrow-right { display: none; }
+            .leadership-management { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="hero-content">
+            <div class="habit-number">02</div>
+            <h1>Начинайте, представляя конечную цель</h1>
+            <p class="hero-subtitle">Принципы личного лидерства</p>
+            <div class="hero-quote">
+                "Всё создаётся дважды: сначала мысленно, затем физически. Ключ в том, чтобы создать правильное мысленное творение — иначе вы можете эффективно двигаться не в ту сторону."
+            </div>
+        </div>
+    </div>
+
+    <div class="section section-dark">
+        <h2 class="section-title">Суть навыка</h2>
+        <p class="section-subtitle">
+            Начинать, представляя конечную цель, означает начинать сегодняшний день, задачу или проект с ясным пониманием желаемого направления и цели. 
+            Это значит понимать, куда вы идёте, чтобы лучше понять, где вы сейчас, и сделать так, чтобы шаги, которые вы предпринимаете, были в правильном направлении.
+        </p>
+
+        <div class="creation-phases">
+            <div class="phase-box mental-creation">
+                <div class="phase-number">01</div>
+                <h3 class="phase-title">Мысленное творение</h3>
+                <p class="phase-desc">Всё создаётся сначала в уме — дом начинается с чертежа, компания с бизнес-плана, жизнь с видением</p>
+            </div>
+            
+            <div class="arrow-right">→</div>
+            
+            <div class="phase-box physical-creation">
+                <div class="phase-number">02</div>
+                <h3 class="phase-title">Физическое творение</h3>
+                <p class="phase-desc">Только после ментального проектирования начинается физическая реализация — строительство, исполнение, проживание</p>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            <p class="quote-text">
+                "Если лестница прислонена не к той стене, каждый шаг вверх приближает вас не к тому месту быстрее."
+            </p>
+        </div>
+    </div>
+
+    <div class="section section-light">
+        <h2 class="section-title">Лидерство vs менеджмент</h2>
+        <p class="section-subtitle">
+            Навык 1 говорит "Ты — программист", навык 2 говорит "Напиши программу". До того как начать карабкаться по лестнице успеха, 
+            убедитесь, что она приставлена к нужной стене. Менеджмент — это эффективность в восхождении по лестнице. 
+            Лидерство определяет, к той ли стене приставлена лестница.
+        </p>
+
+        <div class="leadership-management">
+            <div class="lm-card leadership-card">
+                <h3 class="lm-title">Лидерство</h3>
+                <ul class="lm-list">
+                    <li>Делать правильные вещи</li>
+                    <li>Видение и направление</li>
+                    <li>К какой стене приставлена лестница</li>
+                    <li>Эффективность (результативность)</li>
+                    <li>"Куда мы идём?"</li>
+                    <li>Определяет "что" и "почему"</li>
+                    <li>Навык 2: Начинайте с конца</li>
+                </ul>
+            </div>
+
+            <div class="lm-card management-card">
+                <h3 class="lm-title">Менеджмент</h3>
+                <ul class="lm-list">
+                    <li>Делать вещи правильно</li>
+                    <li>Методы и исполнение</li>
+                    <li>Как быстрее взобраться</li>
+                    <li>Эффективность (КПД)</li>
+                    <li>"Как нам туда добраться?"</li>
+                    <li>Определяет "как"</li>
+                    <li>Навык 3: Главное главным</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            <p class="quote-text">
+                "Нет смысла в успехе на лестнице, если она приставлена не к той стене. Большинство людей живут по сценариям, написанным другими: родителями, обществом, коллегами. Навык 2 — это написание собственного сценария."
+            </p>
+        </div>
+    </div>
+
+    <div class="section section-dark">
+        <h2 class="section-title">Личная миссия</h2>
+        <p class="section-subtitle">
+            В основе навыка 2 лежит способность увидеть потенциальное, мысленное творение любой части вашей жизни. 
+            Самый эффективный способ начинать с конца в уме — разработать личную миссию, философию или credo. 
+            Она фокусируется на том, кем вы хотите быть и что хотите делать.
+        </p>
+
+        <div class="mission-builder">
+            <h3 class="section-title" style="text-align: center;">Создание личной миссии</h3>
+            
+            <div class="mission-steps">
+                <div class="mission-step">
+                    <h4 class="mission-step-title">Шаг 1: Визуализация похорон</h4>
+                    <p class="mission-step-desc">
+                        Представьте свои похороны через три года. Что бы вы хотели услышать от семьи, друзей, коллег о себе? 
+                        Каким человеком вы хотели бы, чтобы вас запомнили? Какой вклад вы хотели бы сделать?
+                    </p>
+                </div>
+
+                <div class="mission-step">
+                    <h4 class="mission-step-title">Шаг 2: Определите свои роли</h4>
+                    <p class="mission-step-desc">
+                        Вы играете разные роли в жизни: личность, супруг/а, родитель, друг, профессионал, член сообщества. 
+                        Запишите все ваши основные роли. Каким вы хотите быть в каждой из них?
+                    </p>
+                </div>
+
+                <div class="mission-step">
+                    <h4 class="mission-step-title">Шаг 3: Определите принципы</h4>
+                    <p class="mission-step-desc">
+                        Какие принципы управляют вашей жизнью? Честность, служение, рост, любовь, справедливость? 
+                        Эти принципы — компас, который направляет вас независимо от обстоятельств.
+                    </p>
+                </div>
+
+                <div class="mission-step">
+                    <h4 class="mission-step-title">Шаг 4: Напишите первый черновик</h4>
+                    <p class="mission-step-desc">
+                        Соедините роли, цели и принципы в связный документ. Это не будет идеально с первого раза. 
+                        Личная миссия — живой документ, который растёт и меняется вместе с вами.
+                    </p>
+                </div>
+
+                <div class="mission-step">
+                    <h4 class="mission-step-title">Шаг 5: Регулярно пересматривайте</h4>
+                    <p class="mission-step-desc">
+                        Возвращайтесь к своей миссии еженедельно или ежемесячно. Уточняйте, углубляйте, переписывайте. 
+                        Процесс важнее продукта — он заставляет вас глубоко задуматься о своей жизни.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section section-light">
+        <h2 class="section-title">Ваши жизненные роли</h2>
+        <p class="section-subtitle">
+            Сбалансированная жизнь требует внимания ко всем важным ролям. Определите 5-7 ключевых ролей в вашей жизни 
+            и опишите, кем вы хотите быть в каждой из них.
+        </p>
+
+        <div class="roles-grid">
+            <div class="role-card">
+                <div class="role-icon">🧘</div>
+                <div class="role-name">Личность</div>
+            </div>
+            <div class="role-card">
+                <div class="role-icon">💑</div>
+                <div class="role-name">Супруг/а</div>
+            </div>
+            <div class="role-card">
+                <div class="role-icon">👨‍👩‍👧‍👦</div>
+                <div class="role-name">Родитель</div>
+            </div>
+            <div class="role-card">
+                <div class="role-icon">💼</div>
+                <div class="role-name">Профессионал</div>
+            </div>
+            <div class="role-card">
+                <div class="role-icon">🤝</div>
+                <div class="role-name">Друг</div>
+            </div>
+            <div class="role-card">
+                <div class="role-icon">🌍</div>
+                <div class="role-name">Гражданин</div>
+            </div>
+            <div class="role-card">
+                <div class="role-icon">📚</div>
+                <div class="role-name">Ученик</div>
+            </div>
+            <div class="role-card">
+                <div class="role-icon">💪</div>
+                <div class="role-name">Здоровье</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section section-dark">
+        <h2 class="section-title">Сила визуализации</h2>
+        <p class="section-subtitle">
+            Каждый из нас может использовать силу визуализации и аффирмаций. Создавая яркие ментальные образы желаемого 
+            в мельчайших деталях, мы программируем свой разум на успех.
+        </p>
+
+        <div class="visualization">
+            <h3 class="viz-title">Техника визуализации цели</h3>
+            
+            <div class="viz-steps">
+                <div class="viz-step">
+                    <div class="viz-number">1</div>
+                    <div class="viz-content">
+                        <div class="viz-step-title">Определите цель</div>
+                        <p class="viz-step-desc">
+                            Выберите конкретную цель или событие, к которому готовитесь. Это может быть презентация, 
+                            важный разговор, спортивное достижение или жизненная цель.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="viz-step">
+                    <div class="viz-number">2</div>
+                    <div class="viz-content">
+                        <div class="viz-step-title">Найдите тихое место</div>
+                        <p class="viz-step-desc">
+                            Выделите 10-15 минут в тихом месте, где вас никто не побеспокоит. Сядьте удобно, 
+                            закройте глаза, сделайте несколько глубоких вдохов.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="viz-step">
+                    <div class="viz-number">3</div>
+                    <div class="viz-content">
+                        <div class="viz-step-title">Создайте яркий образ</div>
+                        <p class="viz-step-desc">
+                            Представьте себя уже достигшим цели. Что вы видите? Что слышите? Что чувствуете? 
+                            Кто рядом? Какие эмоции испытываете? Чем ярче детали, тем сильнее эффект.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="viz-step">
+                    <div class="viz-number">4</div>
+                    <div class="viz-content">
+                        <div class="viz-step-title">Проживите процесс</div>
+                        <p class="viz-step-desc">
+                            Визуализируйте не только результат, но и процесс. Видьте себя действующим уверенно, 
+                            преодолевающим трудности, демонстрирующим нужные качества.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="viz-step">
+                    <div class="viz-number">5</div>
+                    <div class="viz-content">
+                        <div class="viz-step-title">Практикуйте ежедневно</div>
+                        <p class="viz-step-desc">
+                            Повторяйте эту визуализацию каждый день, лучше утром или перед сном. 
+                            Ваш мозг начнёт воспринимать это как реальность и направит действия к цели.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            <p class="quote-text">
+                "Вы не можете жить полноценно, если не знаете, что для вас важно. Вы не можете эффективно управлять своим временем, 
+                если не знаете своих ценностей и целей."
+            </p>
+        </div>
+    </div>
+
+    <div class="section section-light">
+        <h2 class="section-title">Центр принципов</h2>
+        <p class="section-subtitle">
+            То, что мы помещаем в центр нашей жизни, становится источником безопасности, мудрости, силы и руководства. 
+            Принципы — единственный стабильный центр, который не меняется в зависимости от обстоятельств.
+        </p>
+
+        <div class="center-principles">
+            <div class="principle-item">
+                <div class="principle-icon">⚖️</div>
+                <div class="principle-name">Справедливость</div>
+                <p class="principle-desc">Честность и непредвзятость во всех отношениях</p>
+            </div>
+
+            <div class="principle-item">
+                <div class="principle-icon">🌱</div>
+                <div class="principle-name">Рост</div>
+                <p class="principle-desc">Постоянное развитие и совершенствование</p>
+            </div>
+
+            <div class="principle-item">
+                <div class="principle-icon">❤️</div>
+                <div class="principle-name">Любовь</div>
+                <p class="principle-desc">Безусловная забота о благополучии других</p>
+            </div>
+
+            <div class="principle-item">
+                <div class="principle-icon">💎</div>
+                <div class="principle-name">Целостность</div>
+                <p class="principle-desc">Соответствие ценностей и действий</p>
+            </div>
+
+            <div class="principle-item">
+                <div class="principle-icon">🤝</div>
+                <div class="principle-name">Служение</div>
+                <p class="principle-desc">Вклад в благо других и общества</p>
+            </div>
+
+            <div class="principle-item">
+                <div class="principle-icon">🎯</div>
+                <div class="principle-name">Качество</div>
+                <p class="principle-desc">Стремление к совершенству в делах</p>
+            </div>
+
+            <div class="principle-item">
+                <div class="principle-icon">🔬</div>
+                <div class="principle-name">Истина</div>
+                <p class="principle-desc">Поиск и признание реальности</p>
+            </div>
+
+            <div class="principle-item">
+                <div class="principle-icon">🌟</div>
+                <div class="principle-name">Достоинство</div>
+                <p class="principle-desc">Уважение человеческой ценности</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section section-dark">
+        <h2 class="section-title">Практические упражнения</h2>
+
+        <div class="exercise-card">
+            <h3 class="exercise-title">Упражнение 1: Визуализация похорон</h3>
+            <ul class="exercise-list">
+                <li>Найдите тихое место, где вас не будут беспокоить 30 минут</li>
+                <li>Представьте, что прошло 3 года. Вы на своих похоронах</li>
+                <li>Выступают 4 человека: член семьи, друг, коллега, член сообщества</li>
+                <li>Что бы вы хотели услышать о себе от каждого из них?</li>
+                <li>Каким человеком вы хотели бы быть в их глазах?</li>
+                <li>Какой вклад вы хотели бы оставить?</li>
+                <li>Запишите всё, что приходит в голову</li>
+            </ul>
+        </div>
+
+        <div class="exercise-card">
+            <h3 class="exercise-title">Упражнение 2: Определение ролей</h3>
+            <ul class="exercise-list">
+                <li>Выпишите все важные роли в вашей жизни (5-7 ролей)</li>
+                <li>Для каждой роли ответьте: "Каким я хочу быть в этой роли?"</li>
+                <li>Опишите идеал для каждой роли в 2-3 предложениях</li>
+                <li>Оцените текущее состояние по шкале 1-10 для каждой роли</li>
+                <li>Определите один следующий шаг для каждой роли</li>
+            </ul>
+        </div>
+
+        <div class="exercise-card">
+            <h3 class="exercise-title">Упражнение 3: Черновик личной миссии</h3>
+            <ul class="exercise-list">
+                <li>Выделите 2-3 часа спокойного времени</li>
+                <li>Начните с ответа: "Что я хочу, чтобы сказали обо мне через 20 лет?"</li>
+                <li>Перечислите ваши ключевые ценности и принципы</li>
+                <li>Опишите ваше видение для каждой жизненной роли</li>
+                <li>Соедините всё в связный документ на 1-2 страницы</li>
+                <li>Не стремитесь к совершенству — это первый черновик</li>
+                <li>Перечитывайте и улучшайте еженедельно</li>
+            </ul>
+        </div>
+
+        <div class="exercise-card">
+            <h3 class="exercise-title">Упражнение 4: Еженедельная визуализация</h3>
+            <ul class="exercise-list">
+                <li>Выберите важное событие на следующей неделе</li>
+                <li>Потратьте 10 минут на визуализацию идеального исхода</li>
+                <li>Видьте себя действующим согласно своим ценностям</li>
+                <li>Представьте все детали: место, люди, ваши слова, эмоции</li>
+                <li>Почувствуйте эмоции успеха заранее</li>
+                <li>Повторяйте эту визуализацию каждое утро до события</li>
+            </ul>
+        </div>
+
+        <div class="exercise-card">
+            <h3 class="exercise-title">Упражнение 5: Переписывание сценария</h3>
+            <ul class="exercise-list">
+                <li>Определите негативный "сценарий", который управляет вами</li>
+                <li>Это может быть убеждение из детства или общества</li>
+                <li>Осознайте, что это НЕ реальность, а интерпретация</li>
+                <li>Напишите новый, расширяющий возможности сценарий</li>
+                <li>Визуализируйте себя действующим по новому сценарию</li>
+                <li>Практикуйте новое поведение в безопасных ситуациях</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section section-light">
+        <h2 class="section-title">Ключевые выводы</h2>
+        
+        <div class="concept-grid">
+            <div class="concept-card">
+                <div class="concept-icon">🎨</div>
+                <h3 class="concept-title">Двойное творение</h3>
+                <p class="concept-desc">
+                    Всё создаётся дважды: сначала мысленно, затем физически. Ключ — создать правильное мысленное творение, 
+                    иначе вы эффективно идёте не туда.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">🧭</div>
+                <h3 class="concept-title">Личная миссия</h3>
+                <p class="concept-desc">
+                    Личная миссия — это личная конституция, основа для принятия решений. Она даёт критерий, по которому 
+                    можно измерять всё остальное в жизни.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">👁️</div>
+                <h3 class="concept-title">Сила визуализации</h3>
+                <p class="concept-desc">
+                    Способность визуализировать желаемое — мощный инструмент. Ваш мозг не различает живо воображаемое 
+                    и реальное, программируя действия на успех.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">🎯</div>
+                <h3 class="concept-title">Принципы в центре</h3>
+                <p class="concept-desc">
+                    Когда принципы в центре жизни, у вас есть прочная основа для развития. Принципы не меняются — 
+                    они обеспечивают стабильность в меняющемся мире.
+                </p>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            <p class="quote-text">
+                "Самое эффективное вложение времени — это время, потраченное на оттачивание вашей личной миссии. 
+                Оно определяет все остальные решения и даёт смысл всему, что вы делаете."
+            </p>
+            <p class="quote-author">— Стивен Кови</p>
+        </div>
+    </div>
+
+    <script>
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.concept-card, .phase-box, .lm-card, .mission-step, .role-card, .viz-step, .exercise-card, .principle-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
