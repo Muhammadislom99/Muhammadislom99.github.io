@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Навык 3: Главное главным</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0a 100%);
+            position: relative;
+            padding: 40px 20px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -200px;
+            right: -200px;
+            animation: pulse 6s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .hero-content {
+            max-width: 900px;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .habit-number {
+            font-size: 8em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5em;
+            color: #9ca3af;
+            margin-bottom: 40px;
+        }
+
+        .hero-quote {
+            font-size: 1.3em;
+            font-style: italic;
+            color: #cbd5e1;
+            padding: 30px;
+            background: rgba(236, 72, 153, 0.1);
+            border-left: 4px solid #ec4899;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+
+        .section {
+            padding: 100px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-dark {
+            background: #0a0a0a;
+        }
+
+        .section-light {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16162a 100%);
+        }
+
+        .section-title {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .section-subtitle {
+            font-size: 1.2em;
+            color: #9ca3af;
+            margin-bottom: 60px;
+            line-height: 1.8;
+        }
+
+        .time-matrix {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3px;
+            background: #ec4899;
+            padding: 3px;
+            border-radius: 20px;
+            margin: 60px 0;
+        }
+
+        .quadrant {
+            background: #0a0a0a;
+            padding: 40px;
+            border-radius: 17px;
+            min-height: 350px;
+        }
+
+        .q-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .q-number {
+            font-size: 2.5em;
+            font-weight: 900;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .q1 .q-number {
+            background: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .q2 .q-number {
+            background: linear-gradient(135deg, #ec4899, #f472b6);
+            color: #fff;
+        }
+
+        .q3 .q-number {
+            background: rgba(245, 158, 11, 0.3);
+            color: #f59e0b;
+        }
+
+        .q4 .q-number {
+            background: rgba(107, 114, 128, 0.3);
+            color: #6b7280;
+        }
+
+        .q-title {
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .q-label {
+            font-size: 0.9em;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+
+        .q-desc {
+            font-size: 1.05em;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .q-examples {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .q-examples li {
+            padding: 10px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #9ca3af;
+            font-size: 0.95em;
+        }
+
+        .q-examples li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            font-size: 1.5em;
+        }
+
+        .q1 .q-examples li::before { color: #ef4444; }
+        .q2 .q-examples li::before { color: #ec4899; }
+        .q3 .q-examples li::before { color: #f59e0b; }
+        .q4 .q-examples li::before { color: #6b7280; }
+
+        .q2-highlight {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(244, 114, 182, 0.2));
+            border: 2px solid #ec4899;
+            box-shadow: 0 0 30px rgba(236, 72, 153, 0.3);
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .concept-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .concept-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(236, 72, 153, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .concept-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .concept-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .concept-desc {
+            color: #9ca3af;
+            line-height: 1.8;
+        }
+
+        .weekly-planning {
+            background: rgba(236, 72, 153, 0.05);
+            padding: 50px;
+            border-radius: 20px;
+            margin-top: 40px;
+        }
+
+        .planning-steps {
+            display: grid;
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .planning-step {
+            display: flex;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 16px;
+            border-left: 4px solid #ec4899;
+        }
+
+        .step-number {
+            font-size: 2em;
+            font-weight: 900;
+            color: #ec4899;
+            min-width: 50px;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .step-desc {
+            color: #9ca3af;
+            line-height: 1.7;
+        }
+
+        .delegation {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .delegation-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid;
+        }
+
+        .gofer {
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .steward {
+            border-color: #ec4899;
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(244, 114, 182, 0.1));
+        }
+
+        .del-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .del-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .del-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+        }
+
+        .del-list li:last-child {
+            border-bottom: none;
+        }
+
+        .quote-box {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(244, 114, 182, 0.1));
+            padding: 40px;
+            border-left: 4px solid #ec4899;
+            border-radius: 8px;
+            margin: 40px 0;
+        }
+
+        .quote-text {
+            font-size: 1.3em;
+            font-style: italic;
+            color: #cbd5e1;
+            line-height: 1.8;
+        }
+
+        .quote-author {
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #9ca3af;
+            text-align: right;
+        }
+
+        .exercise-card {
+            background: linear-gradient(135deg, #1a1a2e, #16162a);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .exercise-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #ec4899;
+        }
+
+        .exercise-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .exercise-list li {
+            padding: 15px 0 15px 40px;
+            position: relative;
+            color: #cbd5e1;
+        }
+
+        .exercise-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #ec4899;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .comparison-table {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-top: 40px;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-cell {
+            padding: 25px;
+        }
+
+        .table-header {
+            background: rgba(236, 72, 153, 0.2);
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .urgent-col {
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2em; }
+            .habit-number { font-size: 4em; }
+            .time-matrix { grid-template-columns: 1fr; }
+            .delegation { grid-template-columns: 1fr; }
+            .table-row { grid-template-columns: 1fr; }
+            .urgent-col { border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="hero-content">
+            <div class="habit-number">03</div>
+            <h1>Главное главным</h1>
+            <p class="hero-subtitle">Принципы личного менеджмента</p>
+            <div class="hero-quote">
+                "Главное — это держать главное главным. Эффективные люди не ориентируются на проблемы, они ориентируются на возможности. 
+                Они питают возможности и морят голодом проблемы."
+            </div>
+        </div>
+    </div>
+
+    <div class="section section-dark">
+        <h2 class="section-title">Суть навыка</h2>
+        <p class="section-subtitle">
+            Навык 3 — это физическое творение, реализация навыков 1 и 2. Это исполнение, воплощение, естественное следствие навыков 1 и 2. 
+            Навык 1 говорит: "Ты — творец. Ты ответственен". Навык 2 — это первое, мысленное творение. Навык 3 — второе, физическое творение. 
+            Это упражнение независимой воли для того, чтобы стать принципиально-центрированным.
+        </p>
+
+        <div class="concept-grid">
+            <div class="concept-card">
+                <div class="concept-icon">⚖️</div>
+                <h3 class="concept-title">Сила независимой воли</h3>
+                <p class="concept-desc">
+                    Независимая воля — это способность принимать решения и действовать в соответствии с ними. 
+                    Это способность действовать, а не быть объектом воздействия, проактивно выполнять программу, которую мы разработали в навыке 2.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">🎯</div>
+                <h3 class="concept-title">Четыре поколения тайм-менеджмента</h3>
+                <p class="concept-desc">
+                    1-е: заметки и списки дел. 2-е: календари и встречи. 3-е: приоритизация и планирование. 
+                    4-е: управление собой, а не временем. Фокус на отношениях и результатах, а не на вещах и времени.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">📊</div>
+                <h3 class="concept-title">Важное vs Срочное</h3>
+                <p class="concept-desc">
+                    Срочное требует немедленного внимания. Важное способствует вашей миссии, ценностям, приоритетным целям. 
+                    Ключ к эффективности — в умении отличать срочное от важного и фокусироваться на важном.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">💎</div>
+                <h3 class="concept-title">Квадрант II</h3>
+                <p class="concept-desc">
+                    Сердце эффективного управления — в квадранте II: важные, но не срочные дела. Профилактика, построение отношений, 
+                    новые возможности, планирование, обновление. Это квадрант качества и личной эффективности.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section section-light">
+        <h2 class="section-title">Матрица управления временем</h2>
+        <p class="section-subtitle">
+            Всё, что мы делаем, можно классифицировать по двум факторам: срочности и важности. 
+            Срочное действует на нас, важное требует от нас действий. Эффективные люди живут в квадранте II.
+        </p>
+
+        <div class="time-matrix">
+            <div class="quadrant q1">
+                <div class="q-header">
+                    <div class="q-number">I</div>
+                    <div>
+                        <div class="q-title">Кризисы</div>
+                        <div class="q-label">СРОЧНО и ВАЖНО</div>
+                    </div>
+                </div>
+                <p class="q-desc">
+                    Критические проблемы, пожаротушение, дедлайны, кризисы. Жизнь здесь означает стресс, выгорание, 
+                    постоянное управление кризисами.
+                </p>
+                <ul class="q-examples">
+                    <li>Критические ситуации</li>
+                    <li>Неотложные проблемы</li>
+                    <li>Проекты с дедлайном</li>
+                    <li>Медицинские экстренные случаи</li>
+                    <li>Некоторые звонки, встречи, совещания</li>
+                </ul>
+            </div>
+
+            <div class="quadrant q2 q2-highlight">
+                <div class="q-header">
+                    <div class="q-number">II</div>
+                    <div>
+                        <div class="q-title">Качество жизни</div>
+                        <div class="q-label">НЕ СРОЧНО, но ВАЖНО</div>
+                    </div>
+                </div>
+                <p class="q-desc">
+                    Профилактика, развитие возможностей, планирование, построение отношений. Это квадрант лидерства, 
+                    долгосрочного видения и дисциплины. Здесь растёт эффективность.
+                </p>
+                <ul class="q-examples">
+                    <li>Профилактика, предупреждение проблем</li>
+                    <li>Построение отношений</li>
+                    <li>Признание новых возможностей</li>
+                    <li>Планирование, подготовка</li>
+                    <li>Обновление, отдых, спорт</li>
+                    <li>Обучение, развитие</li>
+                </ul>
+            </div>
+
+            <div class="quadrant q3">
+                <div class="q-header">
+                    <div class="q-number">III</div>
+                    <div>
+                        <div class="q-title">Отвлечения</div>
+                        <div class="q-label">СРОЧНО, но НЕ ВАЖНО</div>
+                    </div>
+                </div>
+                <p class="q-desc">
+                    Прерывания, некоторые звонки, встречи, почта. Многие проводят здесь много времени, думая, что это квадрант I, 
+                    реагируя на срочность других людей.
+                </p>
+                <ul class="q-examples">
+                    <li>Прерывания, некоторые звонки</li>
+                    <li>Некоторая почта, отчёты</li>
+                    <li>Некоторые встречи</li>
+                    <li>Насущные, настойчивые вопросы</li>
+                    <li>Популярная деятельность</li>
+                </ul>
+            </div>
+
+            <div class="quadrant q4">
+                <div class="q-header">
+                    <div class="q-number">IV</div>
+                    <div>
+                        <div class="q-title">Пустая трата времени</div>
+                        <div class="q-label">НЕ СРОЧНО и НЕ ВАЖНО</div>
+                    </div>
+                </div>
+                <p class="q-desc">
+                    Мелочи, некоторые звонки, бесцельное времяпровождение, бездумное потребление контента. 
+                    Здесь люди убегают от стресса квадрантов I и III.
+                </p>
+                <ul class="q-examples">
+                    <li>Мелочи, нагрузка</li>
+                    <li>Некоторая почта</li>
+                    <li>Некоторые телефонные звонки</li>
+                    <li>Пожиратели времени</li>
+                    <li>Приятная деятельность</li>
+                    <li>Бездумный сёрфинг интернета</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            <p class="quote-text">
+                "Эффективные люди остаются вне квадрантов III и IV, потому что срочные или нет, эти вещи неважны. 
+                Они также сокращают квадрант I, проводя больше времени в квадранте II."
+            </p>
+        </div>
+    </div>
+
+    <div class="section section-dark">
+        <h2 class="section-title">Жизнь в квадранте II</h2>
+        <p class="section-subtitle">
+            Квадрант II — сердце эффективного личного управления. Это дела важные, но не срочные: построение отношений, 
+            написание личной миссии, долгосрочное планирование, упражнения, профилактика. Всё, что мы знаем, что нужно делать, 
+            но редко делаем, потому что это не срочно.
+        </p>
+
+        <div class="comparison-table">
+            <div class="table-row">
+                <div class="table-cell table-header urgent-col">Люди квадранта I</div>
+                <div class="table-cell table-header">Люди квадранта II</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell urgent-col">Управляются кризисами</div>
+                <div class="table-cell">Фокусируются на возможностях</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell urgent-col">Всегда в режиме пожаротушения</div>
+                <div class="table-cell">Предотвращают пожары профилактикой</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell urgent-col">Думают краткосрочно</div>
+                <div class="table-cell">Мыслят долгосрочно</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell urgent-col">Реагируют на проблемы</div>
+                <div class="table-cell">Проактивно создают будущее</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell urgent-col">Измотаны и выгорают</div>
+                <div class="table-cell">Энергичны и сбалансированы</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell urgent-col">Контролируют ущерб</div>
+                <div class="table-cell">Инвестируют в развитие</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section section-light">
+        <h2 class="section-title">Еженедельное планирование</h2>
+        <p class="section-subtitle">
+            Ключ к жизни в квадранте II — еженедельное планирование, а не ежедневное. Неделя — достаточно длинный период для контекста 
+            и достаточно короткий для точности. Планирование на основе ролей и целей, а не времени.
+        </p>
+
+        <div class="weekly-planning">
+            <h3 class="section-title" style="text-align: center; font-size: 2em;">Процесс еженедельного планирования</h3>
+            
+            <div class="planning-steps">
+                <div class="planning-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Соединитесь с вашей миссией</div>
+                        <p class="step-desc">
+                            Начните с пересмотра вашей личной миссии. Это даёт контекст и перспективу для планирования недели. 
+                            Напомните себе о ваших ролях и долгосрочных целях.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="planning-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">Определите роли</div>
+                        <p class="step-desc">
+                            Запишите 5-7 ключевых ролей вашей жизни: личность, супруг/а, родитель, профессионал, друг и т.д. 
+                            Это обеспечит баланс и не даст чему-то одному доминировать над всем остальным.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="planning-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">Выберите цели для каждой роли</div>
+                        <p class="step-desc">
+                            Для каждой роли определите 1-2 важных результата, которых вы хотите достичь на этой неделе. 
+                            Это должны быть действия квадранта II, которые двигают вас к вашим долгосрочным целям.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="planning-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <div class="step-title">Создайте временные блоки</div>
+                        <p class="step-desc">
+                            Запланируйте конкретное время для работы над этими целями. Блокируйте время для квадранта II 
+                            СНАЧАЛА, затем планируйте остальное вокруг этого. Защищайте это время.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="planning-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <div class="step-title">Делегируйте и адаптируйте</div>
+                        <p class="step-desc">
+                            Определите, что можно делегировать. В течение недели адаптируйте план по необходимости, 
+                            но всегда с перспективой ваших принципов и долгосрочных целей.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="planning-step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <div class="step-title">Ежедневная адаптация</div>
+                        <p class="step-desc">
+                            Каждое утро тратьте 5-10 минут на пересмотр дня в контексте недели. Приоритизируйте, 
+                            используя критерии важности. Будьте гибки, но принципиальны.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            <p class="quote-text">
+                "Ключ не в том, чтобы расставлять приоритеты в вашем расписании, а в том, чтобы планировать ваши приоритеты."
+            </p>
+        </div>
+    </div>
+
+    <div class="section section-dark">
+        <h2 class="section-title">Делегирование</h2>
+        <p class="section-subtitle">
+            Делегирование — одна из самых мощных форм квадранта II. Но эффективное делегирование требует времени на обучение 
+            и развитие других людей. Существует два типа делегирования: на посыльных и управляющее делегирование.
+        </p>
+
+        <div class="delegation">
+            <div class="delegation-card gofer">
+                <h3 class="del-title">Делегирование на посыльных</h3>
+                <ul class="del-list">
+                    <li>Сходи туда, принеси то</li>
+                    <li>Делай это именно так</li>
+                    <li>Скажи мне, когда сделано</li>
+                    <li>Контроль над методами</li>
+                    <li>Подходит для неопытных людей</li>
+                    <li>Требует микроменеджмента</li>
+                    <li>Ограничивает рост</li>
+                    <li>Отнимает ваше время</li>
+                </ul>
+            </div>
+
+            <div class="delegation-card steward">
+                <h3 class="del-title">Управляющее делегирование</h3>
+                <ul class="del-list">
+                    <li>Фокус на результатах, а не методах</li>
+                    <li>Предоставление ресурсов и поддержки</li>
+                    <li>Ясные ожидания и критерии</li>
+                    <li>Отчётность по результатам</li>
+                    <li>Последствия — хорошие и плохие</li>
+                    <li>Развивает людей и освобождает вас</li>
+                    <li>Требует инвестиций времени вначале</li>
+                    <li>Экономит огромное время в долгосрочной перспективе</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="concept-grid" style="margin-top: 60px;">
+            <div class="concept-card">
+                <div class="concept-icon">🎯</div>
+                <h3 class="concept-title">Желаемые результаты</h3>
+                <p class="concept-desc">
+                    Чётко опишите, что нужно достичь. Фокусируйтесь на "что", а не на "как". 
+                    Визуализируйте желаемый результат и создайте взаимное понимание и приверженность.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">📋</div>
+                <h3 class="concept-title">Руководящие принципы</h3>
+                <p class="concept-desc">
+                    Определите параметры, в рамках которых человек должен работать. Меньше принципов — больше свободы. 
+                    Больше доверия — меньше контроля.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">🛠️</div>
+                <h3 class="concept-title">Ресурсы</h3>
+                <p class="concept-desc">
+                    Определите человеческие, финансовые, технические или организационные ресурсы, 
+                    которые человек может использовать для достижения результатов.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">✅</div>
+                <h3 class="concept-title">Отчётность</h3>
+                <p class="concept-desc">
+                    Установите стандарты производительности и время оценки. Создайте чёткие, взаимно понятные 
+                    последствия — как позитивные, так и негативные.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section section-light">
+        <h2 class="section-title">Умение говорить "нет"</h2>
+        <p class="section-subtitle">
+            Самое важное слово в квадранте II — "нет". Нет отвлечениям, нет неважному. Легко сказать "нет", 
+            когда внутри горит более сильное "да". Когда у вас есть миссия, легко отказаться от хорошего ради лучшего.
+        </p>
+
+        <div class="exercise-card">
+            <h3 class="exercise-title">Как эффективно говорить "нет"</h3>
+            <ul class="exercise-list">
+                <li>Будьте проактивны: предвидьте просьбы и готовьте ответы заранее</li>
+                <li>Говорите "нет" деятельности, а не человеку: "Я не смогу это сделать, но ценю, что спросили"</li>
+                <li>Предложите альтернативу: "Я не могу сделать X, но могу помочь с Y"</li>
+                <li>Используйте свою миссию как щит: "Это не соответствует моим текущим приоритетам"</li>
+                <li>Будьте честны и прямолинейны, но добры и уважительны</li>
+                <li>Не извиняйтесь за границы — они необходимы для эффективности</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section section-dark">
+        <h2 class="section-title">Практические упражнения</h2>
+
+        <div class="exercise-card">
+            <h3 class="exercise-title">Упражнение 1: Анализ недели</h3>
+            <ul class="exercise-list">
+                <li>Запишите всё, что вы делали на прошлой неделе</li>
+                <li>Классифицируйте каждую активность по квадрантам</li>
+                <li>Посчитайте процент времени в каждом квадранте</li>
+                <li>Определите: что из квадранта III или IV можно устранить?</li>
+                <li>Что из квадранта I можно предотвратить активностями квадранта II?</li>
+                <li>Какие активности квадранта II вы хотите добавить?</li>
+            </ul>
+        </div>
+
+        <div class="exercise-card">
+            <h3 class="exercise-title">Упражнение 2: План еженедельной роли</h3>
+            <ul class="exercise-list">
+                <li>Выделите 30 минут воскресным вечером или понедельником утром</li>
+                <li>Перечитайте вашу личную миссию</li>
+                <li>Запишите ваши роли (5-7 ключевых ролей)</li>
+                <li>Для каждой роли определите 1-2 цели на неделю (квадрант II)</li>
+                <li>Запланируйте конкретное время для работы над этими целями</li>
+                <li>Защитите это время как важную встречу с самим собой</li>
+            </ul>
+        </div>
+
+        <div class="exercise-card">
+            <h3 class="exercise-title">Упражнение 3: Практика делегирования</h3>
+            <ul class="exercise-list">
+                <li>Выберите одну задачу, которую вы можете делегировать</li>
+                <li>Определите желаемые результаты максимально чётко</li>
+                <li>Установите руководящие принципы и параметры</li>
+                <li>Определите доступные ресурсы</li>
+                <li>Установите стандарты отчётности и последствия</li>
+                <li>Проведите встречу делегирования, убедитесь во взаимном понимании</li>
+                <li>Дайте свободу методам, но проверяйте результаты</li>
+            </ul>
+        </div>
+
+        <div class="exercise-card">
+            <h3 class="exercise-title">Упражнение 4: Практика "нет"</h3>
+            <ul class="exercise-list">
+                <li>Составьте список типичных запросов, которые вы получаете</li>
+                <li>Определите, какие из них квадрант III или IV для вас</li>
+                <li>Подготовьте вежливые, но твёрдые отказы для каждого типа</li>
+                <li>Практикуйте эти ответы вслух</li>
+                <li>На этой неделе скажите "нет" минимум одному неважному запросу</li>
+                <li>Используйте освободившееся время для активности квадранта II</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section section-light">
+        <h2 class="section-title">Ключевые выводы</h2>
+        
+        <div class="concept-grid">
+            <div class="concept-card">
+                <div class="concept-icon">🎯</div>
+                <h3 class="concept-title">Квадрант II — ключ</h3>
+                <p class="concept-desc">
+                    Сердце эффективного управления — важные, но не срочные дела. Профилактика, подготовка, 
+                    планирование, построение отношений. Здесь растёт качество жизни.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">📅</div>
+                <h3 class="concept-title">Еженедельное планирование</h3>
+                <p class="concept-desc">
+                    Планируйте по неделям, а не дням. Используйте роли для баланса. Планируйте приоритеты, 
+                    а не расставляйте приоритеты в расписании.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">🤝</div>
+                <h3 class="concept-title">Управляющее делегирование</h3>
+                <p class="concept-desc">
+                    Делегируйте результаты, а не методы. Это требует времени вначале, но освобождает огромное время 
+                    в долгосрочной перспективе и развивает людей.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">🛡️</div>
+                <h3 class="concept-title">Сила "нет"</h3>
+                <p class="concept-desc">
+                    Умение говорить "нет" неважному — критический навык. Легче сказать "нет", когда внутри горит 
+                    более сильное "да" вашей миссии и целей.
+                </p>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            <p class="quote-text">
+                "Главное — это держать главное главным."
+            </p>
+            <p class="quote-author">— Стивен Кови</p>
+        </div>
+    </div>
+
+    <script>
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.concept-card, .quadrant, .planning-step, .delegation-card, .exercise-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
