@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Навык 4: Думайте в духе Выиграл/Выиграл</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0a 100%);
+            position: relative;
+            padding: 40px 20px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -200px;
+            left: -200px;
+            animation: pulse 6s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .hero-content {
+            max-width: 900px;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .habit-number {
+            font-size: 8em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #22c55e 0%, #4ade80 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            font-weight: 800;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #22c55e 0%, #4ade80 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5em;
+            color: #9ca3af;
+            margin-bottom: 40px;
+        }
+
+        .hero-quote {
+            font-size: 1.3em;
+            font-style: italic;
+            color: #cbd5e1;
+            padding: 30px;
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 4px solid #22c55e;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+
+        .section {
+            padding: 100px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-dark {
+            background: #0a0a0a;
+        }
+
+        .section-light {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16162a 100%);
+        }
+
+        .section-title {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .section-subtitle {
+            font-size: 1.2em;
+            color: #9ca3af;
+            margin-bottom: 60px;
+            line-height: 1.8;
+        }
+
+        .paradigms-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .paradigm-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .paradigm-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .lose-lose {
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .lose-win {
+            border-color: rgba(245, 158, 11, 0.5);
+        }
+
+        .win-lose {
+            border-color: rgba(147, 51, 234, 0.5);
+        }
+
+        .win-win {
+            border-color: #22c55e;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(74, 222, 128, 0.15));
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.2);
+        }
+
+        .no-deal {
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .paradigm-title {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .paradigm-subtitle {
+            font-size: 1.1em;
+            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+
+        .paradigm-desc {
+            color: #cbd5e1;
+            line-height: 1.8;
+        }
+
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .concept-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .concept-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(34, 197, 94, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .concept-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .concept-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .concept-desc {
+            color: #9ca3af;
+            line-height: 1.8;
+        }
+
+        .dimensions {
+            display: grid;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .dimension-card {
+            background: rgba(34, 197, 94, 0.05);
+            padding: 50px;
+            border-radius: 20px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .dimension-number {
+            font-size: 3em;
+            font-weight: 900;
+            color: #22c55e;
+            margin-bottom: 15px;
+        }
+
+        .dimension-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .dimension-desc {
+            color: #9ca3af;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .dimension-examples {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 3px solid #22c55e;
+        }
+
+        .dimension-examples h4 {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #22c55e;
+        }
+
+        .dimension-examples ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .dimension-examples li {
+            padding: 8px 0;
+            color: #cbd5e1;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .dimension-examples li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #22c55e;
+        }
+
+        .abundance-scarcity {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .mindset-card {
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid;
+        }
+
+        .scarcity-card {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .abundance-card {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(74, 222, 128, 0.15));
+            border-color: #22c55e;
+        }
+
+        .mindset-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .mindset-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .mindset-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+        }
+
+        .mindset-list li:last-child {
+            border-bottom: none;
+        }
+
+        .quote-box {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(74, 222, 128, 0.1));
+            padding: 40px;
+            border-left: 4px solid #22c55e;
+            border-radius: 8px;
+            margin: 40px 0;
+        }
+
+        .quote-text {
+            font-size: 1.3em;
+            font-style: italic;
+            color: #cbd5e1;
+            line-height: 1.8;
+        }
+
+        .quote-author {
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #9ca3af;
+            text-align: right;
+        }
+
+        .process-steps {
+            display: grid;
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .process-step {
+            display: flex;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 16px;
+            border-left: 4px solid #22c55e;
+        }
+
+        .step-number {
+            font-size: 2em;
+            font-weight: 900;
+            color: #22c55e;
+            min-width: 50px;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .step-desc {
+            color: #9ca3af;
+            line-height: 1.7;
+        }
+
+        .exercise-card {
+            background: linear-gradient(135deg, #1a1a2e, #16162a);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .exercise-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #22c55e;
+        }
+
+        .exercise-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .exercise-list li {
+            padding: 15px 0 15px 40px;
+            position: relative;
+            color: #cbd5e1;
+        }
+
+        .exercise-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #22c55e;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .comparison-table {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-top: 40px;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-cell {
+            padding: 25px;
+        }
+
+        .table-header {
+            background: rgba(34, 197, 94, 0.2);
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .left-col {
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2em; }
+            .habit-number { font-size: 4em; }
+            .paradigms-grid { grid-template-columns: 1fr; }
+            .abundance-scarcity { grid-template-columns: 1fr; }
+            .table-row { grid-template-columns: 1fr; }
+            .left-col { border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="hero-content">
+            <div class="habit-number">04</div>
+            <h1>Думайте в духе Выиграл/Выиграл</h1>
+            <p class="hero-subtitle">Принципы межличностного лидерства</p>
+            <div class="hero-quote">
+                "Выиграл/Выиграл — это не техника, это целостная философия человеческого взаимодействия. 
+                Это образ мышления, который постоянно ищет взаимную выгоду во всех взаимодействиях."
+            </div>
+        </div>
+    </div>
+
+    <div class="section section-dark">
+        <h2 class="section-title">Суть навыка</h2>
+        <p class="section-subtitle">
+            Выиграл/Выиграл — это не компромисс. Это не 1+1=1,5. Это синергичная 1+1=3 или больше. Это решение, 
+            которое лучше того, что предложил любой из участников. Это требует мужества и внимательности одновременно. 
+            Начиная с навыка 4, мы переходим от частной победы (независимости) к публичной победе (взаимозависимости).
+        </p>
+
+        <div class="concept-grid">
+            <div class="concept-card">
+                <div class="concept-icon">🤝</div>
+                <h3 class="concept-title">Взаимозависимость</h3>
+                <p class="concept-desc">
+                    Навыки 4, 5, 6 — это навыки публичной победы, навыки командной работы, сотрудничества, коммуникации. 
+                    Они основаны на фундаменте частной победы навыков 1, 2, 3.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">🎯</div>
+                <h3 class="concept-title">Философия, не техника</h3>
+                <p class="concept-desc">
+                    Выиграл/Выиграл — это не просто метод переговоров. Это образ жизни, основанный на парадигме изобилия, 
+                    где успех одного не исключает успех другого.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">💪</div>
+                <h3 class="concept-title">Мужество и внимательность</h3>
+                <p class="concept-desc">
+                    Требует баланса: мужества отстаивать свои интересы и внимательности уважать интересы других. 
+                    Не мягкость и не жёсткость, а одновременно то и другое.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">🌱</div>
+                <h3 class="concept-title">Долгосрочная перспектива</h3>
+                <p class="concept-desc">
+                    Фокус на отношениях и долгосрочных результатах, а не на краткосрочных победах. 
+                    Здоровые отношения важнее единичных сделок.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section section-light">
+        <h2 class="section-title">Шесть парадигм взаимодействия</h2>
+        <p class="section-subtitle">
+            Существует шесть основных парадигм человеческого взаимодействия. Четыре из них альтернативы: 
+            Выиграл/Проиграл, Проиграл/Выиграл, Проиграл/Проиграл, Выиграл. Два дополнительных варианта: 
+            Выиграл/Выиграл и Выиграл/Выиграл или Нет Сделки.
+        </p>
+
+        <div class="paradigms-grid">
+            <div class="paradigm-card win-win">
+                <h3 class="paradigm-title">Выиграл/Выиграл</h3>
+                <p class="paradigm-subtitle">Оба выигрывают</p>
+                <p class="paradigm-desc">
+                    Оба получают то, что хотят. Решение взаимовыгодно и удовлетворяет обе стороны. 
+                    Обе чувствуют хорошо о решении и привержены плану действий. Это единственная жизнеспособная 
+                    альтернатива в взаимозависимых реалиях. Требует высокого доверия, мужества и креативности.
+                </p>
+            </div>
+
+            <div class="paradigm-card no-deal">
+                <h3 class="paradigm-title">Выиграл/Выиграл или Нет Сделки</h3>
+                <p class="paradigm-subtitle">Согласие не обязательно</p>
+                <p class="paradigm-desc">
+                    Если мы не можем найти решение Выиграл/Выиграл, мы соглашаемся не соглашаться по-доброму — Нет Сделки. 
+                    Никаких ожиданий, никаких договоров, никаких найма. Это освобождает реалистично смотреть на варианты. 
+                    Лучше не иметь сделки, чем жить с решением, которое не работает.
+                </p>
+            </div>
+
+            <div class="paradigm-card win-lose">
+                <h3 class="paradigm-title">Выиграл/Проиграл</h3>
+                <p class="paradigm-subtitle">Я выигрываю, ты проигрываешь</p>
+                <p class="paradigm-desc">
+                    Авторитарный подход: "Я добьюсь своего, тебе не повезло". Люди с менталитетом Выиграл/Проиграл 
+                    склонны использовать позицию, власть, титулы, имущество или личность для получения своего. 
+                    Разрушает отношения и доверие в долгосрочной перспективе.
+                </p>
+            </div>
+
+            <div class="paradigm-card lose-win">
+                <h3 class="paradigm-title">Проиграл/Выиграл</h3>
+                <p class="paradigm-subtitle">Ты выигрываешь, я проигрываю</p>
+                <p class="paradigm-desc">
+                    "Я миротворец. Всё что угодно, только без конфликта". Люди Проиграл/Выиграл быстро угождают или 
+                    уступают. Они ищут силу в популярности или принятии. Нет требований, нет ожиданий, нет видения. 
+                    Подавляют чувства, которые потом взрываются.
+                </p>
+            </div>
+
+            <div class="paradigm-card lose-lose">
+                <h3 class="paradigm-title">Проиграл/Проиграл</h3>
+                <p class="paradigm-subtitle">Оба проигрывают</p>
+                <p class="paradigm-desc">
+                    Результат столкновения двух упрямых, эгоцентричных людей Выиграл/Проиграл. Оба становятся 
+                    мстительными, хотят отомстить. "Если я иду ко дну, то и ты идёшь со мной". Обе стороны проигрывают, 
+                    но хотя бы другой не выиграл.
+                </p>
+            </div>
+
+            <div class="paradigm-card win-lose" style="border-color: rgba(147, 51, 234, 0.5); background: rgba(147, 51, 234, 0.05);">
+                <h3 class="paradigm-title">Выиграл</h3>
+                <p class="paradigm-subtitle">Я выигрываю (неважно что ты)</p>
+                <p class="paradigm-desc">
+                    Люди думают только о том, чтобы получить то, что хотят. Не обязательно хотят, чтобы кто-то другой 
+                    проиграл — это не релевантно. Работает в независимых ситуациях (спорт, рынки), но не в 
+                    взаимозависимых отношениях.
+                </p>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            <p class="quote-text">
+                "Выиграл/Выиграл — единственный реальный вариант в взаимозависимых реалиях. 
+                Любая другая альтернатива в долгосрочной перспективе становится Проиграл/Проиграл."
+            </p>
+        </div>
+    </div>
+
+    <div class="section section-dark">
+        <h2 class="section-title">Пять измерений Выиграл/Выиграл</h2>
+        <p class="section-subtitle">
+            Принцип Выиграл/Выиграл фундаментален для успеха во всех взаимодействиях. Он охватывает пять взаимозависимых измерений жизни. 
+            Он начинается с характера и движется к отношениям, из которых текут соглашения. Он питается системами и процессами.
+        </p>
+
+        <div class="dimensions">
+            <div class="dimension-card">
+                <div class="dimension-number">01</div>
+                <h3 class="dimension-title">Характер</h3>
+                <p class="dimension-desc">
+                    Характер — это фундамент Выиграл/Выиграл. Невозможно практиковать Выиграл/Выиграл без целостности, зрелости и менталитета изобилия. 
+                    Три черты характера, необходимые для Выиграл/Выиграл:
+                </p>
+                <div class="dimension-examples">
+                    <h4>Ключевые черты:</h4>
+                    <ul>
+                        <li><strong>Целостность:</strong> Верность своим чувствам, ценностям и обязательствам</li>
+                        <li><strong>Зрелость:</strong> Баланс мужества и внимательности — отстаивать свои взгляды и уважать других</li>
+                        <li><strong>Менталитет изобилия:</strong> Убеждение, что всем хватит, успех не является игрой с нулевой суммой</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dimension-card">
+                <div class="dimension-number">02</div>
+                <h3 class="dimension-title">Отношения</h3>
+                <p class="dimension-desc">
+                    Из фундамента характера строятся отношения. Доверие — это счёт в эмоциональном банке отношений. 
+                    Высокое доверие делает коммуникацию легкой, быстрой и эффективной. Низкое доверие превращает общение в минное поле.
+                </p>
+                <div class="dimension-examples">
+                    <h4>Построение доверия:</h4>
+                    <ul>
+                        <li>Понимать другого человека глубоко</li>
+                        <li>Выполнять обязательства</li>
+                        <li>Прояснять ожидания</li>
+                        <li>Демонстрировать личную целостность</li>
+                        <li>Искренне извиняться при снятии со счёта</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dimension-card">
+                <div class="dimension-number">03</div>
+                <h3 class="dimension-title">Соглашения</h3>
+                <p class="dimension-desc">
+                    Из отношений вытекают соглашения Выиграл/Выиграл. Это парадигма, которая привносится в переговоры. 
+                    Соглашения должны иметь пять элементов: желаемые результаты, руководящие принципы, ресурсы, отчётность и последствия.
+                </p>
+                <div class="dimension-examples">
+                    <h4>Элементы соглашения:</h4>
+                    <ul>
+                        <li><strong>Желаемые результаты:</strong> Что нужно достичь и когда</li>
+                        <li><strong>Руководящие принципы:</strong> Параметры, в рамках которых достигаются результаты</li>
+                        <li><strong>Ресурсы:</strong> Человеческие, финансовые, технические ресурсы для поддержки</li>
+                        <li><strong>Отчётность:</strong> Стандарты исполнения и время оценки</li>
+                        <li><strong>Последствия:</strong> Естественные положительные и отрицательные последствия</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dimension-card">
+                <div class="dimension-number">04</div>
+                <h3 class="dimension-title">Системы</h3>
+                <p class="dimension-desc">
+                    Выиграл/Выиграл может существовать только в системах, которые его поддерживают. Если вы говорите Выиграл/Выиграл, 
+                    но вознаграждаете Выиграл/Проиграл, люди будут жить по системе, а не философии. Системы должны быть согласованы с целями.
+                </p>
+                <div class="dimension-examples">
+                    <h4>Системы поддержки:</h4>
+                    <ul>
+                        <li>Обучение и развитие, поддерживающие сотрудничество</li>
+                        <li>Планирование процессов, учитывающих все заинтересованные стороны</li>
+                        <li>Системы коммуникации, создающие открытость</li>
+                        <li>Бюджетные процессы, основанные на потребностях и вкладе</li>
+                        <li>Информационные системы, дающие доступ к данным</li>
+                        <li>Компенсация на основе Выиграл/Выиграл критериев</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dimension-card">
+                <div class="dimension-number">05</div>
+                <h3 class="dimension-title">Процессы</h3>
+                <p class="dimension-desc">
+                    Процесс — это как достичь Выиграл/Выиграл в практических ситуациях. Невозможно достичь целей Выиграл/Выиграл 
+                    с менталитетом или навыками Выиграл/Проиграл. Процесс требует видеть проблему с точки зрения другого, 
+                    идентифицировать ключевые вопросы и заботы, определять приемлемые результаты и находить новые варианты для их достижения.
+                </p>
+                <div class="dimension-examples">
+                    <h4>Четыре шага процесса:</h4>
+                    <ul>
+                        <li><strong>Шаг 1:</strong> Увидьте проблему с точки зрения другого человека</li>
+                        <li><strong>Шаг 2:</strong> Определите ключевые вопросы и заботы (не позиции)</li>
+                        <li><strong>Шаг 3:</strong> Определите, какие результаты будут полностью приемлемы</li>
+                        <li><strong>Шаг 4:</strong> Определите новые варианты для достижения этих результатов</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section section-light">
+        <h2 class="section-title">Менталитет изобилия vs дефицита</h2>
+        <p class="section-subtitle">
+            В основе Выиграл/Выиграл лежит менталитет изобилия — парадигма, что всем хватит. 
+            Большинство людей глубоко запрограммированы на менталитет дефицита — убеждение, что если кто-то получает большой кусок пирога, 
+            то остальным достаётся меньше.
+        </p>
+
+        <div class="abundance-scarcity">
+            <div class="mindset-card scarcity-card">
+                <h3 class="mindset-title">Менталитет дефицита</h3>
+                <ul class="mindset-list">
+                    <li>Если ты выигрываешь, я проигрываю</li>
+                    <li>Успех — игра с нулевой суммой</li>
+                    <li>Ресурсы ограничены</li>
+                    <li>Сравнение и конкуренция</li>
+                    <li>Трудно радоваться успеху других</li>
+                    <li>Трудно делиться признанием, властью</li>
+                    <li>Собственничество в отношениях</li>
+                    <li>Постоянная внутренняя неуверенность</li>
+                    <li>Необходимость "быть правым"</li>
+                    <li>Трудно работать в команде</li>
+                </ul>
+            </div>
+
+            <div class="mindset-card abundance-card">
+                <h3 class="mindset-title">Менталитет изобилия</h3>
+                <ul class="mindset-list">
+                    <li>Всем хватит</li>
+                    <li>Успех не ограничен</li>
+                    <li>Возможности везде</li>
+                    <li>Сотрудничество и синергия</li>
+                    <li>Искренне радуетесь успеху других</li>
+                    <li>Щедро делитесь признанием, прибылью, ответственностью</li>
+                    <li>Открытость в отношениях</li>
+                    <li>Внутренняя уверенность и ценность</li>
+                    <li>Цените различия как сильные стороны</li>
+                    <li>Естественно работаете в команде</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            <p class="quote-text">
+                "Менталитет изобилия вытекает из глубокого внутреннего чувства личной ценности и безопасности. 
+                Это результат богатой внутренней жизни с миссией и внутренними стандартами."
+            </p>
+        </div>
+    </div>
+
+    <div class="section section-dark">
+        <h2 class="section-title">Как развить мышление Выиграл/Выиграл</h2>
+        <p class="section-subtitle">
+            Выиграл/Выиграл — это не то, что вы делаете кому-то, это то, что вы делаете с кем-то. 
+            Это привычка эффективной взаимозависимости, требующая развития характера, навыков и понимания.
+        </p>
+
+        <div class="process-steps">
+            <div class="process-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <div class="step-title">Начните с себя</div>
+                    <p class="step-desc">
+                        Спросите: "Действительно ли я хочу Выиграл/Выиграл?" Проверьте свои мотивы. Вы ищете взаимную выгоду 
+                        или просто хотите выглядеть хорошо? Честность с собой — первый шаг.
+                    </p>
+                </div>
+            </div>
+
+            <div class="process-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <div class="step-title">Развивайте менталитет изобилия</div>
+                    <p class="step-desc">
+                        Осознайте свой менталитет дефицита. Когда вы чувствуете угрозу от чужого успеха? Когда трудно делиться признанием? 
+                        Работайте над внутренней безопасностью через навыки 1, 2, 3 — они дают уверенность в себе.
+                    </p>
+                </div>
+            </div>
+
+            <div class="process-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <div class="step-title">Баланс мужества и внимательности</div>
+                    <p class="step-desc">
+                        Мужество без внимательности — это эгоизм (Выиграл/Проиграл). Внимательность без мужества — это слабость (Проиграл/Выиграл). 
+                        Нужны оба одновременно. Практикуйте отстаивать свою позицию И слушать других.
+                    </p>
+                </div>
+            </div>
+
+            <div class="process-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <div class="step-title">Инвестируйте в отношения</div>
+                    <p class="step-desc">
+                        Делайте вклады в эмоциональный банковский счёт: понимайте другого, выполняйте обязательства, проясняйте ожидания, 
+                        демонстрируйте целостность. Высокое доверие делает Выиграл/Выиграл легче.
+                    </p>
+                </div>
+            </div>
+
+            <div class="process-step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <div class="step-title">Фокусируйтесь на интересах, а не позициях</div>
+                    <p class="step-desc">
+                        Позиции — это то, что люди говорят, что хотят. Интересы — это почему они этого хотят. 
+                        Копайте глубже к настоящим заботам и потребностям. Там возможны творческие решения.
+                    </p>
+                </div>
+            </div>
+
+            <div class="process-step">
+                <div class="step-number">6</div>
+                <div class="step-content">
+                    <div class="step-title">Создавайте критерии Выиграл/Выиграл</div>
+                    <p class="step-desc">
+                        Вместо "Я хочу это, ты хочешь то", установите критерии: "Какой результат будет хорош для обоих?" 
+                        Затем вместе оцените варианты по этим критериям. Это превращает проблему в "нас против проблемы".
+                    </p>
+                </div>
+            </div>
+
+            <div class="process-step">
+                <div class="step-number">7</div>
+                <div class="step-content">
+                    <div class="step-title">Будьте готовы к "Нет Сделки"</div>
+                    <p class="step-desc">
+                        Если Выиграл/Выиграл невозможен, будьте готовы пойти на "Нет Сделки". Это освобождает быть честным 
+                        и креативным. Лучше не иметь соглашения, чем жить с плохим соглашением.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section section-light">
+        <h2 class="section-title">Выиграл/Выиграл в разных контекстах</h2>
+
+        <div class="concept-grid">
+            <div class="concept-card">
+                <div class="concept-icon">👨‍👩‍👧‍👦</div>
+                <h3 class="concept-title">В семье</h3>
+                <p class="concept-desc">
+                    Семейные решения, где учитываются потребности всех. Не диктат родителей и не вседозволенность детям, 
+                    а взаимное уважение. Дети учатся думать о других, родители уважают растущую независимость.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">💼</div>
+                <h3 class="concept-title">В бизнесе</h3>
+                <p class="concept-desc">
+                    Долгосрочные отношения с клиентами, поставщиками, сотрудниками. Не "максимизировать прибыль любой ценой", 
+                    а "создавать ценность для всех". Сотрудничество вместо внутренней конкуренции.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">🤝</div>
+                <h3 class="concept-title">В переговорах</h3>
+                <p class="concept-desc">
+                    Вместо позиционного торга — интересы обеих сторон. Креативные решения, которые дают больше обеим сторонам. 
+                    Долгосрочные партнёрства вместо разовых сделок.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">👥</div>
+                <h3 class="concept-title">В команде</h3>
+                <p class="concept-desc">
+                    Сотрудничество, а не конкуренция внутри команды. Щедрое признание заслуг других. 
+                    Радость от успеха коллег. Синергия, где 1+1=3 или больше.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section section-dark">
+        <h2 class="section-title">Практические упражнения</h2>
+
+        <div class="exercise-card">
+            <h3 class="exercise-title">Упражнение 1: Аудит менталитета</h3>
+            <ul class="exercise-list">
+                <li>Вспомните недавнюю ситуацию, где кто-то получил признание или награду</li>
+                <li>Какова была ваша первая внутренняя реакция?</li>
+                <li>Вы искренне радовались или чувствовали угрозу?</li>
+                <li>Было ли трудно поздравить человека?</li>
+                <li>Это признак менталитета дефицита или изобилия?</li>
+                <li>Что вы можете сделать для развития менталитета изобилия?</li>
+            </ul>
+        </div>
+
+        <div class="exercise-card">
+            <h3 class="exercise-title">Упражнение 2: Практика Выиграл/Выиграл</h3>
+            <ul class="exercise-list">
+                <li>Выберите предстоящую ситуацию, где есть конфликт интересов</li>
+                <li>До встречи запишите: что вы хотите (ваш Выиграл)</li>
+                <li>Запишите: что хочет другой человек (их Выиграл)</li>
+                <li>Определите критерии: какой результат будет хорош для обоих?</li>
+                <li>Придумайте минимум 3 варианта решения, отвечающих критериям</li>
+                <li>На встрече сначала убедитесь, что понимаете их интересы</li>
+                <li>Предложите работать вместе над решением Выиграл/Выиграл</li>
+            </ul>
+        </div>
+
+        <div class="exercise-card">
+            <h3 class="exercise-title">Упражнение 3: Эмоциональный банковский счёт</h3>
+            <ul class="exercise-list">
+                <li>Выберите важные отношения в вашей жизни</li>
+                <li>Оцените баланс эмоционального счёта: высокий, средний или низкий?</li>
+                <li>Вспомните последние вклады и снятия</li>
+                <li>Определите один конкретный вклад, который вы можете сделать на этой неделе</li>
+                <li>Это может быть: понять глубже, выполнить обещание, прояснить ожидание</li>
+                <li>Сделайте этот вклад и наблюдайте за изменением в отношениях</li>
+            </ul>
+        </div>
+
+        <div class="exercise-card">
+            <h3 class="exercise-title">Упражнение 4: Анализ парадигмы</h3>
+            <ul class="exercise-list">
+                <li>Вспомните 5 недавних взаимодействий</li>
+                <li>Определите парадигму каждого: Выиграл/Выиграл, Выиграл/Проиграл и т.д.</li>
+                <li>Какая парадигма преобладает в вашей жизни?</li>
+                <li>Где вы склонны к Выиграл/Проиграл? (дом, работа, друзья?)</li>
+                <li>Где вы склонны к Проиграл/Выиграл?</li>
+                <li>Выберите одну ситуацию для практики Выиграл/Выиграл на следующей неделе</li>
+            </ul>
+        </div>
+
+        <div class="exercise-card">
+            <h3 class="exercise-title">Упражнение 5: Соглашения управляющего делегирования</h3>
+            <ul class="exercise-list">
+                <li>Выберите задачу, которую вы можете делегировать</li>
+                <li>Создайте соглашение Выиграл/Выиграл с пятью элементами:</li>
+                <li>1. Желаемые результаты (что, к когда)</li>
+                <li>2. Руководящие принципы (параметры работы)</li>
+                <li>3. Ресурсы (что доступно для использования)</li>
+                <li>4. Отчётность (стандарты и время проверки)</li>
+                <li>5. Последствия (что происходит при достижении/не достижении)</li>
+                <li>Убедитесь во взаимном понимании всех элементов</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section section-light">
+        <h2 class="section-title">Ключевые выводы</h2>
+        
+        <div class="concept-grid">
+            <div class="concept-card">
+                <div class="concept-icon">🤝</div>
+                <h3 class="concept-title">Философия взаимодействия</h3>
+                <p class="concept-desc">
+                    Выиграл/Выиграл — это не техника, а целостная философия. Это образ мышления, основанный на изобилии, 
+                    который ищет взаимную выгоду во всех взаимодействиях.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">💪</div>
+                <h3 class="concept-title">Мужество и внимательность</h3>
+                <p class="concept-desc">
+                    Требует баланса: мужества выражать свои чувства и убеждения И внимательности к чувствам и 
+                    убеждениям других. Это зрелость — высшая степень эмоционального развития.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">🌱</div>
+                <h3 class="concept-title">Менталитет изобилия</h3>
+                <p class="concept-desc">
+                    В основе лежит глубокое убеждение, что всем хватит. Успех не игра с нулевой суммой. 
+                    Можно искренне радоваться успеху других, потому что он не угрожает вашему.
+                </p>
+            </div>
+
+            <div class="concept-card">
+                <div class="concept-icon">🎯</div>
+                <h3 class="concept-title">Долгосрочная перспектива</h3>
+                <p class="concept-desc">
+                    Выиграл/Выиграл — единственная жизнеспособная альтернатива в взаимозависимых отношениях. 
+                    Все остальные в долгосрочной перспективе становятся Проиграл/Проиграл.
+                </p>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            <p class="quote-text">
+                "Выиграл/Выиграл или Нет Сделки освобождает. Вы можете быть абсолютно открытым. Вы можете выразить свои идеи и чувства 
+                с мужеством, сбалансированным с внимательностью к мыслям и чувствам других."
+            </p>
+            <p class="quote-author">— Стивен Кови</p>
+        </div>
+    </div>
+
+    <script>
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.concept-card, .paradigm-card, .dimension-card, .mindset-card, .process-step, .exercise-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
