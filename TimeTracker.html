@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Time Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #581c87 50%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #9333ea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #7e22ce;
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .btn-secondary.active {
+            background: #9333ea;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #15803d;
+        }
+        
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+        
+        .btn:disabled {
+            background: #4b5563;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .card.active-task {
+            border: 2px solid #10b981;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 14px;
+        }
+        
+        .form-control::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #9333ea;
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .task-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .task-project {
+            color: #c084fc;
+            font-size: 0.9rem;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-box {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .stat-label {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .sessions-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .session-item {
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .active-indicator {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .progress-bar {
+            background: rgba(255,255,255,0.1);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #9333ea, #3b82f6);
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .session-comment {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+            font-style: italic;
+            margin-top: 5px;
+            padding: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+        }
+        
+        textarea.form-control {
+            min-height: 80px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">⏱️ Work Time Tracker</h1>
+            <div class="nav-tabs">
+                <button class="btn btn-secondary active" id="tabTasks">Задачи</button>
+                <button class="btn btn-secondary" id="tabReports">Отчеты</button>
+            </div>
+        </div>
+
+        <div class="export-buttons">
+            <button class="btn btn-success btn-small" id="btnExportJSON">📥 Экспорт JSON</button>
+            <button class="btn btn-success btn-small" id="btnExportExcel">📊 Экспорт Excel</button>
+            <button class="btn btn-success btn-small" id="btnExportMonthReport">📑 Отчет за месяц</button>
+            <button class="btn btn-secondary btn-small" id="btnImportJSON">📤 Импорт JSON</button>
+            <input type="file" id="fileInput" accept=".json" class="hidden">
+        </div>
+
+        <!-- Вид задач -->
+        <div id="viewTasks">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                <button class="btn btn-primary" id="btnAddTask">➕ Новая задача</button>
+            </div>
+
+            <div id="taskForm" class="card hidden">
+                <h2 style="margin-bottom: 20px;">Создать задачу</h2>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="inputTaskName" placeholder="Название задачи *">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="inputProjectName" placeholder="Проект">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-success" id="btnSaveTask">Добавить</button>
+                    <button class="btn btn-secondary" id="btnCancelTask">Отмена</button>
+                </div>
+            </div>
+
+            <div id="manualSessionForm" class="card hidden">
+                <h2 style="margin-bottom: 20px;">Добавить сессию вручную</h2>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 5px; color: rgba(255,255,255,0.8);">Дата начала:</label>
+                    <input type="datetime-local" class="form-control" id="inputSessionStart">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 5px; color: rgba(255,255,255,0.8);">Дата окончания:</label>
+                    <input type="datetime-local" class="form-control" id="inputSessionStop">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 5px; color: rgba(255,255,255,0.8);">Комментарий (необязательно):</label>
+                    <textarea class="form-control" id="inputSessionComment" placeholder="Описание работы, заметки..."></textarea>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-success" id="btnSaveManualSession">Добавить сессию</button>
+                    <button class="btn btn-secondary" id="btnCancelManualSession">Отмена</button>
+                </div>
+            </div>
+
+            <div id="editSessionForm" class="card hidden">
+                <h2 style="margin-bottom: 20px;">Редактировать сессию</h2>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 5px; color: rgba(255,255,255,0.8);">Дата начала:</label>
+                    <input type="datetime-local" class="form-control" id="inputEditSessionStart">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 5px; color: rgba(255,255,255,0.8);">Дата окончания:</label>
+                    <input type="datetime-local" class="form-control" id="inputEditSessionStop">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 5px; color: rgba(255,255,255,0.8);">Комментарий:</label>
+                    <textarea class="form-control" id="inputEditSessionComment" placeholder="Описание работы, заметки..."></textarea>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-success" id="btnSaveEditSession">Сохранить изменения</button>
+                    <button class="btn btn-secondary" id="btnCancelEditSession">Отмена</button>
+                </div>
+            </div>
+
+            <div id="tasksList"></div>
+        </div>
+
+        <!-- Вид отчетов -->
+        <div id="viewReports" class="hidden">
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="btn btn-secondary active" id="btnDay">По дням</button>
+                <button class="btn btn-secondary" id="btnWeek">По неделям</button>
+                <button class="btn btn-secondary" id="btnMonth">По месяцам</button>
+            </div>
+            <div id="reportsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Глобальные переменные
+        let tasks = [];
+        let activeTaskId = null;
+        let currentView = 'tasks';
+        let reportPeriod = 'day';
+        let updateInterval = null;
+        let currentManualTaskId = null;
+        let currentEditTaskId = null;
+        let currentEditSessionIndex = null;
+
+        // Загрузка данных
+        function loadData() {
+            const saved = localStorage.getItem('workTimeTrackerData');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    tasks = data.tasks || [];
+                    activeTaskId = data.activeTaskId || null;
+                } catch (e) {
+                    console.error('Ошибка загрузки данных:', e);
+                }
+            }
+        }
+
+        // Сохранение данных
+        function saveData() {
+            const data = {
+                tasks: tasks,
+                activeTaskId: activeTaskId
+            };
+            localStorage.setItem('workTimeTrackerData', JSON.stringify(data));
+        }
+
+        // Форматирование даты и времени
+        function formatDateTime(isoString) {
+            const date = new Date(isoString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${day}.${month}.${year} ${hours}:${minutes}`;
+        }
+
+        function formatDate(isoString) {
+            const date = new Date(isoString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+
+        // Расчеты времени
+        function calculateTotalMinutes(task) {
+            let total = 0;
+            
+            task.timeSegments.forEach(segment => {
+                const start = new Date(segment.start);
+                const stop = new Date(segment.stop);
+                total += (stop - start) / (1000 * 60);
+            });
+
+            if (task.isActive && task.currentStartTime) {
+                const start = new Date(task.currentStartTime);
+                const now = new Date();
+                total += (now - start) / (1000 * 60);
+            }
+
+            return Math.round(total);
+        }
+
+        function calculateTotalHours(task) {
+            const minutes = calculateTotalMinutes(task);
+            return (minutes / 60).toFixed(2);
+        }
+
+        // Переключение видов
+        function switchView(view) {
+            currentView = view;
+            
+            document.getElementById('viewTasks').classList.toggle('hidden', view !== 'tasks');
+            document.getElementById('viewReports').classList.toggle('hidden', view !== 'reports');
+            
+            document.getElementById('tabTasks').classList.toggle('active', view === 'tasks');
+            document.getElementById('tabReports').classList.toggle('active', view === 'reports');
+            
+            if (view === 'reports') {
+                renderReports();
+            }
+        }
+
+        // Показать/скрыть форму
+        function showTaskForm(show) {
+            document.getElementById('taskForm').classList.toggle('hidden', !show);
+            if (show) {
+                document.getElementById('inputTaskName').focus();
+            }
+        }
+
+        // Добавить задачу
+        function addTask() {
+            const taskName = document.getElementById('inputTaskName').value.trim();
+            const projectName = document.getElementById('inputProjectName').value.trim();
+            
+            if (!taskName) {
+                alert('Введите название задачи');
+                return;
+            }
+
+            const task = {
+                id: Date.now(),
+                task: taskName,
+                project: projectName,
+                timeSegments: [],
+                isActive: false,
+                currentStartTime: null
+            };
+
+            tasks.push(task);
+            saveData();
+            
+            document.getElementById('inputTaskName').value = '';
+            document.getElementById('inputProjectName').value = '';
+            showTaskForm(false);
+            renderTasks();
+        }
+
+        // Старт задачи
+        function startTask(taskId) {
+            if (activeTaskId) {
+                stopTask(activeTaskId);
+            }
+
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.isActive = true;
+                task.currentStartTime = new Date().toISOString();
+                activeTaskId = taskId;
+                saveData();
+                renderTasks();
+                startTimer();
+            }
+        }
+
+        // Стоп задачи
+        function stopTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task && task.isActive) {
+                const segment = {
+                    start: task.currentStartTime,
+                    stop: new Date().toISOString()
+                };
+                task.timeSegments.push(segment);
+                task.isActive = false;
+                task.currentStartTime = null;
+                
+                if (activeTaskId === taskId) {
+                    activeTaskId = null;
+                    stopTimer();
+                }
+                
+                saveData();
+                renderTasks();
+            }
+        }
+
+        // Удалить задачу
+        function deleteTask(taskId) {
+            if (!confirm('Удалить задачу?')) return;
+            
+            if (activeTaskId === taskId) {
+                stopTask(taskId);
+            }
+            
+            tasks = tasks.filter(t => t.id !== taskId);
+            saveData();
+            renderTasks();
+        }
+
+        // Удалить сессию
+        function deleteSession(taskId, sessionIndex) {
+            if (!confirm('Удалить эту сессию?')) return;
+            
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                task.timeSegments.splice(sessionIndex, 1);
+                saveData();
+                renderTasks();
+            }
+        }
+
+        // Показать форму ручного добавления сессии
+        function showManualSessionForm(taskId) {
+            currentManualTaskId = taskId;
+            const form = document.getElementById('manualSessionForm');
+            form.classList.remove('hidden');
+            
+            // Установить текущую дату и время
+            const now = new Date();
+            const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+            
+            document.getElementById('inputSessionStart').value = formatDateTimeLocal(oneHourAgo);
+            document.getElementById('inputSessionStop').value = formatDateTimeLocal(now);
+            
+            // Прокрутить к форме
+            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Скрыть форму ручного добавления сессии
+        function hideManualSessionForm() {
+            document.getElementById('manualSessionForm').classList.add('hidden');
+            currentManualTaskId = null;
+        }
+
+        // Добавить сессию вручную
+        function addManualSession() {
+            if (!currentManualTaskId) return;
+            
+            const startValue = document.getElementById('inputSessionStart').value;
+            const stopValue = document.getElementById('inputSessionStop').value;
+            const comment = document.getElementById('inputSessionComment').value.trim();
+            
+            if (!startValue || !stopValue) {
+                alert('Заполните дату начала и окончания');
+                return;
+            }
+            
+            const start = new Date(startValue);
+            const stop = new Date(stopValue);
+            
+            if (start >= stop) {
+                alert('Дата окончания должна быть позже даты начала');
+                return;
+            }
+            
+            const task = tasks.find(t => t.id === currentManualTaskId);
+            if (task) {
+                const segment = {
+                    start: start.toISOString(),
+                    stop: stop.toISOString()
+                };
+                if (comment) {
+                    segment.comment = comment;
+                }
+                task.timeSegments.push(segment);
+                saveData();
+                renderTasks();
+                hideManualSessionForm();
+            }
+        }
+
+        // Показать форму редактирования сессии
+        function editSession(taskId, sessionIndex) {
+            currentEditTaskId = taskId;
+            currentEditSessionIndex = sessionIndex;
+            
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            const segment = task.timeSegments[sessionIndex];
+            if (!segment) return;
+            
+            document.getElementById('inputEditSessionStart').value = formatDateTimeLocal(new Date(segment.start));
+            document.getElementById('inputEditSessionStop').value = formatDateTimeLocal(new Date(segment.stop));
+            document.getElementById('inputEditSessionComment').value = segment.comment || '';
+            
+            const form = document.getElementById('editSessionForm');
+            form.classList.remove('hidden');
+            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Скрыть форму редактирования сессии
+        function hideEditSessionForm() {
+            document.getElementById('editSessionForm').classList.add('hidden');
+            currentEditTaskId = null;
+            currentEditSessionIndex = null;
+        }
+
+        // Сохранить изменения сессии
+        function saveEditSession() {
+            if (currentEditTaskId === null || currentEditSessionIndex === null) return;
+            
+            const startValue = document.getElementById('inputEditSessionStart').value;
+            const stopValue = document.getElementById('inputEditSessionStop').value;
+            const comment = document.getElementById('inputEditSessionComment').value.trim();
+            
+            if (!startValue || !stopValue) {
+                alert('Заполните дату начала и окончания');
+                return;
+            }
+            
+            const start = new Date(startValue);
+            const stop = new Date(stopValue);
+            
+            if (start >= stop) {
+                alert('Дата окончания должна быть позже даты начала');
+                return;
+            }
+            
+            const task = tasks.find(t => t.id === currentEditTaskId);
+            if (task && task.timeSegments[currentEditSessionIndex]) {
+                task.timeSegments[currentEditSessionIndex] = {
+                    start: start.toISOString(),
+                    stop: stop.toISOString()
+                };
+                if (comment) {
+                    task.timeSegments[currentEditSessionIndex].comment = comment;
+                }
+                saveData();
+                renderTasks();
+                hideEditSessionForm();
+            }
+        }
+
+        // Форматирование для datetime-local input
+        function formatDateTimeLocal(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        // Таймер для обновления активных задач
+        function startTimer() {
+            if (!updateInterval) {
+                updateInterval = setInterval(() => {
+                    if (activeTaskId) {
+                        renderTasks();
+                    }
+                }, 1000);
+            }
+        }
+
+        function stopTimer() {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+        }
+
+        // Рендер списка задач
+        function renderTasks() {
+            const container = document.getElementById('tasksList');
+            
+            if (tasks.length === 0) {
+                container.innerHTML = '<div class="card empty-state"><p>Нет задач. Создайте первую задачу!</p></div>';
+                return;
+            }
+
+            let html = '';
+            
+            tasks.forEach(task => {
+                const isActive = task.isActive;
+                const minutes = calculateTotalMinutes(task);
+                const hours = calculateTotalHours(task);
+                
+                html += `
+                    <div class="card ${isActive ? 'active-task' : ''}">
+                        <div class="task-header">
+                            <div style="flex: 1;">
+                                <div class="task-title">${escapeHtml(task.task)}</div>
+                                ${task.project ? `<div class="task-project">Проект: ${escapeHtml(task.project)}</div>` : ''}
+                            </div>
+                            <div class="task-actions">
+                                ${!isActive ? 
+                                    `<button class="btn btn-success btn-small" onclick="startTask(${task.id})" ${activeTaskId ? 'disabled' : ''}>▶️ Старт</button>` :
+                                    `<button class="btn btn-danger btn-small pulse" onclick="stopTask(${task.id})">⏹️ Стоп</button>`
+                                }
+                                <button class="btn btn-danger btn-small" onclick="deleteTask(${task.id})">🗑️</button>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div class="stat-label">Минуты</div>
+                                <div class="stat-value">${minutes}</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Часы</div>
+                                <div class="stat-value">${hours}</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 15px;">
+                            <button class="btn btn-secondary btn-small" onclick="showManualSessionForm(${task.id})">➕ Добавить сессию вручную</button>
+                        </div>
+
+                        ${task.timeSegments.length > 0 ? `
+                            <div class="stat-label" style="margin-top: 15px;">Рабочие сессии (${task.timeSegments.length}):</div>
+                            <div class="sessions-list">
+                                ${task.timeSegments.map((segment, index) => {
+                                    const start = new Date(segment.start);
+                                    const stop = new Date(segment.stop);
+                                    const duration = Math.round((stop - start) / (1000 * 60));
+                                    return `
+                                        <div class="session-item">
+                                            <div class="session-header">
+                                                <span>Сессия ${index + 1}</span>
+                                                <div>
+                                                    <strong>${duration} мин</strong>
+                                                    <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px; margin-left: 8px;" onclick="editSession(${task.id}, ${index})">✏️</button>
+                                                    <button class="btn btn-danger" style="padding: 4px 8px; font-size: 11px; margin-left: 4px;" onclick="deleteSession(${task.id}, ${index})">🗑️</button>
+                                                </div>
+                                            </div>
+                                            <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">
+                                                ${formatDateTime(segment.start)} → ${formatDateTime(segment.stop)}
+                                            </div>
+                                            ${segment.comment ? `<div class="session-comment">💬 ${escapeHtml(segment.comment)}</div>` : ''}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        ` : ''}
+
+                        ${isActive ? `
+                            <div class="active-indicator">
+                                ⏱️ Активна с: ${formatDateTime(task.currentStartTime)}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Экранирование HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Отчеты
+        function getWeekNumber(date) {
+            const d = new Date(date);
+            d.setHours(0, 0, 0, 0);
+            d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+            const yearStart = new Date(d.getFullYear(), 0, 1);
+            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+            return `${d.getFullYear()}-W${weekNo}`;
+        }
+
+        function getMonthYear(date) {
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            return `${year}-${month}`;
+        }
+
+        function getPeriodLabel(key) {
+            if (reportPeriod === 'day') {
+                return key;
+            } else if (reportPeriod === 'week') {
+                const parts = key.split('-W');
+                return `Неделя ${parts[1]}, ${parts[0]}`;
+            } else {
+                const parts = key.split('-');
+                const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
+                                  'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+                return `${monthNames[parseInt(parts[1]) - 1]} ${parts[0]}`;
+            }
+        }
+
+        function changeReportPeriod(period) {
+            reportPeriod = period;
+            document.getElementById('btnDay').classList.toggle('active', period === 'day');
+            document.getElementById('btnWeek').classList.toggle('active', period === 'week');
+            document.getElementById('btnMonth').classList.toggle('active', period === 'month');
+            renderReports();
+        }
+
+        function generateReportsData() {
+            const reports = {};
+            const projectStats = {};
+
+            tasks.forEach(task => {
+                task.timeSegments.forEach(segment => {
+                    const start = new Date(segment.start);
+                    const stop = new Date(segment.stop);
+                    const minutes = (stop - start) / (1000 * 60);
+
+                    let periodKey;
+                    if (reportPeriod === 'day') {
+                        periodKey = formatDate(segment.start);
+                    } else if (reportPeriod === 'week') {
+                        periodKey = getWeekNumber(segment.start);
+                    } else {
+                        periodKey = getMonthYear(segment.start);
+                    }
+
+                    if (!reports[periodKey]) {
+                        reports[periodKey] = { tasks: {}, total: 0, projects: {} };
+                    }
+
+                    const taskKey = task.task;
+                    if (!reports[periodKey].tasks[taskKey]) {
+                        reports[periodKey].tasks[taskKey] = {
+                            minutes: 0,
+                            project: task.project,
+                            sessions: 0
+                        };
+                    }
+
+                    reports[periodKey].tasks[taskKey].minutes += minutes;
+                    reports[periodKey].tasks[taskKey].sessions += 1;
+                    reports[periodKey].total += minutes;
+
+                    const projectName = task.project || 'Без проекта';
+                    reports[periodKey].projects[projectName] = (reports[periodKey].projects[projectName] || 0) + minutes;
+                    projectStats[projectName] = (projectStats[projectName] || 0) + minutes;
+                });
+            });
+
+            return { reports, projectStats };
+        }
+
+        function renderReports() {
+            const container = document.getElementById('reportsContent');
+            const { reports, projectStats } = generateReportsData();
+            const sortedPeriods = Object.keys(reports).sort().reverse();
+            const totalMinutes = Object.values(projectStats).reduce((a, b) => a + b, 0);
+
+            if (sortedPeriods.length === 0) {
+                container.innerHTML = '<div class="card empty-state"><p>Нет данных для отчета</p></div>';
+                return;
+            }
+
+            let html = '';
+
+            sortedPeriods.forEach(period => {
+                const report = reports[period];
+                const sortedTasks = Object.entries(report.tasks).sort((a, b) => b[1].minutes - a[1].minutes);
+
+                html += `
+                    <div class="card">
+                        <h2 style="margin-bottom: 20px;">📅 ${getPeriodLabel(period)}</h2>
+
+                        <div style="margin-bottom: 20px;">
+                            ${sortedTasks.map(([taskName, data]) => `
+                                <div class="stat-box" style="margin-bottom: 10px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <div>
+                                            <div style="font-weight: bold;">${escapeHtml(taskName)}</div>
+                                            ${data.project ? `<div style="color: #c084fc; font-size: 0.85rem;">Проект: ${escapeHtml(data.project)}</div>` : ''}
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <div style="font-weight: bold;">${(data.minutes / 60).toFixed(2)} ч</div>
+                                            <div style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">${Math.round(data.minutes)} мин</div>
+                                        </div>
+                                    </div>
+                                    <div style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">Сессий: ${data.sessions}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div style="background: linear-gradient(135deg, rgba(147, 51, 234, 0.2), rgba(59, 130, 246, 0.2)); border: 1px solid rgba(147, 51, 234, 0.3); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                            <h3 style="margin-bottom: 15px;">Распределение по проектам:</h3>
+                            ${Object.entries(report.projects).sort((a, b) => b[1] - a[1]).map(([project, minutes]) => {
+                                const percentage = ((minutes / report.total) * 100).toFixed(1);
+                                return `
+                                    <div style="margin-bottom: 12px;">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                            <span style="font-size: 0.9rem;">${escapeHtml(project)}</span>
+                                            <span style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">${percentage}%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: ${percentage}%;"></div>
+                                        </div>
+                                        <div style="text-align: right; margin-top: 3px; font-size: 0.85rem; color: rgba(255,255,255,0.8);">
+                                            ${(minutes / 60).toFixed(2)} ч
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        <div style="background: rgba(234, 179, 8, 0.2); border: 1px solid rgba(234, 179, 8, 0.5); border-radius: 8px; padding: 15px;">
+                            <div class="stats-grid">
+                                <div>
+                                    <div style="color: #fde047; font-size: 0.85rem; margin-bottom: 5px;">Итого часов:</div>
+                                    <div style="font-size: 1.5rem; font-weight: bold;">${(report.total / 60).toFixed(2)}</div>
+                                </div>
+                                <div>
+                                    <div style="color: #fde047; font-size: 0.85rem; margin-bottom: 5px;">Итого минут:</div>
+                                    <div style="font-size: 1.5rem; font-weight: bold;">${Math.round(report.total)}</div>
+                                </div>
+                                <div>
+                                    <div style="color: #fde047; font-size: 0.85rem; margin-bottom: 5px;">Задач:</div>
+                                    <div style="font-size: 1.5rem; font-weight: bold;">${sortedTasks.length}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Общая статистика
+            html += `
+                <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2)); border: 1px solid rgba(16, 185, 129, 0.3);">
+                    <h2 style="margin-bottom: 20px;">📊 Общая статистика по проектам</h2>
+                    ${Object.entries(projectStats).sort((a, b) => b[1] - a[1]).map(([project, minutes]) => {
+                        const percentage = ((minutes / totalMinutes) * 100).toFixed(1);
+                        return `
+                            <div class="stat-box" style="margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="font-weight: bold;">${escapeHtml(project)}</span>
+                                    <div>
+                                        <span style="font-weight: bold;">${(minutes / 60).toFixed(2)} ч</span>
+                                        <span style="color: rgba(255,255,255,0.6); margin-left: 8px;">(${percentage}%)</span>
+                                    </div>
+                                </div>
+                                <div class="progress-bar" style="height: 12px;">
+                                    <div style="background: linear-gradient(90deg, #10b981, #059669); height: 100%; border-radius: 6px; width: ${percentage}%;"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                    <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 15px; margin-top: 20px;">
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-bottom: 5px;">Всего отработано:</div>
+                        <div style="font-size: 2rem; font-weight: bold;">${(totalMinutes / 60).toFixed(2)} часов</div>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // Экспорт в JSON
+        function exportToJSON() {
+            const dataStr = JSON.stringify({ tasks, activeTaskId }, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            const date = new Date().toISOString().split('T')[0];
+            link.download = `work-time-tracker-${date}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Экспорт в Excel
+        function exportToExcel() {
+            const wb = XLSX.utils.book_new();
+            
+            // Лист 1: Задачи
+            const tasksData = tasks.map(task => ({
+                'Задача': task.task,
+                'Проект': task.project || 'Без проекта',
+                'Статус': task.isActive ? 'Активна' : 'Остановлена',
+                'Всего минут': calculateTotalMinutes(task),
+                'Всего часов': calculateTotalHours(task),
+                'Количество сессий': task.timeSegments.length
+            }));
+            const wsTask = XLSX.utils.json_to_sheet(tasksData);
+            XLSX.utils.book_append_sheet(wb, wsTask, 'Задачи');
+
+            // Лист 2: Сессии
+            const sessionsData = [];
+            tasks.forEach(task => {
+                task.timeSegments.forEach((segment, index) => {
+                    const start = new Date(segment.start);
+                    const stop = new Date(segment.stop);
+                    const duration = Math.round((stop - start) / (1000 * 60));
+                    sessionsData.push({
+                        'Задача': task.task,
+                        'Проект': task.project || 'Без проекта',
+                        'Сессия': index + 1,
+                        'Дата начала': formatDateTime(segment.start),
+                        'Дата окончания': formatDateTime(segment.stop),
+                        'Длительность (мин)': duration,
+                        'Длительность (ч)': (duration / 60).toFixed(2),
+                        'Комментарий': segment.comment || ''
+                    });
+                });
+            });
+            const wsSessions = XLSX.utils.json_to_sheet(sessionsData);
+            XLSX.utils.book_append_sheet(wb, wsSessions, 'Сессии');
+
+            // Лист 3: Проекты
+            const { projectStats } = generateReportsData();
+            const totalMinutes = Object.values(projectStats).reduce((a, b) => a + b, 0);
+            const projectsData = Object.entries(projectStats).map(([project, minutes]) => ({
+                'Проект': project,
+                'Всего минут': Math.round(minutes),
+                'Всего часов': (minutes / 60).toFixed(2),
+                'Процент': ((minutes / totalMinutes) * 100).toFixed(1) + '%'
+            }));
+            const wsProjects = XLSX.utils.json_to_sheet(projectsData);
+            XLSX.utils.book_append_sheet(wb, wsProjects, 'Проекты');
+
+            // Лист 4: Отчеты
+            const { reports } = generateReportsData();
+            const reportsData = [];
+            Object.keys(reports).sort().forEach(period => {
+                const report = reports[period];
+                Object.entries(report.tasks).forEach(([taskName, data]) => {
+                    reportsData.push({
+                        'Период': getPeriodLabel(period),
+                        'Задача': taskName,
+                        'Проект': data.project || 'Без проекта',
+                        'Минуты': Math.round(data.minutes),
+                        'Часы': (data.minutes / 60).toFixed(2),
+                        'Сессий': data.sessions
+                    });
+                });
+            });
+            const wsReports = XLSX.utils.json_to_sheet(reportsData);
+            XLSX.utils.book_append_sheet(wb, wsReports, 'Отчеты');
+
+            const date = new Date().toISOString().split('T')[0];
+            XLSX.writeFile(wb, `work-time-tracker-${date}.xlsx`);
+        }
+
+        // Экспорт отчета за текущий месяц
+        function exportMonthReport() {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            const monthKey = getMonthYear(now);
+            
+            // Собираем данные за текущий месяц
+            const monthData = {
+                tasks: {},
+                projects: {},
+                total: 0,
+                sessionsCount: 0
+            };
+            
+            tasks.forEach(task => {
+                task.timeSegments.forEach(segment => {
+                    const segmentDate = new Date(segment.start);
+                    if (segmentDate.getMonth() === currentMonth && segmentDate.getFullYear() === currentYear) {
+                        const start = new Date(segment.start);
+                        const stop = new Date(segment.stop);
+                        const minutes = (stop - start) / (1000 * 60);
+                        
+                        // Статистика по задачам
+                        const taskKey = task.task;
+                        if (!monthData.tasks[taskKey]) {
+                            monthData.tasks[taskKey] = {
+                                minutes: 0,
+                                project: task.project,
+                                sessions: 0
+                            };
+                        }
+                        monthData.tasks[taskKey].minutes += minutes;
+                        monthData.tasks[taskKey].sessions += 1;
+                        
+                        // Статистика по проектам
+                        const projectName = task.project || 'Без проекта';
+                        monthData.projects[projectName] = (monthData.projects[projectName] || 0) + minutes;
+                        
+                        monthData.total += minutes;
+                        monthData.sessionsCount += 1;
+                    }
+                });
+            });
+            
+            if (monthData.total === 0) {
+                alert('Нет данных за текущий месяц');
+                return;
+            }
+            
+            const wb = XLSX.utils.book_new();
+            
+            // Лист 1: Общая статистика
+            const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
+                              'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+            const summaryData = [
+                { 'Параметр': 'Месяц', 'Значение': `${monthNames[currentMonth]} ${currentYear}` },
+                { 'Параметр': 'Всего часов', 'Значение': (monthData.total / 60).toFixed(2) },
+                { 'Параметр': 'Всего минут', 'Значение': Math.round(monthData.total) },
+                { 'Параметр': 'Количество сессий', 'Значение': monthData.sessionsCount },
+                { 'Параметр': 'Количество задач', 'Значение': Object.keys(monthData.tasks).length },
+                { 'Параметр': 'Количество проектов', 'Значение': Object.keys(monthData.projects).length }
+            ];
+            const wsSummary = XLSX.utils.json_to_sheet(summaryData);
+            XLSX.utils.book_append_sheet(wb, wsSummary, 'Сводка');
+            
+            // Лист 2: Распределение по проектам
+            const projectsData = Object.entries(monthData.projects)
+                .sort((a, b) => b[1] - a[1])
+                .map(([project, minutes]) => ({
+                    'Проект': project,
+                    'Часы': (minutes / 60).toFixed(2),
+                    'Минуты': Math.round(minutes),
+                    'Процент от общего времени': ((minutes / monthData.total) * 100).toFixed(1) + '%'
+                }));
+            const wsProjects = XLSX.utils.json_to_sheet(projectsData);
+            XLSX.utils.book_append_sheet(wb, wsProjects, 'Проекты');
+            
+            // Лист 3: Задачи
+            const tasksData = Object.entries(monthData.tasks)
+                .sort((a, b) => b[1].minutes - a[1].minutes)
+                .map(([taskName, data]) => ({
+                    'Задача': taskName,
+                    'Проект': data.project || 'Без проекта',
+                    'Часы': (data.minutes / 60).toFixed(2),
+                    'Минуты': Math.round(data.minutes),
+                    'Сессий': data.sessions,
+                    'Процент от общего времени': ((data.minutes / monthData.total) * 100).toFixed(1) + '%'
+                }));
+            const wsTasks = XLSX.utils.json_to_sheet(tasksData);
+            XLSX.utils.book_append_sheet(wb, wsTasks, 'Задачи');
+            
+            // Лист 4: Детальные сессии за месяц
+            const sessionsData = [];
+            tasks.forEach(task => {
+                task.timeSegments.forEach((segment, index) => {
+                    const segmentDate = new Date(segment.start);
+                    if (segmentDate.getMonth() === currentMonth && segmentDate.getFullYear() === currentYear) {
+                        const start = new Date(segment.start);
+                        const stop = new Date(segment.stop);
+                        const duration = Math.round((stop - start) / (1000 * 60));
+                        sessionsData.push({
+                            'Дата': formatDate(segment.start),
+                            'Задача': task.task,
+                            'Проект': task.project || 'Без проекта',
+                            'Начало': formatDateTime(segment.start),
+                            'Окончание': formatDateTime(segment.stop),
+                            'Длительность (ч)': (duration / 60).toFixed(2),
+                            'Длительность (мин)': duration,
+                            'Комментарий': segment.comment || ''
+                        });
+                    }
+                });
+            });
+            const wsSessions = XLSX.utils.json_to_sheet(sessionsData);
+            XLSX.utils.book_append_sheet(wb, wsSessions, 'Детальные сессии');
+            
+            const fileName = `отчет-${monthNames[currentMonth]}-${currentYear}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        }
+
+        // Импорт из JSON
+        function importFromJSON() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.tasks && Array.isArray(data.tasks)) {
+                        if (confirm('Импортировать данные? Текущие данные будут заменены.')) {
+                            tasks = data.tasks;
+                            activeTaskId = data.activeTaskId || null;
+                            saveData();
+                            renderTasks();
+                            alert('Данные успешно импортированы!');
+                        }
+                    } else {
+                        alert('Неверный формат файла');
+                    }
+                } catch (error) {
+                    alert('Ошибка чтения файла: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // События
+        document.getElementById('tabTasks').addEventListener('click', () => switchView('tasks'));
+        document.getElementById('tabReports').addEventListener('click', () => switchView('reports'));
+        
+        document.getElementById('btnAddTask').addEventListener('click', () => showTaskForm(true));
+        document.getElementById('btnSaveTask').addEventListener('click', addTask);
+        document.getElementById('btnCancelTask').addEventListener('click', () => showTaskForm(false));
+        
+        document.getElementById('inputTaskName').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTask();
+        });
+        
+        document.getElementById('btnDay').addEventListener('click', () => changeReportPeriod('day'));
+        document.getElementById('btnWeek').addEventListener('click', () => changeReportPeriod('week'));
+        document.getElementById('btnMonth').addEventListener('click', () => changeReportPeriod('month'));
+        
+        document.getElementById('btnExportJSON').addEventListener('click', exportToJSON);
+        document.getElementById('btnExportExcel').addEventListener('click', exportToExcel);
+        document.getElementById('btnExportMonthReport').addEventListener('click', exportMonthReport);
+        document.getElementById('btnImportJSON').addEventListener('click', importFromJSON);
+        document.getElementById('fileInput').addEventListener('change', handleFileImport);
+
+        document.getElementById('btnSaveManualSession').addEventListener('click', addManualSession);
+        document.getElementById('btnCancelManualSession').addEventListener('click', hideManualSessionForm);
+        
+        document.getElementById('btnSaveEditSession').addEventListener('click', saveEditSession);
+        document.getElementById('btnCancelEditSession').addEventListener('click', hideEditSessionForm);
+
+        // Инициализация
+        loadData();
+        renderTasks();
+        
+        if (activeTaskId) {
+            startTimer();
+        }
+    </script>
+</body>
+</html>
