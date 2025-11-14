@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Детерминизм и Свобода выбора</title>
+    <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+
+      body {
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          background: #0a0a0a;
+          color: #e4e4e7;
+          overflow: hidden;
+          height: 100vh;
+      }
+
+      .slide-container {
+          width: 100vw;
+          height: 100vh;
+          position: relative;
+      }
+
+      .slide {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          display: none;
+          align-items: center;
+          justify-content: center;
+          padding: 80px;
+          opacity: 0;
+          transform: translateX(30px);
+          transition: all 0.4s ease;
+      }
+
+      .slide.active {
+          display: flex;
+          opacity: 1;
+          transform: translateX(0);
+      }
+
+      .slide-content {
+          width: 100%;
+          max-width: 1400px;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+      }
+
+      :root {
+          --accent: #3b82f6;
+          --accent-dark: #2563eb;
+          --success: #10b981;
+          --danger: #ef4444;
+          --warning: #f59e0b;
+          --bg-card: #18181b;
+          --bg-card-light: #27272a;
+          --text-primary: #e4e4e7;
+          --text-secondary: #a1a1aa;
+      }
+
+      /* Титульный слайд */
+      .title-slide {
+          background: #0a0a0a;
+      }
+
+      .title-slide h1 {
+          font-size: 4.5em;
+          font-weight: 700;
+          margin-bottom: 30px;
+          color: var(--text-primary);
+          letter-spacing: -0.02em;
+      }
+
+      .title-slide .accent-line {
+          width: 100px;
+          height: 4px;
+          background: var(--accent);
+          margin: 0 auto 40px;
+      }
+
+      .title-slide .subtitle {
+          font-size: 2em;
+          color: var(--text-secondary);
+          font-weight: 400;
+      }
+
+      .title-slide .author {
+          font-size: 1.3em;
+          margin-top: 60px;
+          color: var(--text-secondary);
+      }
+
+      /* Секционный заголовок */
+      .section-slide {
+          background: #0a0a0a;
+      }
+
+      .section-slide .icon {
+          font-size: 6em;
+          margin-bottom: 40px;
+          opacity: 0.9;
+      }
+
+      .section-slide h2 {
+          font-size: 5em;
+          font-weight: 700;
+          color: var(--text-primary);
+          letter-spacing: -0.02em;
+      }
+
+      .section-slide .accent-line {
+          width: 150px;
+          height: 4px;
+          background: var(--accent);
+          margin: 40px auto 0;
+      }
+
+      /* Определение */
+      .definition-slide {
+          background: #0a0a0a;
+      }
+
+      .definition-slide h2 {
+          font-size: 3.5em;
+          font-weight: 700;
+          margin-bottom: 60px;
+          color: var(--text-primary);
+      }
+
+      .definition-box {
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-light);
+          border-left: 4px solid var(--accent);
+          padding: 50px;
+          border-radius: 12px;
+          font-size: 1.8em;
+          line-height: 1.8;
+          color: var(--text-secondary);
+      }
+
+      .definition-box strong {
+          color: var(--text-primary);
+          font-weight: 600;
+      }
+
+      /* Типы детерминизма */
+      .types-slide {
+          background: #0a0a0a;
+      }
+
+      .types-slide h2 {
+          font-size: 3.5em;
+          font-weight: 700;
+          margin-bottom: 60px;
+          text-align: center;
+      }
+
+      .types-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 30px;
+      }
+
+      .type-card {
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-light);
+          padding: 40px;
+          border-radius: 12px;
+          border-left: 4px solid var(--danger);
+      }
+
+      .type-card .icon {
+          font-size: 4em;
+          margin-bottom: 20px;
+          text-align: center;
+          display: block;
+      }
+
+      .type-card h3 {
+          font-size: 2em;
+          margin-bottom: 20px;
+          color: var(--danger);
+          font-weight: 600;
+          text-align: center;
+      }
+
+      .type-card p {
+          font-size: 1.3em;
+          line-height: 1.7;
+          color: var(--text-secondary);
+      }
+
+      .type-card .example {
+          margin-top: 20px;
+          padding: 15px;
+          background: var(--bg-card-light);
+          border-radius: 8px;
+          font-size: 1.2em;
+          font-style: italic;
+      }
+
+      /* Сравнение */
+      .comparison-slide {
+          background: #0a0a0a;
+      }
+
+      .comparison-slide h2 {
+          font-size: 3.5em;
+          font-weight: 700;
+          margin-bottom: 60px;
+          text-align: center;
+      }
+
+      .comparison-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 40px;
+          height: 70%;
+      }
+
+      .comparison-box {
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-light);
+          padding: 50px;
+          border-radius: 12px;
+      }
+
+      .comparison-box.negative {
+          border-left: 4px solid var(--danger);
+      }
+
+      .comparison-box.positive {
+          border-left: 4px solid var(--success);
+      }
+
+      .comparison-box h3 {
+          font-size: 2.8em;
+          margin-bottom: 40px;
+          font-weight: 600;
+      }
+
+      .comparison-box.negative h3 {
+          color: var(--danger);
+      }
+
+      .comparison-box.positive h3 {
+          color: var(--success);
+      }
+
+      .comparison-box ul {
+          list-style: none;
+          font-size: 1.5em;
+          line-height: 2;
+          color: var(--text-secondary);
+      }
+
+      .comparison-box li {
+          margin: 15px 0;
+          padding-left: 40px;
+          position: relative;
+      }
+
+      .comparison-box.negative li:before {
+          content: "×";
+          position: absolute;
+          left: 0;
+          color: var(--danger);
+          font-size: 1.5em;
+          font-weight: bold;
+      }
+
+      .comparison-box.positive li:before {
+          content: "✓";
+          position: absolute;
+          left: 0;
+          color: var(--success);
+          font-size: 1.5em;
+          font-weight: bold;
+      }
+
+      /* Последствия */
+      .consequences-slide {
+          background: #0a0a0a;
+      }
+
+      .consequences-slide h2 {
+          font-size: 3.5em;
+          font-weight: 700;
+          margin-bottom: 60px;
+          text-align: center;
+      }
+
+      .consequences-grid {
+          display: grid;
+          gap: 25px;
+      }
+
+      .consequence-item {
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-light);
+          border-left: 4px solid var(--danger);
+          padding: 35px;
+          border-radius: 12px;
+      }
+
+      .consequence-item h4 {
+          font-size: 2em;
+          margin-bottom: 15px;
+          color: var(--danger);
+          font-weight: 600;
+      }
+
+      .consequence-item p {
+          font-size: 1.5em;
+          line-height: 1.7;
+          color: var(--text-secondary);
+      }
+
+      /* Пространство между стимулом и реакцией */
+      .space-slide {
+          background: #0a0a0a;
+      }
+
+      .space-slide h2 {
+          font-size: 3.5em;
+          font-weight: 700;
+          margin-bottom: 60px;
+          text-align: center;
+      }
+
+      .space-visual {
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-light);
+          padding: 60px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 40px;
+      }
+
+      .space-item {
+          flex: 1;
+          text-align: center;
+      }
+
+      .space-item.main {
+          flex: 2;
+          background: var(--bg-card-light);
+          padding: 40px;
+          border-radius: 12px;
+          border: 2px solid var(--success);
+      }
+
+      .space-item h3 {
+          font-size: 2.5em;
+          margin-bottom: 20px;
+          color: var(--text-primary);
+          font-weight: 600;
+      }
+
+      .space-item.main h3 {
+          color: var(--success);
+      }
+
+      .space-item p {
+          font-size: 1.5em;
+          line-height: 1.7;
+          color: var(--text-secondary);
+      }
+
+      .space-arrow {
+          font-size: 4em;
+          color: var(--accent);
+      }
+
+      /* 4 дара */
+      .gifts-slide {
+          background: #0a0a0a;
+      }
+
+      .gifts-slide h2 {
+          font-size: 3.5em;
+          font-weight: 700;
+          margin-bottom: 60px;
+          text-align: center;
+      }
+
+      .gifts-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 30px;
+      }
+
+      .gift-card {
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-light);
+          border-left: 4px solid var(--success);
+          padding: 40px;
+          border-radius: 12px;
+      }
+
+      .gift-card .icon {
+          font-size: 4em;
+          margin-bottom: 20px;
+          text-align: center;
+          display: block;
+      }
+
+      .gift-card h3 {
+          font-size: 2.2em;
+          margin-bottom: 20px;
+          color: var(--success);
+          font-weight: 600;
+          text-align: center;
+      }
+
+      .gift-card p {
+          font-size: 1.4em;
+          line-height: 1.7;
+          color: var(--text-secondary);
+          text-align: center;
+      }
+
+      .gift-card .details {
+          margin-top: 20px;
+          padding: 20px;
+          background: var(--bg-card-light);
+          border-radius: 8px;
+          font-size: 1.3em;
+          line-height: 1.6;
+      }
+
+      /* Примеры */
+      .examples-slide {
+          background: #0a0a0a;
+      }
+
+      .examples-slide h2 {
+          font-size: 3.5em;
+          font-weight: 700;
+          margin-bottom: 60px;
+          text-align: center;
+      }
+
+      .examples-container {
+          display: grid;
+          gap: 30px;
+      }
+
+      .example-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 30px;
+      }
+
+      .example-box {
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-light);
+          padding: 35px;
+          border-radius: 12px;
+      }
+
+      .example-box.reactive {
+          border-left: 4px solid var(--danger);
+      }
+
+      .example-box.proactive {
+          border-left: 4px solid var(--success);
+      }
+
+      .example-box h4 {
+          font-size: 1.8em;
+          margin-bottom: 15px;
+          font-weight: 600;
+          text-align: center;
+      }
+
+      .example-box.reactive h4 {
+          color: var(--danger);
+      }
+
+      .example-box.proactive h4 {
+          color: var(--success);
+      }
+
+      .example-box p {
+          font-size: 1.4em;
+          line-height: 1.7;
+          color: var(--text-secondary);
+      }
+
+      .example-scenario {
+          font-size: 1.5em;
+          padding: 25px;
+          background: var(--bg-card-light);
+          border-radius: 8px;
+          margin-bottom: 25px;
+          text-align: center;
+          color: var(--text-primary);
+          font-weight: 500;
+      }
+
+      /* Действия */
+      .action-slide {
+          background: #0a0a0a;
+      }
+
+      .action-slide h2 {
+          font-size: 3.5em;
+          font-weight: 700;
+          margin-bottom: 60px;
+          text-align: center;
+      }
+
+      .action-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 25px;
+      }
+
+      .action-item {
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-light);
+          padding: 35px;
+          border-radius: 12px;
+          transition: all 0.3s ease;
+      }
+
+      .action-item:hover {
+          border-color: var(--accent);
+          transform: translateY(-5px);
+      }
+
+      .action-item .emoji {
+          font-size: 3.5em;
+          margin-bottom: 20px;
+          text-align: center;
+          display: block;
+      }
+
+      .action-item h4 {
+          font-size: 1.6em;
+          margin-bottom: 15px;
+          color: var(--text-primary);
+          font-weight: 600;
+          text-align: center;
+      }
+
+      .action-item p {
+          font-size: 1.2em;
+          line-height: 1.6;
+          color: var(--text-secondary);
+          text-align: center;
+      }
+
+      /* Цитата */
+      .quote-slide {
+          background: #0a0a0a;
+      }
+
+      .quote-box {
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-light);
+          border-left: 4px solid var(--accent);
+          padding: 60px;
+          border-radius: 12px;
+          font-size: 2.2em;
+          line-height: 1.8;
+          font-style: italic;
+          color: var(--text-secondary);
+          position: relative;
+      }
+
+      .quote-box:before {
+          content: """;
+          font-size: 6em;
+          position: absolute;
+          top: 20px;
+          left: 30px;
+          opacity: 0.2;
+          color: var(--accent);
+          font-style: normal;
+      }
+
+      .quote-author {
+          font-size: 1.5em;
+          margin-top: 40px;
+          text-align: right;
+          color: var(--accent);
+          font-style: normal;
+          font-weight: 600;
+      }
+
+      /* Финальный слайд */
+      .final-slide {
+          background: #0a0a0a;
+      }
+
+      .final-slide h2 {
+          font-size: 4em;
+          font-weight: 700;
+          margin-bottom: 60px;
+      }
+
+      .final-slide .accent-line {
+          width: 100px;
+          height: 4px;
+          background: var(--accent);
+          margin: 0 auto 60px;
+      }
+
+      .final-content {
+          font-size: 1.9em;
+          line-height: 2.2;
+          color: var(--text-secondary);
+          text-align: center;
+      }
+
+      .final-content strong {
+          color: var(--text-primary);
+          font-weight: 600;
+      }
+
+      .final-content .reactive {
+          color: var(--danger);
+      }
+
+      .final-content .proactive {
+          color: var(--success);
+      }
+
+      .final-thanks {
+          margin-top: 80px;
+          font-size: 1.8em;
+          color: var(--text-secondary);
+      }
+
+      /* Навигация */
+      .navigation {
+          position: fixed;
+          bottom: 40px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          gap: 20px;
+          z-index: 1000;
+      }
+
+      .nav-button {
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-light);
+          color: var(--text-primary);
+          padding: 12px 35px;
+          font-size: 1.2em;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-weight: 500;
+      }
+
+      .nav-button:hover:not(:disabled) {
+          background: var(--bg-card-light);
+          border-color: var(--accent);
+      }
+
+      .nav-button:disabled {
+          opacity: 0.3;
+          cursor: not-allowed;
+      }
+
+      .slide-counter {
+          position: fixed;
+          top: 40px;
+          right: 40px;
+          background: var(--bg-card);
+          border: 1px solid var(--bg-card-light);
+          padding: 12px 25px;
+          border-radius: 8px;
+          font-size: 1.3em;
+          font-weight: 500;
+          z-index: 1000;
+          color: var(--text-secondary);
+      }
+
+      .slide-counter span {
+          color: var(--accent);
+          font-weight: 600;
+      }
+
+      @media (max-width: 1200px) {
+          .slide {
+              padding: 60px 40px;
+          }
+
+          .title-slide h1 { font-size: 3.5em; }
+          .section-slide h2 { font-size: 4em; }
+          .types-grid,
+          .action-grid {
+              grid-template-columns: repeat(2, 1fr);
+          }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="slide-counter">
+      <span id="currentSlide">1</span> / <span id="totalSlides">0</span>
+    </div>
+
+    <div class="slide-container">
+      <!-- Слайд 1: Титульный -->
+      <div class="slide active title-slide">
+        <div class="slide-content" style="text-align: center">
+          <h1>Навык 1: Будьте Проактивны</h1>
+          <div class="accent-line"></div>
+          <p class="subtitle">Детерминизм и Свобода выбора</p>
+          <p class="author">
+            По книге Стивена Кови "7 навыков высокоэффективных людей"
+          </p>
+        </div>
+      </div>
+
+      <!-- Слайд 2: Детерминизм -->
+      <div class="slide section-slide">
+        <div class="slide-content" style="text-align: center">
+          <div class="icon">⛓️</div>
+          <h2>ДЕТЕРМИНИЗМ</h2>
+          <div class="accent-line"></div>
+        </div>
+      </div>
+
+      <!-- Слайд 3: Определение детерминизма -->
+      <div class="slide definition-slide">
+        <div class="slide-content">
+          <h2>Что такое детерминизм?</h2>
+          <div class="definition-box">
+            <strong
+              style="font-size: 1.2em; display: block; margin-bottom: 25px"
+              >Детерминизм</strong
+            >
+            — это философская концепция, утверждающая, что все события, включая
+            человеческие действия и решения, предопределены внешними факторами и
+            прошлым опытом.
+            <br /><br />
+            В контексте личной эффективности детерминизм означает
+            <strong>веру в то, что мы не контролируем свою жизнь</strong>, а
+            являемся результатом обстоятельств, генетики, воспитания или
+            окружения. <br /><br />
+            Это
+            <strong style="color: var(--danger)">реактивная позиция</strong>,
+            которая лишает человека ответственности и силы менять свою жизнь.
+          </div>
+        </div>
+      </div>
+
+      <!-- Слайд 4: Три типа детерминизма -->
+      <div class="slide types-slide">
+        <div class="slide-content">
+          <h2>Три типа детерминизма</h2>
+          <div class="types-grid">
+            <div class="type-card">
+              <span class="icon">🧬</span>
+              <h3>Генетический</h3>
+              <p>
+                Убеждение, что наша личность, способности и поведение заложены в
+                ДНК и не могут быть изменены.
+              </p>
+              <div class="example">
+                "Я такой же вспыльчивый, как мой отец. У меня это в генах,
+                ничего не поделаешь"
+              </div>
+            </div>
+            <div class="type-card">
+              <span class="icon">👨‍👩‍👧</span>
+              <h3>Психологический</h3>
+              <p>
+                Убеждение, что наше поведение полностью определено воспитанием,
+                детскими травмами и отношениями с родителями.
+              </p>
+              <div class="example">
+                "Меня так воспитали, поэтому я неуверен в себе. Это вина моих
+                родителей"
+              </div>
+            </div>
+            <div class="type-card">
+              <span class="icon">🌍</span>
+              <h3>Средовой</h3>
+              <p>
+                Убеждение, что нас формирует окружение: начальник, коллеги,
+                экономическая ситуация, политика, погода.
+              </p>
+              <div class="example">
+                "Я не могу быть продуктивным, потому что у меня токсичный босс и
+                плохой коллектив"
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Слайд 5: Детерминистское vs Проактивное мышление -->
+
+      <!-- Слайд 6: Последствия детерминизма -->
+      <div class="slide consequences-slide">
+        <div class="slide-content">
+          <h2>Последствия детерминистского мышления</h2>
+          <div class="types-grid">
+            <div class="consequence-item">
+              <h4>Потеря личной силы</h4>
+              <p>
+                Когда вы верите, что не контролируете свою жизнь, вы перестаете
+                пытаться что-то изменить и теряете мотивацию к действию
+              </p>
+            </div>
+            <div class="consequence-item">
+              <h4>Роль жертвы</h4>
+              <p>
+                Вы начинаете позиционировать себя как жертву обстоятельств, что
+                приводит к пассивности и ожиданию помощи извне
+              </p>
+            </div>
+            <div class="consequence-item">
+              <h4>Отсутствие роста</h4>
+              <p>
+                Если вы не можете измениться, зачем работать над собой?
+                Детерминизм блокирует личностное и профессиональное развитие
+              </p>
+            </div>
+          </div>
+          <br />
+          <div class="types-grid">
+            <div class="consequence-item">
+              <h4>Перекладывание ответственности</h4>
+              <p>
+                Винить других или обстоятельства легче, чем брать
+                ответственность. Это разрушает доверие и отношения в команде
+              </p>
+            </div>
+            <div class="consequence-item">
+              <h4>Выученная беспомощность</h4>
+              <p>
+                Постоянное убеждение в бессилии формирует привычку сдаваться при
+                первых трудностях, не пытаясь найти решение
+              </p>
+            </div>
+            <div class="consequence-item">
+              <h4>Низкая самооценка и депрессия</h4>
+              <p>
+                Ощущение отсутствия контроля над жизнью ведет к чувству
+                безнадежности, тревожности и депрессивным состояниям
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Слайд 7: Свобода выбора -->
+      <div class="slide section-slide">
+        <div class="slide-content" style="text-align: center">
+          <div class="icon">🦅</div>
+          <h2>СВОБОДА ВЫБОРА</h2>
+          <div class="accent-line"></div>
+        </div>
+      </div>
+
+      <!-- Слайд 8: Определение свободы выбора -->
+      <div class="slide definition-slide">
+        <div class="slide-content">
+          <h2>Что такое свобода выбора?</h2>
+          <div class="definition-box">
+            <strong
+              style="font-size: 1.2em; display: block; margin-bottom: 25px"
+              >Свобода выбора</strong
+            >
+            — это фундаментальная способность человека выбирать свою реакцию на
+            любые обстоятельства, независимо от внешних факторов.
+            <br /><br />
+            Стивен Кови утверждает: между <strong>стимулом</strong> (внешним
+            событием) и <strong>реакцией</strong> (нашим ответом) существует
+            <strong style="color: var(--success)">пространство</strong>.
+            <br /><br />
+            В этом пространстве заключается наша
+            <strong>свобода и сила выбирать</strong>. Именно в нашей способности
+            делать осознанный выбор кроется ключ к проактивности и личной
+            эффективности.
+          </div>
+        </div>
+      </div>
+
+      <!-- Слайд 9: Пространство между стимулом и реакцией -->
+      <div class="slide space-slide">
+        <div class="slide-content">
+          <h2>Пространство свободы</h2>
+          <div class="space-visual">
+            <div class="space-item">
+              <h3>Стимул</h3>
+              <p>Внешнее событие, ситуация, слова другого человека</p>
+            </div>
+            <span class="space-arrow">→</span>
+            <div class="space-item main">
+              <h3>ПРОСТРАНСТВО СВОБОДЫ</h3>
+              <p>
+                Здесь вы делаете выбор. Здесь ваша сила. Здесь ваша свобода.
+              </p>
+            </div>
+            <span class="space-arrow">→</span>
+            <div class="space-item">
+              <h3>Реакция</h3>
+              <p>Ваш осознанный выбор, как реагировать</p>
+            </div>
+          </div>
+          <!-- <div
+            style="
+              margin-top: 60px;
+              background: var(--bg-card);
+              border: 1px solid var(--bg-card-light);
+              padding: 40px;
+              border-radius: 12px;
+              border-left: 4px solid var(--accent);
+            "
+          >
+            <p
+              style="
+                font-size: 1.8em;
+                line-height: 1.8;
+                color: var(--text-secondary);
+                text-align: center;
+              "
+            >
+              <strong style="color: var(--text-primary)">Детерминисты</strong>
+              не видят этого пространства — для них стимул автоматически
+              приводит к реакции. <br /><br />
+              <strong style="color: var(--text-primary)"
+                >Проактивные люди</strong
+              >
+              осознают это пространство и используют его для осознанного выбора
+              своей реакции.
+            </p>
+          </div> -->
+        </div>
+      </div>
+
+      <!-- Слайд 10: 4 дара человека -->
+
+       <div class="slide section-slide">
+        <div class="slide-content" style="text-align: center">
+          <div class="icon">🦅</div>
+          <h2>4 уникальных дара человека</h2>
+          <div class="accent-line"></div>
+        </div>
+      </div>
+
+      <div class="slide gifts-slide">
+          <div class="gifts-grid">
+            <div class="gift-card">
+              <span class="icon">🧠</span>
+              <h3>Самосознание</h3>
+              <p>
+                Способность наблюдать за своими мыслями и анализировать себя
+              </p>
+              <div class="details">
+                Вы можете отстраниться от ситуации и посмотреть на себя со
+                стороны. Вы осознаете свои эмоции, мысли и реакции в моменте,
+                что позволяет вам их контролировать.
+              </div>
+            </div>
+            <div class="gift-card">
+              <span class="icon">🎭</span>
+              <h3>Воображение</h3>
+              <p>Способность создавать в уме то, чего еще нет в реальности</p>
+              <div class="details">
+                Вы можете представить разные сценарии будущего, визуализировать
+                свои цели и придумывать креативные решения. Воображение
+                позволяет планировать и мечтать.
+              </div>
+            </div>
+            <div class="gift-card">
+              <span class="icon">⚖️</span>
+              <h3>Совесть</h3>
+              <p>Внутренний моральный компас, различающий добро и зло</p>
+              <div class="details">
+                Это ваш внутренний голос, который подсказывает, что правильно, а
+                что нет. Совесть помогает принимать решения, соответствующие
+                вашим ценностям и принципам.
+              </div>
+            </div>
+            <div class="gift-card">
+              <span class="icon">🎯</span>
+              <h3>Независимая воля</h3>
+              <p>
+                Способность действовать на основе самосознания, а не импульсов
+              </p>
+              <div class="details">
+                Это сила действовать вопреки внешним обстоятельствам, эмоциям и
+                привычкам. Способность сказать "нет" искушению и "да" своим
+                ценностям.
+              </div>
+            </div>
+          </div>
+        </div>
+     
+
+      <!-- Слайд 11: Реактивный vs Проактивный язык -->
+      <div class="slide comparison-slide">
+        <div class="slide-content">
+          <h2>Язык реактивных и проактивных людей</h2>
+          <div class="comparison-grid">
+            <div class="comparison-box negative">
+              <h3>Реактивный язык</h3>
+              <ul style="font-size: 1.4em">
+                <li>"Я ничего не могу сделать"</li>
+                <li>"Я такой, какой есть"</li>
+                <li>"Он меня бесит"</li>
+                <li>"Они не позволяют мне..."</li>
+                <li>"Я вынужден это делать"</li>
+                <li>"Я не могу"</li>
+                <li>"Если бы только..."</li>
+                <li>"Мне приходится..."</li>
+              </ul>
+            </div>
+            <div class="comparison-box positive">
+              <h3>Проактивный язык</h3>
+              <ul style="font-size: 1.4em">
+                <li>"Давайте рассмотрим варианты"</li>
+                <li>"Я могу выбрать другой подход"</li>
+                <li>"Я контролирую свои эмоции"</li>
+                <li>"Я могу создать эффективную презентацию"</li>
+                <li>"Я выбираю..."</li>
+                <li>"Я предпочитаю..."</li>
+                <li>"Я сделаю..."</li>
+                <li>"Я решил..."</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Слайд 12: Примеры 1 -->
+      <div class="slide examples-slide">
+        <div class="slide-content">
+          <h2>Пример 1: Критика от руководителя</h2>
+          <div class="examples-container">
+            <div class="example-scenario">
+              Ситуация: Ваш руководитель резко раскритиковал вашу работу на
+              совещании при всей команде
+            </div>
+            <div class="example-row">
+              <div class="example-box reactive">
+                <h4>Реактивная реакция</h4>
+                <p>
+                  <strong>Мысль:</strong> "Он всегда меня унижает! Это
+                  несправедливо!"
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Действие:</strong> Обижаетесь, замыкаетесь, начинаете
+                  избегать руководителя, жалуетесь коллегам
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Результат:</strong> Испорченные отношения, репутация
+                  "обидчивого", проблема не решена
+                </p>
+              </div>
+              <div class="example-box proactive">
+                <h4>Проактивная реакция</h4>
+                <p>
+                  <strong>Мысль:</strong> "Критика неприятна, но я могу из неё
+                  извлечь пользу"
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Действие:</strong> После совещания спокойно
+                  спрашиваете конкретные детали, что можно улучшить, предлагаете
+                  план исправления
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Результат:</strong> Профессиональный рост, уважение
+                  руководителя, решение проблемы
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Слайд 13: Примеры 2 -->
+      <div class="slide examples-slide">
+        <div class="slide-content">
+          <h2>Пример 2: Перегруженность задачами</h2>
+          <div class="examples-container">
+            <div class="example-scenario">
+              Ситуация: У вас накопилось слишком много задач, дедлайны горят, вы
+              чувствуете стресс
+            </div>
+            <div class="example-row">
+              <div class="example-box reactive">
+                <h4>Реактивная реакция</h4>
+                <p>
+                  <strong>Мысль:</strong> "Мне дают слишком много! Никто не
+                  ценит мою работу!"
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Действие:</strong> Жалуетесь, прокрастинируете,
+                  работаете хаотично, срываете дедлайны
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Результат:</strong> Выгорание, низкое качество работы,
+                  претензии от команды
+                </p>
+              </div>
+              <div class="example-box proactive">
+                <h4>Проактивная реакция</h4>
+                <p>
+                  <strong>Мысль:</strong> "Нужно расставить приоритеты и
+                  попросить помощи"
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Действие:</strong> Составляете список задач по
+                  срочности, делегируете, договариваетесь о переносе дедлайнов
+                  там, где возможно
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Результат:</strong> Контроль ситуации, выполнение
+                  важного, здоровый баланс
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+   
+      <!-- Слайд 15: Примеры 3 -->
+      <div class="slide examples-slide">
+        <div class="slide-content">
+          <h2>Пример 3: Технические трудности</h2>
+          <div class="examples-container">
+            <div class="example-scenario">
+              Ситуация: За час до важной презентации ломается оборудование или
+              падает система
+            </div>
+            <div class="example-row">
+              <div class="example-box reactive">
+                <h4>Реактивная реакция</h4>
+                <p>
+                  <strong>Мысль:</strong> "Всё пропало! Почему это всегда
+                  происходит со мной?!"
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Действие:</strong> Паникуете, обвиняете IT-отдел,
+                  срываетесь на окружающих, опускаете руки
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Результат:</strong> Презентация сорвана, стресс для
+                  всех, упущенная возможность
+                </p>
+              </div>
+              <div class="example-box proactive">
+                <h4>Проактивная реакция</h4>
+                <p>
+                  <strong>Мысль:</strong> "Есть проблема, но есть и решение. Что
+                  я могу сделать прямо сейчас?"
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Действие:</strong> Спокойно связываетесь с IT, ищете
+                  альтернативное оборудование, готовите план Б (презентация без
+                  слайдов), информируете аудиторию
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Результат:</strong> Презентация состоялась (возможно,
+                  в другом формате), демонстрация профессионализма
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+         <!-- Слайд 14: Примеры 4 -->
+      <!-- <div class="slide examples-slide">
+        <div class="slide-content">
+          <h2>Пример 3: Конфликт в команде</h2>
+          <div class="examples-container">
+            <div class="example-scenario">
+              Ситуация: Ваш коллега постоянно критикует ваши идеи на митингах и
+              пытается продвинуть свои
+            </div>
+            <div class="example-row">
+              <div class="example-box reactive">
+                <h4>Реактивная реакция</h4>
+                <p>
+                  <strong>Мысль:</strong> "Он специально меня подставляет! Я ему
+                  отомщу!"
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Действие:</strong> Начинаете в ответ критиковать его
+                  идеи, сплетничаете за спиной, создаёте коалиции против него
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Результат:</strong> Токсичная атмосфера в команде,
+                  падение продуктивности, вовлечение других в конфликт
+                </p>
+              </div>
+              <div class="example-box proactive">
+                <h4>Проактивная реакция</h4>
+                <p>
+                  <strong>Мысль:</strong> "Возможно, у него другое видение.
+                  Нужно найти общий язык"
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Действие:</strong> Разговариваете с коллегой наедине,
+                  выясняете его мотивы, ищете точки соприкосновения, предлагаете
+                  совместное решение
+                </p>
+                <p style="margin-top: 15px">
+                  <strong>Результат:</strong> Конструктивное сотрудничество,
+                  синергия идей, улучшение командной работы
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+
+      <!-- Слайд 16: Как развить свободу выбора -->
+      <div class="slide action-slide">
+        <div class="slide-content">
+          <h2>Как развивать свободу выбора</h2>
+          <div class="action-grid">
+            <div class="action-item">
+              <span class="emoji">⏸️</span>
+              <h4>Практикуйте паузу</h4>
+              <p>
+                Перед реакцией возьмите паузу: досчитайте до 10, сделайте
+                глубокий вдох
+              </p>
+            </div>
+            <div class="action-item">
+              <span class="emoji">🔍</span>
+              <h4>Наблюдайте за собой</h4>
+              <p>
+                Замечайте свои автоматические реакции и триггеры в течение дня
+              </p>
+            </div>
+            <div class="action-item">
+              <span class="emoji">📝</span>
+              <h4>Ведите журнал</h4>
+              <p>
+                Записывайте ситуации и анализируйте свои реакции — были ли они
+                осознанными
+              </p>
+            </div>
+            <div class="action-item">
+              <span class="emoji">🎬</span>
+              <h4>Визуализируйте</h4>
+              <p>
+                Представляйте сложные ситуации заранее и продумывайте
+                проактивные реакции
+              </p>
+            </div>
+            <div class="action-item">
+              <span class="emoji">💬</span>
+              <h4>Меняйте язык</h4>
+              <p>
+                Заменяйте реактивные фразы на проактивные: "Я должен" → "Я
+                выбираю"
+              </p>
+            </div>
+            <div class="action-item">
+              <span class="emoji">🎯</span>
+              <h4>Фокус на круге влияния</h4>
+              <p>Концентрируйтесь на том, что вы можете контролировать</p>
+            </div>
+            <div class="action-item">
+              <span class="emoji">🧘</span>
+              <h4>Медитация и осознанность</h4>
+              <p>
+                Развивайте способность быть в моменте и осознавать свои мысли
+              </p>
+            </div>
+            <div class="action-item">
+              <span class="emoji">📚</span>
+              <h4>Изучайте себя</h4>
+              <p>
+                Читайте о психологии, личностном росте, понимайте свои паттерны
+              </p>
+            </div>
+            <div class="action-item">
+              <span class="emoji">💪</span>
+              <h4>Принимайте вызовы</h4>
+              <p>
+                Намеренно ставьте себя в сложные ситуации для тренировки выбора
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide section-slide">
+        <div class="slide-content" style="text-align: center">
+          <div class="icon">🎓</div>
+          <h2>Задача</h2>
+          <div class="accent-line"></div>
+          <h1>1.Эмоциальнынй банковской счёт</h3>
+          <h1>2.Зависть</h3>
+        </div>
+      </div>
+
+
+
+      <!-- Слайд 17: Круг влияния vs Круг забот
+      <div class="slide space-slide">
+        <div class="slide-content">
+          <h2>Круг влияния и круг забот</h2>
+          <div
+            style="
+              background: var(--bg-card);
+              border: 1px solid var(--bg-card-light);
+              padding: 60px;
+              border-radius: 12px;
+            "
+          >
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px"
+            >
+              <div
+                style="
+                  background: var(--bg-card-light);
+                  padding: 40px;
+                  border-radius: 12px;
+                  border-left: 4px solid var(--danger);
+                "
+              >
+                <h3
+                  style="
+                    font-size: 2.5em;
+                    margin-bottom: 30px;
+                    color: var(--danger);
+                    font-weight: 600;
+                    text-align: center;
+                  "
+                >
+                  Круг забот
+                </h3>
+                <p
+                  style="
+                    font-size: 1.5em;
+                    line-height: 1.8;
+                    color: var(--text-secondary);
+                    margin-bottom: 25px;
+                  "
+                >
+                  Всё, что вас беспокоит, но на что вы не можете повлиять:
+                </p>
+                <ul
+                  style="
+                    list-style: none;
+                    font-size: 1.4em;
+                    line-height: 1.9;
+                    color: var(--text-secondary);
+                  "
+                >
+                  <li
+                    style="
+                      margin: 12px 0;
+                      padding-left: 35px;
+                      position: relative;
+                    "
+                  >
+                    <span
+                      style="position: absolute; left: 0; color: var(--danger)"
+                      >→</span
+                    >
+                    Погода и пробки
+                  </li>
+                  <li
+                    style="
+                      margin: 12px 0;
+                      padding-left: 35px;
+                      position: relative;
+                    "
+                  >
+                    <span
+                      style="position: absolute; left: 0; color: var(--danger)"
+                      >→</span
+                    >
+                    Прошлые события
+                  </li>
+                  <li
+                    style="
+                      margin: 12px 0;
+                      padding-left: 35px;
+                      position: relative;
+                    "
+                  >
+                    <span
+                      style="position: absolute; left: 0; color: var(--danger)"
+                      >→</span
+                    >
+                    Поведение других людей
+                  </li>
+                  <li
+                    style="
+                      margin: 12px 0;
+                      padding-left: 35px;
+                      position: relative;
+                    "
+                  >
+                    <span
+                      style="position: absolute; left: 0; color: var(--danger)"
+                      >→</span
+                    >
+                    Экономическая ситуация
+                  </li>
+                  <li
+                    style="
+                      margin: 12px 0;
+                      padding-left: 35px;
+                      position: relative;
+                    "
+                  >
+                    <span
+                      style="position: absolute; left: 0; color: var(--danger)"
+                      >→</span
+                    >
+                    Политика компании
+                  </li>
+                </ul>
+              </div>
+              <div
+                style="
+                  background: var(--bg-card-light);
+                  padding: 40px;
+                  border-radius: 12px;
+                  border-left: 4px solid var(--success);
+                "
+              >
+                <h3
+                  style="
+                    font-size: 2.5em;
+                    margin-bottom: 30px;
+                    color: var(--success);
+                    font-weight: 600;
+                    text-align: center;
+                  "
+                >
+                  Круг влияния
+                </h3>
+                <p
+                  style="
+                    font-size: 1.5em;
+                    line-height: 1.8;
+                    color: var(--text-secondary);
+                    margin-bottom: 25px;
+                  "
+                >
+                  То, на что вы реально можете повлиять:
+                </p>
+                <ul
+                  style="
+                    list-style: none;
+                    font-size: 1.4em;
+                    line-height: 1.9;
+                    color: var(--text-secondary);
+                  "
+                >
+                  <li
+                    style="
+                      margin: 12px 0;
+                      padding-left: 35px;
+                      position: relative;
+                    "
+                  >
+                    <span
+                      style="position: absolute; left: 0; color: var(--success)"
+                      >→</span
+                    >
+                    Ваши реакции и выбор
+                  </li>
+                  <li
+                    style="
+                      margin: 12px 0;
+                      padding-left: 35px;
+                      position: relative;
+                    "
+                  >
+                    <span
+                      style="position: absolute; left: 0; color: var(--success)"
+                      >→</span
+                    >
+                    Ваши навыки и знания
+                  </li>
+                  <li
+                    style="
+                      margin: 12px 0;
+                      padding-left: 35px;
+                      position: relative;
+                    "
+                  >
+                    <span
+                      style="position: absolute; left: 0; color: var(--success)"
+                      >→</span
+                    >
+                    Ваше отношение
+                  </li>
+                  <li
+                    style="
+                      margin: 12px 0;
+                      padding-left: 35px;
+                      position: relative;
+                    "
+                  >
+                    <span
+                      style="position: absolute; left: 0; color: var(--success)"
+                      >→</span
+                    >
+                    Ваши усилия и действия
+                  </li>
+                  <li
+                    style="
+                      margin: 12px 0;
+                      padding-left: 35px;
+                      position: relative;
+                    "
+                  >
+                    <span
+                      style="position: absolute; left: 0; color: var(--success)"
+                      >→</span
+                    >
+                    Ваши привычки
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div
+              style="
+                margin-top: 50px;
+                padding: 35px;
+                background: rgba(59, 130, 246, 0.1);
+                border: 2px solid var(--accent);
+                border-radius: 12px;
+                text-align: center;
+                font-size: 1.7em;
+                line-height: 1.8;
+                color: var(--text-primary);
+                font-weight: 600;
+              "
+            >
+              Проактивные люди расширяют круг влияния, фокусируясь на том, что
+              могут контролировать.<br />
+              Реактивные люди сжимают его, тратя энергию на круг забот.
+            </div>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Слайд 18: Цитата 1 -->
+      <!-- <div class="slide quote-slide">
+        <div class="slide-content">
+          <div class="quote-box">
+            Между стимулом и реакцией есть пространство. В этом пространстве
+            заключается наша свобода и сила выбирать свою реакцию. В нашей
+            реакции — наш рост и наша свобода.
+            <div class="quote-author">— Стивен Кови</div>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Слайд 19: Цитата 2 -->
+      <!-- <div class="slide quote-slide">
+        <div class="slide-content">
+          <div class="quote-box">
+            Я не продукт своих обстоятельств. Я продукт своих решений.
+            <div class="quote-author">— Стивен Кови</div>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Слайд 20: Цитата 3 -->
+      <!-- <div class="slide quote-slide">
+        <div class="slide-content">
+          <div class="quote-box">
+            Пока вы думаете, что проблема где-то снаружи, сама эта мысль и есть
+            проблема. Мы даём другим людям власть контролировать нашу жизнь.
+            <div class="quote-author">— Стивен Кови</div>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Слайд 21: Финальный -->
+      <!-- <div class="slide final-slide">
+        <div class="slide-content" style="text-align: center">
+          <h2>Ваш выбор определяет вашу жизнь</h2>
+          <div class="accent-line"></div>
+          <div class="final-content">
+            <strong class="reactive">Детерминизм</strong> говорит: "Ты не можешь
+            измениться" <br /><br />
+            <strong class="proactive">Свобода выбора</strong> говорит: "Ты
+            можешь выбирать свою реакцию" <br /><br /><br />
+            Каждый день, в каждой ситуации<br />
+            вы делаете выбор:<br /><br />
+            быть <strong class="reactive">жертвой обстоятельств</strong><br />
+            или <strong class="proactive">автором своей жизни</strong>
+            <br /><br /><br />
+            Проактивность — это не отсутствие проблем,<br />
+            это <strong>выбор того, как на них реагировать</strong>
+          </div>
+          <p class="final-thanks">Спасибо за внимание!</p>
+        </div>
+      </div> -->
+    </div>
+
+    <!-- Навигация -->
+    <div class="navigation">
+      <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">
+        ← Назад
+      </button>
+      <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">
+        Вперед →
+      </button>
+    </div>
+
+    <script>
+      let currentSlide = 0;
+      const slides = document.querySelectorAll(".slide");
+      const totalSlides = slides.length;
+
+      document.getElementById("totalSlides").textContent = totalSlides;
+
+      function showSlide(n) {
+        slides[currentSlide].classList.remove("active");
+        currentSlide = (n + totalSlides) % totalSlides;
+        slides[currentSlide].classList.add("active");
+        document.getElementById("currentSlide").textContent = currentSlide + 1;
+        document.getElementById("prevBtn").disabled = currentSlide === 0;
+        document.getElementById("nextBtn").disabled =
+          currentSlide === totalSlides - 1;
+      }
+
+      function changeSlide(direction) {
+        showSlide(currentSlide + direction);
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === " ") {
+          e.preventDefault();
+          if (currentSlide < totalSlides - 1) changeSlide(1);
+        } else if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          if (currentSlide > 0) changeSlide(-1);
+        } else if (e.key === "Home") {
+          e.preventDefault();
+          showSlide(0);
+        } else if (e.key === "End") {
+          e.preventDefault();
+          showSlide(totalSlides - 1);
+        }
+      });
+
+      document.addEventListener("click", (e) => {
+        if (e.target.classList.contains("nav-button")) return;
+        const clickX = e.clientX;
+        const windowWidth = window.innerWidth;
+        if (clickX > windowWidth / 2 && currentSlide < totalSlides - 1) {
+          changeSlide(1);
+        } else if (clickX < windowWidth / 2 && currentSlide > 0) {
+          changeSlide(-1);
+        }
+      });
+
+      showSlide(0);
+    </script>
+  </body>
+</html>
