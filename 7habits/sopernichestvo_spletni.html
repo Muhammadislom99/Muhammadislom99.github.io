@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Навык 1: Будьте Проактивны</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #e4e4e7;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 80px;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.4s ease;
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide-content {
+            width: 100%;
+            max-width: 1400px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Акцентный цвет IT */
+        :root {
+            --accent: #3b82f6;
+            --accent-dark: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-card: #18181b;
+            --bg-card-light: #27272a;
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+        }
+
+        /* Титульный слайд */
+        .title-slide {
+            background: #0a0a0a;
+        }
+
+        .title-slide h1 {
+            font-size: 4.5em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .title-slide .accent-line {
+            width: 100px;
+            height: 4px;
+            background: var(--accent);
+            margin: 0 auto 40px;
+        }
+
+        .title-slide .subtitle {
+            font-size: 2em;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .title-slide .author {
+            font-size: 1.3em;
+            margin-top: 60px;
+            color: var(--text-secondary);
+        }
+
+        /* Секционный заголовок */
+        .section-slide {
+            background: #0a0a0a;
+        }
+
+        .section-slide .icon {
+            font-size: 6em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .section-slide h2 {
+            font-size: 5em;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .section-slide .accent-line {
+            width: 150px;
+            height: 4px;
+            background: var(--accent);
+            margin: 40px auto 0;
+        }
+
+        /* Определение */
+        .definition-slide {
+            background: #0a0a0a;
+        }
+
+        .definition-slide h2 {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin-bottom: 60px;
+            color: var(--text-primary);
+        }
+
+        .definition-box {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-light);
+            border-left: 4px solid var(--accent);
+            padding: 50px;
+            border-radius: 12px;
+            font-size: 1.8em;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .definition-box strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Сравнение */
+        .comparison-slide {
+            background: #0a0a0a;
+        }
+
+        .comparison-slide h2 {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            height: 70%;
+        }
+
+        .comparison-box {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-light);
+            padding: 50px;
+            border-radius: 12px;
+        }
+
+        .comparison-box.negative {
+            border-left: 4px solid var(--danger);
+        }
+
+        .comparison-box.positive {
+            border-left: 4px solid var(--success);
+        }
+
+        .comparison-box h3 {
+            font-size: 2.8em;
+            margin-bottom: 40px;
+            font-weight: 600;
+        }
+
+        .comparison-box.negative h3 {
+            color: var(--danger);
+        }
+
+        .comparison-box.positive h3 {
+            color: var(--success);
+        }
+
+        .comparison-box ul {
+            list-style: none;
+            font-size: 1.5em;
+            line-height: 2;
+            color: var(--text-secondary);
+        }
+
+        .comparison-box li {
+            margin: 15px 0;
+            padding-left: 40px;
+            position: relative;
+        }
+
+        .comparison-box.negative li:before {
+            content: "×";
+            position: absolute;
+            left: 0;
+            color: var(--danger);
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .comparison-box.positive li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        /* Плюсы/Минусы */
+        .pros-cons-slide {
+            background: #0a0a0a;
+        }
+
+        .pros-cons-slide h2 {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .pros-cons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            height: 75%;
+        }
+
+        .pros-box, .cons-box {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-light);
+            padding: 40px;
+            border-radius: 12px;
+            overflow-y: auto;
+        }
+
+        .pros-box {
+            border-left: 4px solid var(--success);
+        }
+
+        .cons-box {
+            border-left: 4px solid var(--danger);
+        }
+
+        .pros-box h3 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .cons-box h3 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .pros-box ul, .cons-box ul {
+            list-style: none;
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        .pros-box li, .cons-box li {
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--bg-card-light);
+            border-radius: 8px;
+            color: var(--text-secondary);
+        }
+
+        .pros-box li strong, .cons-box li strong {
+            display: block;
+            font-size: 1.15em;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        /* Типы сплетен */
+        .types-slide {
+            background: #0a0a0a;
+        }
+
+        .types-slide h2 {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .types-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .type-box {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-light);
+            padding: 50px;
+            border-radius: 12px;
+        }
+
+        .type-box.good {
+            border-left: 4px solid var(--success);
+        }
+
+        .type-box.bad {
+            border-left: 4px solid var(--danger);
+        }
+
+        .type-box h3 {
+            font-size: 2.8em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .type-box.good h3 {
+            color: var(--success);
+        }
+
+        .type-box.bad h3 {
+            color: var(--danger);
+        }
+
+        .type-box .icon-large {
+            font-size: 5em;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        .type-box p {
+            font-size: 1.5em;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .type-box ul {
+            list-style: none;
+            font-size: 1.4em;
+            line-height: 1.9;
+            color: var(--text-secondary);
+        }
+
+        .type-box li {
+            margin: 12px 0;
+            padding-left: 35px;
+            position: relative;
+        }
+
+        .type-box.good li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .type-box.bad li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        /* Тонкая грань */
+        .thin-line-slide {
+            background: #0a0a0a;
+        }
+
+        .thin-line-slide h2 {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .thin-line-content {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-light);
+            padding: 50px;
+            border-radius: 12px;
+        }
+
+        .thin-line-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            padding: 30px;
+            border-radius: 8px;
+            font-size: 1.7em;
+            line-height: 1.8;
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--text-primary);
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .example-box {
+            background: var(--bg-card-light);
+            padding: 30px;
+            border-radius: 8px;
+            font-size: 1.4em;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+
+        .example-box.good {
+            border-left: 3px solid var(--success);
+        }
+
+        .example-box.bad {
+            border-left: 3px solid var(--danger);
+        }
+
+        .example-box h4 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .example-box.good h4 {
+            color: var(--success);
+        }
+
+        .example-box.bad h4 {
+            color: var(--danger);
+        }
+
+        .example-box p {
+            margin: 15px 0;
+        }
+
+        .example-box .goal {
+            font-size: 0.9em;
+            font-style: italic;
+            opacity: 0.8;
+            margin-top: 20px;
+        }
+
+        /* Цитата */
+        .quote-slide {
+            background: #0a0a0a;
+        }
+
+        .quote-box {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-light);
+            border-left: 4px solid var(--accent);
+            padding: 60px;
+            border-radius: 12px;
+            font-size: 2.2em;
+            line-height: 1.8;
+            font-style: italic;
+            color: var(--text-secondary);
+            position: relative;
+        }
+
+        .quote-box:before {
+            content: """;
+            font-size: 6em;
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            opacity: 0.2;
+            color: var(--accent);
+            font-style: normal;
+        }
+
+        .quote-author {
+            font-size: 1.5em;
+            margin-top: 40px;
+            text-align: right;
+            color: var(--accent);
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        /* Действия */
+        .action-slide {
+            background: #0a0a0a;
+        }
+
+        .action-slide h2 {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .action-item {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-light);
+            padding: 35px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .action-item:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .action-item .emoji {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+        }
+
+        .action-item h4 {
+            font-size: 1.6em;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .action-item p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        /* Тест */
+        .test-slide {
+            background: #0a0a0a;
+        }
+
+        .test-slide h2 {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .test-content {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-light);
+            padding: 50px;
+            border-radius: 12px;
+        }
+
+        .test-intro {
+            font-size: 1.8em;
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--text-secondary);
+        }
+
+        .test-questions {
+            display: grid;
+            gap: 20px;
+        }
+
+        .test-question {
+            background: var(--bg-card-light);
+            padding: 25px;
+            border-radius: 8px;
+            font-size: 1.5em;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            border-left: 3px solid var(--accent);
+        }
+
+        .test-question strong {
+            color: var(--text-primary);
+            font-size: 1.1em;
+        }
+
+        .test-result {
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid var(--danger);
+            border-radius: 8px;
+            font-size: 1.6em;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Финальный слайд */
+        .final-slide {
+            background: #0a0a0a;
+        }
+
+        .final-slide h2 {
+            font-size: 4em;
+            font-weight: 700;
+            margin-bottom: 60px;
+        }
+
+        .final-slide .accent-line {
+            width: 100px;
+            height: 4px;
+            background: var(--accent);
+            margin: 0 auto 60px;
+        }
+
+        .final-content {
+            font-size: 1.9em;
+            line-height: 2.2;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .final-content strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .final-content .reactive {
+            color: var(--danger);
+        }
+
+        .final-content .proactive {
+            color: var(--success);
+        }
+
+        .final-thanks {
+            margin-top: 80px;
+            font-size: 1.8em;
+            color: var(--text-secondary);
+        }
+
+        /* Навигация */
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-button {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-light);
+            color: var(--text-primary);
+            padding: 12px 35px;
+            font-size: 1.2em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            background: var(--bg-card-light);
+            border-color: var(--accent);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-light);
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.3em;
+            font-weight: 500;
+            z-index: 1000;
+            color: var(--text-secondary);
+        }
+
+        .slide-counter span {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Скроллбар */
+        .pros-box::-webkit-scrollbar,
+        .cons-box::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .pros-box::-webkit-scrollbar-track,
+        .cons-box::-webkit-scrollbar-track {
+            background: var(--bg-card);
+        }
+
+        .pros-box::-webkit-scrollbar-thumb,
+        .cons-box::-webkit-scrollbar-thumb {
+            background: var(--bg-card-light);
+            border-radius: 4px;
+        }
+
+        .pros-box::-webkit-scrollbar-thumb:hover,
+        .cons-box::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* Адаптив */
+        @media (max-width: 1200px) {
+            .slide {
+                padding: 60px 40px;
+            }
+            
+            .title-slide h1 { font-size: 3.5em; }
+            .section-slide h2 { font-size: 4em; }
+            .action-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">0</span>
+    </div>
+
+    <div class="slide-container">
+        <!-- Слайд 1: Титульный -->
+        <div class="slide active title-slide">
+            <div class="slide-content" style="text-align: center;">
+                <h1>Навык 1: Будьте Проактивны</h1>
+                <div class="accent-line"></div>
+                <p class="subtitle">Соперничество и Сплетни</p>
+                <p class="author">По книге Стивена Кови "7 навыков высокоэффективных людей"</p>
+            </div>
+        </div>
+
+        <!-- Слайд 2: Соперничество -->
+        <div class="slide section-slide">
+            <div class="slide-content" style="text-align: center;">
+                <div class="icon">⚔️</div>
+                <h2>СОПЕРНИЧЕСТВО</h2>
+                <div class="accent-line"></div>
+            </div>
+        </div>
+
+        <!-- Слайд 3: Определение соперничества -->
+        <div class="slide definition-slide">
+            <div class="slide-content">
+                <h2>Что такое соперничество?</h2>
+                <div class="definition-box">
+                    <strong style="font-size: 1.2em; display: block; margin-bottom: 25px;">Соперничество</strong>
+                    — это стремление превзойти других, доказать свое превосходство и выиграть в конкурентной борьбе.
+                    <br><br>
+                    В контексте проактивности соперничество может быть как <strong>реактивным</strong> (основанным на страхе и неуверенности), так и <strong>проактивным</strong> (основанным на стремлении к личному росту).
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 4: Реактивное vs Проактивное -->
+        <div class="slide comparison-slide">
+            <div class="slide-content">
+                <h2>Два типа соперничества</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-box negative">
+                        <h3>Реактивное</h3>
+                        <ul>
+                            <li>Основано на страхе неудачи</li>
+                            <li>Победа любой ценой</li>
+                            <li>Успех других = моя неудача</li>
+                            <li>Зависть и недоброжелательность</li>
+                            <li>Постоянное сравнение с другими</li>
+                            <li>Нечестные методы конкуренции</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-box positive">
+                        <h3>Проактивное</h3>
+                        <ul>
+                            <li>Стремление к личному росту</li>
+                            <li>Честная конкуренция</li>
+                            <li>Радость за успехи других</li>
+                            <li>Вдохновение от конкурентов</li>
+                            <li>Сравнение с собой вчерашним</li>
+                            <li>Фокус на процессе развития</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 5: Плюсы соперничества -->
+        <div class="slide pros-cons-slide">
+            <div class="slide-content">
+                <h2>Плюсы соперничества</h2>
+                <div class="pros-cons-grid">
+                    <div class="pros-box">
+                        <h3>Преимущества</h3>
+                        <ul>
+                            <li>
+                                <strong>Мотивация к развитию</strong>
+                                Конкуренция стимулирует улучшать навыки и достигать новых высот в профессиональной деятельности
+                            </li>
+                            <li>
+                                <strong>Повышение производительности</strong>
+                                Желание быть лучшим заставляет работать эффективнее и качественнее
+                            </li>
+                            <li>
+                                <strong>Инновации и креативность</strong>
+                                Соперничество толкает на поиск новых решений и нестандартных подходов
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="pros-box">
+                        <h3>Дополнительно</h3>
+                        <ul>
+                            <li>
+                                <strong>Самопознание</strong>
+                                В конкуренции вы лучше узнаете свои сильные и слабые стороны, области для роста
+                            </li>
+                            <li>
+                                <strong>Достижение целей</strong>
+                                Наличие конкурентов помогает не расслабляться и держать фокус на целях
+                            </li>
+                            <li>
+                                <strong>Развитие устойчивости</strong>
+                                Учит справляться с неудачами, поражениями и двигаться дальше
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 6: Минусы соперничества -->
+        <div class="slide pros-cons-slide">
+            <div class="slide-content">
+                <h2>Минусы соперничества</h2>
+                <div class="pros-cons-grid">
+                    <div class="cons-box">
+                        <h3>Риски</h3>
+                        <ul>
+                            <li>
+                                <strong>Стресс и выгорание</strong>
+                                Постоянная гонка за лидерством истощает эмоционально и физически
+                            </li>
+                            <li>
+                                <strong>Разрушение отношений</strong>
+                                Реактивное соперничество портит связи с коллегами и командой
+                            </li>
+                            <li>
+                                <strong>Потеря аутентичности</strong>
+                                Чрезмерный фокус на других мешает слышать свои истинные желания и ценности
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="cons-box">
+                        <h3>Последствия</h3>
+                        <ul>
+                            <li>
+                                <strong>Нечестные методы</strong>
+                                Желание победить может привести к манипуляциям, обману и подставам
+                            </li>
+                            <li>
+                                <strong>Зависть и токсичность</strong>
+                                Реактивное соперничество порождает негативные эмоции и токсичную атмосферу
+                            </li>
+                            <li>
+                                <strong>Упущенные возможности</strong>
+                                Концентрация на конкуренции закрывает возможности для сотрудничества и синергии
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 7: Проактивное соперничество -->
+        <div class="slide action-slide">
+            <div class="slide-content">
+                <h2>Как сделать соперничество проактивным</h2>
+                <div class="action-grid">
+                    <div class="action-item">
+                        <div class="emoji">🎯</div>
+                        <h4>Конкурируйте с собой</h4>
+                        <p>Сравнивайте себя сегодняшнего с собой вчерашним, а не с другими людьми</p>
+                    </div>
+                    <div class="action-item">
+                        <div class="emoji">🤝</div>
+                        <h4>Ищите синергию</h4>
+                        <p>Превращайте конкуренцию в сотрудничество там, где это возможно</p>
+                    </div>
+                    <div class="action-item">
+                        <div class="emoji">📚</div>
+                        <h4>Учитесь у конкурентов</h4>
+                        <p>Используйте успехи других как источник вдохновения и знаний</p>
+                    </div>
+                    <div class="action-item">
+                        <div class="emoji">💪</div>
+                        <h4>Фокус на процессе</h4>
+                        <p>Получайте удовольствие от развития и обучения, а не только от победы</p>
+                    </div>
+                    <div class="action-item">
+                        <div class="emoji">🧘</div>
+                        <h4>Управляйте эмоциями</h4>
+                        <p>Не позволяйте зависти и страху контролировать ваши действия и решения</p>
+                    </div>
+                    <div class="action-item">
+                        <div class="emoji">🎉</div>
+                        <h4>Празднуйте успехи других</h4>
+                        <p>Искренне радуйтесь достижениям окружающих — это признак силы</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 8: Сплетни -->
+        <div class="slide section-slide">
+            <div class="slide-content" style="text-align: center;">
+                <div class="icon">💬</div>
+                <h2>СПЛЕТНИ</h2>
+                <div class="accent-line"></div>
+            </div>
+        </div>
+
+        <!-- Слайд 9: Определение сплетен -->
+        <div class="slide definition-slide">
+            <div class="slide-content">
+                <h2>Что такое сплетни?</h2>
+                <div class="definition-box">
+                    <strong style="font-size: 1.2em; display: block; margin-bottom: 25px;">Сплетни</strong>
+                    — это обсуждение личной жизни и проблем других людей в их отсутствие, часто с элементами осуждения или искажения фактов.
+                    <br><br>
+                    С точки зрения проактивности, сплетни — это <strong>реактивное поведение</strong>, которое отвлекает от контроля собственной жизни и фокусирует внимание на том, что вне нашего влияния.
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 10: Два вида сплетен -->
+        <div class="slide types-slide">
+            <div class="slide-content">
+                <h2>Два вида сплетен</h2>
+                <div class="types-container">
+                    <div class="type-box good">
+                        <div class="icon-large">✨</div>
+                        <h3>Доброкачественные</h3>
+                        <p>Обсуждение в пользу человека</p>
+                        <ul>
+                            <li>Положительная информация о достижениях</li>
+                            <li>Восхищение профессиональными качествами</li>
+                            <li>Забота и искренняя поддержка</li>
+                            <li>Желание помочь коллеге</li>
+                            <li>Конструктивное намерение</li>
+                            <li>Основано на проверенных фактах</li>
+                        </ul>
+                    </div>
+                    <div class="type-box bad">
+                        <div class="icon-large">⚠️</div>
+                        <h3>Злокачественные</h3>
+                        <p>Обсуждение во вред человеку</p>
+                        <ul>
+                            <li>Негативная информация и слухи</li>
+                            <li>Осуждение и критика за спиной</li>
+                            <li>Искажение фактов и домыслы</li>
+                            <li>Желание навредить репутации</li>
+                            <li>Деструктивное намерение</li>
+                            <li>Основано на предположениях</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 11: Тонкая грань -->
+        <div class="slide thin-line-slide">
+            <div class="slide-content">
+                <h2>Тонкая грань между ними</h2>
+                <div class="thin-line-content">
+                    <div class="thin-line-warning">
+                        Между доброкачественными и злокачественными сплетнями существует <strong>ОЧЕНЬ тонкая грань</strong>, которую легко переступить даже с благими намерениями
+                    </div>
+                    <div class="examples-grid">
+                        <div class="example-box good">
+                            <h4>✓ Доброкачественно</h4>
+                            <p>"Я восхищаюсь тем, как Анна справилась с этим проектом. Давайте поучимся у неё подходу к решению проблем!"</p>
+                            <p class="goal">Цель: учиться и восхищаться</p>
+                        </div>
+                        <div class="example-box bad">
+                            <h4>✗ Злокачественно</h4>
+                            <p>"Анна снова справилась с проектом. Интересно, кому она помогала на этот раз? Сама бы не смогла..."</p>
+                            <p class="goal">Цель: посеять сомнение</p>
+                        </div>
+                        <div class="example-box good">
+                            <h4>✓ Доброкачественно</h4>
+                            <p>"Я беспокоюсь о Сергее, он выглядит уставшим последние дни. Может, нам предложить ему помощь с задачами?"</p>
+                            <p class="goal">Цель: помочь и поддержать</p>
+                        </div>
+                        <div class="example-box bad">
+                            <h4>✗ Злокачественно</h4>
+                            <p>"Видели Сергея? Совсем опустился. Наверное, проблемы дома или что-то скрывает. Может, начал пить..."</p>
+                            <p class="goal">Цель: обсудить и осудить</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 40px; padding: 25px; background: var(--bg-card-light); border-radius: 8px; text-align: center; font-size: 1.6em; font-weight: 600; border-left: 4px solid var(--accent);">
+                        Проверка намерения: "Помогает ли это человеку или вредит ему?"
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 12: Как отличить -->
+        <div class="slide comparison-slide">
+            <div class="slide-content">
+                <h2>Как отличить один вид от другого?</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-box positive">
+                        <h3>Доброкачественные</h3>
+                        <ul>
+                            <li>Вы говорите с уважением к человеку</li>
+                            <li>Готовы повторить это в присутствии человека</li>
+                            <li>Основная цель — помочь или восхититься</li>
+                            <li>Информация основана на фактах</li>
+                            <li>Разговор приводит к конструктивным действиям</li>
+                            <li>Чувствуете внутреннюю легкость после беседы</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-box negative">
+                        <h3>Злокачественные</h3>
+                        <ul>
+                            <li>Вы говорите с осуждением или иронией</li>
+                            <li>Не повторили бы это в присутствии человека</li>
+                            <li>Основная цель — осудить или развлечься</li>
+                            <li>Информация основана на домыслах и слухах</li>
+                            <li>Разговор приводит только к новым сплетням</li>
+                            <li>Чувствуете внутренний дискомфорт или стыд</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 13: Почему люди сплетничают -->
+        <div class="slide definition-slide">
+            <div class="slide-content">
+                <h2>Почему люди сплетничают?</h2>
+                <div class="definition-box">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px;">
+                        <div style="background: var(--bg-card-light); padding: 30px; border-radius: 8px; border-left: 3px solid var(--accent);">
+                            <strong style="display: block; font-size: 1.3em; margin-bottom: 15px; color: var(--text-primary);">Неуверенность в себе</strong>
+                            <p>Обсуждая недостатки других, человек пытается повысить свою самооценку и почувствовать себя лучше</p>
+                        </div>
+                        <div style="background: var(--bg-card-light); padding: 30px; border-radius: 8px; border-left: 3px solid var(--accent);">
+                            <strong style="display: block; font-size: 1.3em; margin-bottom: 15px; color: var(--text-primary);">Потребность в принадлежности</strong>
+                            <p>Сплетни создают иллюзию близости, общности и причастности к группе коллег</p>
+                        </div>
+                        <div style="background: var(--bg-card-light); padding: 30px; border-radius: 8px; border-left: 3px solid var(--accent);">
+                            <strong style="display: block; font-size: 1.3em; margin-bottom: 15px; color: var(--text-primary);">Скука и отсутствие целей</strong>
+                            <p>Пустота в собственной жизни и карьере заполняется обсуждением жизней других людей</p>
+                        </div>
+                        <div style="background: var(--bg-card-light); padding: 30px; border-radius: 8px; border-left: 3px solid var(--accent);">
+                            <strong style="display: block; font-size: 1.3em; margin-bottom: 15px; color: var(--text-primary);">Иллюзия власти и контроля</strong>
+                            <p>Знание чужих секретов и слабостей дает ложное чувство власти и превосходства</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 14: Круг влияния vs Круг забот -->
+        <div class="slide comparison-slide">
+            <div class="slide-content">
+                <h2>Круг влияния vs Круг забот</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-box negative">
+                        <h3>Круг забот (Сплетни)</h3>
+                        <ul style="font-size: 1.6em;">
+                            <li>Личная жизнь других людей</li>
+                            <li>Чужие ошибки и проблемы</li>
+                            <li>То, что "они" должны изменить</li>
+                            <li>Прошлые события и слухи</li>
+                            <li>Осуждение и критика коллег</li>
+                        </ul>
+                        <div style="margin-top: 40px; padding: 25px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; text-align: center; font-size: 1.4em; font-weight: 600;">
+                            Результат: круг влияния СЖИМАЕТСЯ
+                        </div>
+                    </div>
+                    <div class="comparison-box positive">
+                        <h3>Круг влияния (Проактивность)</h3>
+                        <ul style="font-size: 1.6em;">
+                            <li>Собственное профессиональное развитие</li>
+                            <li>Свои реакции и эмоции</li>
+                            <li>Конструктивные действия и решения</li>
+                            <li>Прямая помощь и поддержка</li>
+                            <li>Личные цели и ценности</li>
+                        </ul>
+                        <div style="margin-top: 40px; padding: 25px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; text-align: center; font-size: 1.4em; font-weight: 600;">
+                            Результат: круг влияния РАСШИРЯЕТСЯ
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 15: Последствия злокачественных сплетен -->
+        <div class="slide pros-cons-slide">
+            <div class="slide-content">
+                <h2>Последствия злокачественных сплетен</h2>
+                <div class="pros-cons-grid" style="grid-template-columns: 1fr;">
+                    <div class="cons-box">
+                        <h3>Реальный вред для компании и команды</h3>
+                        <ul style="font-size: 1.5em;">
+                            <li>
+                                <strong>Разрушение доверия</strong>
+                                Теряется репутация надежного коллеги, с которым можно работать в команде
+                            </li>
+                            <li>
+                                <strong>Токсичная атмосфера</strong>
+                                Создается негативная, подозрительная среда в коллективе и компании
+                            </li>
+                            <li>
+                                <strong>Потеря энергии и фокуса</strong>
+                                Растрачивается рабочее время и умственные ресурсы на непродуктивные разговоры
+                            </li>
+                            <li>
+                                <strong>Искажение коммуникации</strong>
+                                Информация передается с ошибками, домыслами и субъективной интерпретацией
+                            </li>
+                            <li>
+                                <strong>Разрушение командной работы</strong>
+                                Люди отдаляются друг от друга, узнав о сплетнях за их спиной
+                            </li>
+                            <li>
+                                <strong>Карма сплетен</strong>
+                                То, что вы говорите о других, обязательно скажут и о вас
+                            </li>
+                            <li>
+                                <strong>Ослабление личной эффективности</strong>
+                                Фокус на чужой жизни мешает концентрироваться на собственных задачах и целях
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 16: Тест проактивности -->
+        <div class="slide test-slide">
+            <div class="slide-content">
+                <h2>Тест: Сплетня или конструктив?</h2>
+                <div class="test-content">
+                    <p class="test-intro">
+                        Задайте себе эти 5 вопросов <strong>ПЕРЕД</strong> тем, как обсудить кого-то:
+                    </p>
+                    <div class="test-questions">
+                        <div class="test-question">
+                            <strong>1. Это правда?</strong><br>
+                            Уверен ли я в достоверности информации или это слухи и домыслы?
+                        </div>
+                        <div class="test-question">
+                            <strong>2. Это необходимо?</strong><br>
+                            Действительно ли нужно это обсуждать или я просто хочу поговорить?
+                        </div>
+                        <div class="test-question">
+                            <strong>3. Это добро?</strong><br>
+                            Принесет ли этот разговор пользу человеку или только вред?
+                        </div>
+                        <div class="test-question">
+                            <strong>4. Сказал бы я это в лицо?</strong><br>
+                            Готов ли я повторить эти слова при самом человеке?
+                        </div>
+                        <div class="test-question">
+                            <strong>5. Это в моем круге влияния?</strong><br>
+                            Могу ли я реально повлиять на ситуацию или просто трачу энергию?
+                        </div>
+                    </div>
+                    <div class="test-result">
+                        Если хотя бы на ОДИН вопрос ответ "НЕТ" — это СПЛЕТНЯ!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 17: Проактивная альтернатива -->
+        <div class="slide action-slide">
+            <div class="slide-content">
+                <h2>Проактивная альтернатива сплетням</h2>
+                <div class="action-grid">
+                    <div class="action-item">
+                        <div class="emoji">🛑</div>
+                        <h4>Остановитесь</h4>
+                        <p>Заметьте момент, когда начинаете сплетничать, и осознанно прервите разговор</p>
+                    </div>
+                    <div class="action-item">
+                        <div class="emoji">🎯</div>
+                        <h4>Переключите фокус</h4>
+                        <p>Направьте разговор на обсуждение идей, проектов и позитивных событий</p>
+                    </div>
+                    <div class="action-item">
+                        <div class="emoji">❤️</div>
+                        <h4>Практикуйте эмпатию</h4>
+                        <p>Вместо осуждения постарайтесь понять мотивы и чувства человека</p>
+                    </div>
+                    <div class="action-item">
+                        <div class="emoji">💬</div>
+                        <h4>Говорите напрямую</h4>
+                        <p>Если есть проблема, обсудите её с человеком лично, а не за его спиной</p>
+                    </div>
+                    <div class="action-item">
+                        <div class="emoji">🚫</div>
+                        <h4>Откажитесь слушать</h4>
+                        <p>Вежливо, но твердо выходите из разговора, когда другие начинают сплетничать</p>
+                    </div>
+                    <div class="action-item">
+                        <div class="emoji">🛡️</div>
+                        <h4>Защищайте отсутствующих</h4>
+                        <p>Вставайте на защиту тех, о ком сплетничают — это укрепит доверие к вам</p>
+                    </div>
+                    <div class="action-item">
+                        <div class="emoji">🌱</div>
+                        <h4>Занимайтесь собой</h4>
+                        <p>Наполните жизнь своими целями и проектами, чтобы не было времени на чужие дела</p>
+                    </div>
+                    <div class="action-item">
+                        <div class="emoji">📖</div>
+                        <h4>Ищите конструктив</h4>
+                        <p>Если обсуждаете проблему, фокусируйтесь на решениях, а не на драме</p>
+                    </div>
+                    <div class="action-item">
+                        <div class="emoji">🗨️</div>
+                        <h4>Конструктивный диалог</h4>
+                        <p>Обсуждайте профессиональные идеи и решения, а не личности коллег</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 18: Цитата 1 -->
+        <div class="slide quote-slide">
+            <div class="slide-content">
+                <div class="quote-box">
+                    Проактивные люди фокусируются на круге влияния — на том, что они могут изменить. Реактивные люди тратят энергию на круг забот — на то, над чем они не властны.
+                    <div class="quote-author">— Стивен Кови</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 19: Цитата 2 -->
+        <div class="slide quote-slide">
+            <div class="slide-content">
+                <div class="quote-box">
+                    Если вы защищаете тех, кто отсутствует, вы завоевываете доверие тех, кто присутствует. Люди будут знать, что вы не будете сплетничать о них за их спиной.
+                    <div class="quote-author">— Стивен Кови</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 20: Цитата 3 -->
+        <div class="slide quote-slide">
+            <div class="slide-content">
+                <div class="quote-box">
+                    Между стимулом и реакцией есть пространство. В этом пространстве заключается наша свобода и сила выбирать свою реакцию. В нашей реакции — наш рост и наша свобода.
+                    <div class="quote-author">— Стивен Кови</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 21: Финальный -->
+        <div class="slide final-slide">
+            <div class="slide-content" style="text-align: center;">
+                <h2>Выбирайте проактивность</h2>
+                <div class="accent-line"></div>
+                <div class="final-content">
+                    Каждый день мы делаем выбор:<br>
+                    быть <strong class="reactive">реактивными</strong> или <strong class="proactive">проактивными</strong>
+                    <br><br><br>
+                    <strong>В соперничестве</strong> — выбирайте рост над страхом
+                    <br><br>
+                    <strong>В сплетнях</strong> — выбирайте добро над осуждением
+                    <br><br>
+                    <strong>В работе</strong> — выбирайте свой круг влияния
+                    <br><br><br>
+                    Проактивность — это не набор техник,<br>
+                    это <strong>философия жизни</strong> и <strong>ежедневный выбор</strong>
+                </div>
+                <p class="final-thanks">Спасибо за внимание!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Навигация -->
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Назад</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Вперед →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                if (currentSlide < totalSlides - 1) changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                if (currentSlide > 0) changeSlide(-1);
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                showSlide(0);
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                showSlide(totalSlides - 1);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('nav-button')) return;
+            const clickX = e.clientX;
+            const windowWidth = window.innerWidth;
+            if (clickX > windowWidth / 2 && currentSlide < totalSlides - 1) {
+                changeSlide(1);
+            } else if (clickX < windowWidth / 2 && currentSlide > 0) {
+                changeSlide(-1);
+            }
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
