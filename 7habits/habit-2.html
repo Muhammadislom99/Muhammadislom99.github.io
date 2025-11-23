@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Навык 2: Начинайте, представляя конечную цель</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            overflow: hidden;
+        }
+
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+            padding: 60px;
+            color: white;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        p, li {
+            font-size: 1.4em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            opacity: 0.9;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .content {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            width: 100%;
+        }
+
+        .column {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 200, 255, 0.2);
+        }
+
+        .column h3 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            padding-left: 30px;
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: rgba(100, 200, 255, 0.08);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(100, 200, 255, 0.3);
+        }
+
+        .quote {
+            font-style: italic;
+            font-size: 1.8em;
+            text-align: center;
+            padding: 40px;
+            line-height: 1.6;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background: rgba(100, 200, 255, 0.15);
+            color: white;
+            border: 2px solid rgba(100, 200, 255, 0.5);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        button:hover {
+            background: rgba(100, 200, 255, 0.25);
+            transform: scale(1.05);
+            border-color: rgba(100, 200, 255, 0.8);
+        }
+
+        button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            font-size: 1.3em;
+            background: rgba(100, 200, 255, 0.15);
+            padding: 15px 25px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 200, 255, 0.3);
+        }
+
+        .diagram {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 40px 0;
+            gap: 20px;
+        }
+
+        .diagram-item {
+            background: rgba(100, 200, 255, 0.08);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            flex: 1;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 200, 255, 0.3);
+        }
+
+        .arrow {
+            font-size: 3em;
+            font-weight: bold;
+        }
+
+        .example-box {
+            background: rgba(100, 200, 255, 0.06);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid rgba(100, 200, 255, 0.5);
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .card {
+            background: rgba(100, 200, 255, 0.08);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            border: 1px solid rgba(100, 200, 255, 0.3);
+        }
+
+        .big-number {
+            font-size: 4em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>Навык 2: Начинайте, представляя конечную цель</h1>
+            <p class="subtitle">По книге Стивена Кови<br>"7 навыков высокоэффективных людей"</p>
+        </div>
+
+        <!-- Slide 2: Main Concept -->
+        <div class="slide">
+            <h2>Что означает "Начинайте, представляя конечную цель"?</h2>
+            <div class="content">
+                <div class="highlight-box">
+                    <p style="font-size: 1.6em; text-align: center;">Всё создаётся дважды:<br>сначала в уме, затем в реальности</p>
+                </div>
+                <div class="diagram">
+                    <div class="diagram-item">
+                        <h3>Первое творение</h3>
+                        <p>Мысленное</p>
+                        <p style="font-size: 1.1em;">Видение, план, замысел</p>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="diagram-item">
+                        <h3>Второе творение</h3>
+                        <p>Физическое</p>
+                        <p style="font-size: 1.1em;">Реализация, действие</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Examples -->
+        <div class="slide">
+            <h2>Примеры двойного творения</h2>
+            <div class="content">
+                <div class="example-box">
+                    <h3>🏗️ Строительство дома</h3>
+                    <p>Первое творение: чертежи, планы, дизайн<br>
+                    Второе творение: строительство по проекту</p>
+                </div>
+                <div class="example-box">
+                    <h3>✈️ Путешествие</h3>
+                    <p>Первое творение: выбор места, бронь отеля, маршрут<br>
+                    Второе творение: сама поездка</p>
+                </div>
+                <div class="example-box">
+                    <h3>💼 Бизнес-презентация</h3>
+                    <p>Первое творение: структура, слайды, репетиция<br>
+                    Второе творение: выступление перед аудиторией</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Without Vision -->
+        <div class="slide">
+            <h2>Что происходит без ясной конечной цели?</h2>
+            <div class="content">
+                <div class="grid-3">
+                    <div class="card">
+                        <div class="big-number">🎯</div>
+                        <h3>Суета вместо движения</h3>
+                        <p>Много действий, но нет результата</p>
+                    </div>
+                    <div class="card">
+                        <div class="big-number">🔄</div>
+                        <h3>Чужие приоритеты</h3>
+                        <p>Живёте по сценариям других людей</p>
+                    </div>
+                    <div class="card">
+                        <div class="big-number">😰</div>
+                        <h3>Постоянный стресс</h3>
+                        <p>Не понимаете, что важно, а что нет</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 40px;">
+                    <p class="quote">"Если вы не знаете, куда идёте, любая дорога приведёт вас туда"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Ladder Metaphor -->
+        <div class="slide">
+            <h2>Метафора лестницы</h2>
+            <div class="content">
+                <div class="highlight-box">
+                    <p style="font-size: 1.8em; text-align: center; margin-bottom: 30px;">
+                        Лестница приставлена не к той стене
+                    </p>
+                    <div class="two-columns" style="margin-top: 30px;">
+                        <div>
+                            <p><strong>Эффективность</strong> — это скорость подъёма по лестнице</p>
+                            <p style="font-size: 1.2em; margin-top: 20px;">⬆️⬆️⬆️</p>
+                        </div>
+                        <div>
+                            <p><strong>Результативность</strong> — это правильная стена</p>
+                            <p style="font-size: 1.2em; margin-top: 20px;">🎯</p>
+                        </div>
+                    </div>
+                    <p style="text-align: center; margin-top: 40px; font-size: 1.3em;">
+                        Без конечной цели вы можете быстро двигаться в неправильном направлении
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Life Centers -->
+        <div class="slide">
+            <h2>Центры жизни: вокруг чего вы строите свою жизнь?</h2>
+            <div class="content">
+                <div class="two-columns">
+                    <div class="column">
+                        <h3>❌ Нестабильные центры</h3>
+                        <ul>
+                            <li>Работа/карьера</li>
+                            <li>Деньги</li>
+                            <li>Супруг/семья</li>
+                            <li>Удовольствия</li>
+                            <li>Друзья/враги</li>
+                            <li>Общественное мнение</li>
+                        </ul>
+                    </div>
+                    <div class="column">
+                        <h3>✅ Стабильный центр</h3>
+                        <ul>
+                            <li>Принципы</li>
+                            <li>Ценности</li>
+                            <li>Внутренняя система координат</li>
+                        </ul>
+                        <p style="margin-top: 30px;">Принципы не меняются, они дают стабильность и направление</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Centers Problems -->
+        <div class="slide">
+            <h2>Проблемы жизни без принципов в центре</h2>
+            <div class="content">
+                <div class="example-box">
+                    <h3>📱 Центр: Работа</h3>
+                    <p>Проблема: Увольнение, выгорание → кризис идентичности<br>
+                    "Кто я без своей должности?"</p>
+                </div>
+                <div class="example-box">
+                    <h3>💰 Центр: Деньги</h3>
+                    <p>Проблема: Финансовый кризис → потеря смысла жизни<br>
+                    Готовы на компромиссы с совестью ради прибыли</p>
+                </div>
+                <div class="example-box">
+                    <h3>👨‍👩‍👧 Центр: Семья (чрезмерная)</h3>
+                    <p>Проблема: Отсутствие личных границ → потеря собственной идентичности<br>
+                    Жертвование собственным развитием и целями ради других</p>
+                </div>
+                <div class="example-box">
+                    <h3>🎉 Центр: Удовольствия</h3>
+                    <p>Проблема: Нет долгосрочных целей → пустота<br>
+                    Постоянный поиск новых развлечений</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Mission Statement -->
+        <div class="slide">
+            <h2>Личная миссия (Personal Mission Statement)</h2>
+            <div class="content">
+                <div class="highlight-box">
+                    <p style="font-size: 1.5em; text-align: center;">Личная конституция — основа для принятия решений</p>
+                </div>
+                <div class="two-columns" style="margin-top: 30px;">
+                    <div>
+                        <h3>Что это?</h3>
+                        <ul>
+                            <li>Письменное заявление о ваших ценностях</li>
+                            <li>Описание, каким человеком вы хотите быть</li>
+                            <li>Ваши долгосрочные цели и принципы</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Зачем это нужно?</h3>
+                        <ul>
+                            <li>Даёт ясность в принятии решений</li>
+                            <li>Защищает от чужих сценариев</li>
+                            <li>Помогает не сбиться с пути</li>
+                            <li>Создаёт внутреннюю стабильность</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Old Age Exercise -->
+        <div class="slide">
+            <h2>Упражнение: Ваша старость</h2>
+            <div class="content">
+                <div class="highlight-box">
+                    <p style="font-size: 1.4em; margin-bottom: 25px;">
+                        Представьте себя в 80 лет. Вы сидите на веранде и размышляете о прожитой жизни. Что вы хотели бы вспоминать? Каким человеком вы были?
+                    </p>
+                    <div class="grid-3" style="grid-template-columns: repeat(2, 1fr);">
+                        <div class="card">
+                            <h3>👨‍👩‍👧‍👦 Семья</h3>
+                            <p>Каким родственником, родителем вы были?</p>
+                        </div>
+                        <div class="card">
+                            <h3>👥 Друзья</h3>
+                            <p>Каким другом вы были? Кто вас будет вспоминать?</p>
+                        </div>
+                        <div class="card">
+                            <h3>💼 Карьера</h3>
+                            <p>Какое наследие вы оставили в профессии?</p>
+                        </div>
+                        <div class="card">
+                            <h3>🌍 Вклад</h3>
+                            <p>Что полезного вы сделали для других?</p>
+                        </div>
+                    </div>
+                    <p style="text-align: center; margin-top: 30px; font-size: 1.3em;">
+                        О чём вы хотели бы вспоминать с гордостью?<br>
+                        Это и есть ваша конечная цель!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Roles -->
+        <div class="slide">
+            <h2>Ваши роли в жизни</h2>
+            <div class="content">
+                <p style="text-align: center; font-size: 1.4em; margin-bottom: 30px;">
+                    Определите 5-7 главных ролей и цели для каждой:
+                </p>
+                <div class="example-box">
+                    <p><strong>Пример 1: Родитель</strong><br>
+                    Цель: Быть примером честности, проводить качественное время с детьми</p>
+                </div>
+                <div class="example-box">
+                    <p><strong>Пример 2: Профессионал</strong><br>
+                    Цель: Развивать команду, создавать ценность, расти в экспертизе</p>
+                </div>
+                <div class="example-box">
+                    <p><strong>Пример 3: Супруг/партнёр</strong><br>
+                    Цель: Быть поддержкой, слушать, развивать отношения</p>
+                </div>
+                <div class="example-box">
+                    <p><strong>Пример 4: Личность</strong><br>
+                    Цель: Учиться, заботиться о здоровье, развивать духовность</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Writing Mission -->
+        <div class="slide">
+            <h2>Как написать личную миссию?</h2>
+            <div class="content">
+                <div class="grid-3">
+                    <div class="card">
+                        <div class="big-number">1</div>
+                        <h3>Определите ценности</h3>
+                        <p>Что для вас действительно важно?</p>
+                    </div>
+                    <div class="card">
+                        <div class="big-number">2</div>
+                        <h3>Опишите роли</h3>
+                        <p>Кем вы являетесь в разных сферах?</p>
+                    </div>
+                    <div class="card">
+                        <div class="big-number">3</div>
+                        <h3>Сформулируйте цели</h3>
+                        <p>Каким вы хотите быть в каждой роли?</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 40px;">
+                    <h3 style="margin-bottom: 20px;">Важные моменты:</h3>
+                    <ul>
+                        <li>Это живой документ — пересматривайте регулярно</li>
+                        <li>Начните с черновика, совершенствуйте постепенно</li>
+                        <li>Держите миссию перед глазами, перечитывайте</li>
+                        <li>Используйте для принятия важных решений</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Example Decisions -->
+        <div class="slide">
+            <h2>Решения с опорой на конечную цель</h2>
+            <div class="content">
+                <div class="example-box">
+                    <h3>❌ Без конечной цели</h3>
+                    <p><strong>Предложение о повышении:</strong> "Больше денег! Соглашаюсь!"<br>
+                    <em>Результат:</em> Нет времени на семью, выгорание, потеря смысла</p>
+                </div>
+                <div class="example-box">
+                    <h3>✅ С конечной целью</h3>
+                    <p><strong>Предложение о повышении:</strong> "Соответствует ли это моим ценностям? Позволит ли мне быть хорошим родителем?"<br>
+                    <em>Результат:</em> Осознанное решение, баланс сфер жизни</p>
+                </div>
+                <div class="example-box" style="margin-top: 30px;">
+                    <h3>❌ Без конечной цели</h3>
+                    <p><strong>Конфликт с коллегой:</strong> "Он не прав! Докажу ему!"<br>
+                    <em>Результат:</em> Испорченные отношения, токсичная атмосфера</p>
+                </div>
+                <div class="example-box">
+                    <h3>✅ С конечной целью</h3>
+                    <p><strong>Конфликт с коллегой:</strong> "Моя ценность — быть миротворцем. Как найти решение win-win?"<br>
+                    <em>Результат:</em> Конструктивный диалог, укрепление команды</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Leadership vs Management -->
+        <div class="slide">
+            <h2>Лидерство vs Менеджмент</h2>
+            <div class="content">
+                <div class="two-columns">
+                    <div class="column">
+                        <h3>👨‍💼 Менеджмент</h3>
+                        <p style="margin-bottom: 20px;"><em>Второе творение</em></p>
+                        <ul>
+                            <li>Как достичь цели?</li>
+                            <li>Эффективность</li>
+                            <li>Дисциплина</li>
+                            <li>Выполнение плана</li>
+                            <li>Управление ресурсами</li>
+                            <li>"Делать вещи правильно"</li>
+                        </ul>
+                    </div>
+                    <div class="column">
+                        <h3>👑 Лидерство</h3>
+                        <p style="margin-bottom: 20px;"><em>Первое творение</em></p>
+                        <ul>
+                            <li>Куда мы идём?</li>
+                            <li>Результативность</li>
+                            <li>Видение</li>
+                            <li>Определение цели</li>
+                            <li>Направление движения</li>
+                            <li>"Делать правильные вещи"</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 30px;">
+                    <p style="font-size: 1.4em; text-align: center;">
+                        Навык 2 — это про лидерство: определить ПРАВИЛЬНОЕ направление,<br>
+                        прежде чем начать эффективно двигаться
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Rescripting -->
+        <div class="slide">
+            <h2>Переписывание сценариев</h2>
+            <div class="content">
+                <div class="highlight-box">
+                    <p style="font-size: 1.4em; margin-bottom: 25px;">
+                        Мы часто живём по сценариям, заложенным другими:
+                    </p>
+                    <ul>
+                        <li>Родителями: "Ты должен стать врачом"</li>
+                        <li>Обществом: "Успех = деньги + статус"</li>
+                        <li>Прошлым опытом: "Я всегда был таким"</li>
+                        <li>Страхами: "Я не могу это изменить"</li>
+                    </ul>
+                </div>
+                <div class="highlight-box" style="margin-top: 30px;">
+                    <p style="font-size: 1.5em; text-align: center; margin-bottom: 25px;">
+                        <strong>Переписывание сценария:</strong>
+                    </p>
+                    <p style="text-align: center;">
+                        Используйте воображение (Навык 2) и самосознание (Навык 1),<br>
+                        чтобы написать свой собственный сценарий жизни,<br>
+                        основанный на ваших принципах и ценностях
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Weekly Planning -->
+        <div class="slide">
+            <h2>От миссии к еженедельному планированию</h2>
+            <div class="content">
+                <div class="diagram">
+                    <div class="diagram-item">
+                        <h3>Личная миссия</h3>
+                        <p>Ценности и принципы</p>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="diagram-item">
+                        <h3>Роли</h3>
+                        <p>Ключевые области жизни</p>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="diagram-item">
+                        <h3>Цели для ролей</h3>
+                        <p>На эту неделю</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 40px;">
+                    <h3 style="margin-bottom: 20px;">Пример еженедельного планирования:</h3>
+                    <div class="example-box">
+                        <p><strong>Роль: Родитель</strong><br>
+                        Цель на неделю: Провести вечер пятницы с детьми (настолки, без гаджетов)</p>
+                    </div>
+                    <div class="example-box">
+                        <p><strong>Роль: Руководитель</strong><br>
+                        Цель на неделю: Провести 1-on-1 с каждым членом команды</p>
+                    </div>
+                    <div class="example-box">
+                        <p><strong>Роль: Личность</strong><br>
+                        Цель на неделю: 3 тренировки по 30 минут, дочитать книгу</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Key Benefits -->
+        <div class="slide">
+            <h2>Преимущества жизни с конечной целью</h2>
+            <div class="content">
+                <div class="grid-3">
+                    <div class="card">
+                        <h3>🎯 Ясность</h3>
+                        <p>Вы точно знаете, что для вас важно</p>
+                    </div>
+                    <div class="card">
+                        <h3>💪 Сила</h3>
+                        <p>Внутренний стержень в трудные моменты</p>
+                    </div>
+                    <div class="card">
+                        <h3>🧭 Направление</h3>
+                        <p>Чёткий компас для принятия решений</p>
+                    </div>
+                    <div class="card">
+                        <h3>⚖️ Баланс</h3>
+                        <p>Гармония всех сфер жизни</p>
+                    </div>
+                    <div class="card">
+                        <h3>🔒 Защита</h3>
+                        <p>Неподвластность чужим влияниям</p>
+                    </div>
+                    <div class="card">
+                        <h3>✨ Смысл</h3>
+                        <p>Ощущение цели и наполненности жизни</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: Common Mistakes -->
+        <div class="slide">
+            <h2>Типичные ошибки при работе с конечной целью</h2>
+            <div class="content">
+                <div class="example-box">
+                    <h3>❌ Написал миссию и забыл</h3>
+                    <p>Миссия должна быть живым документом, который вы регулярно пересматриваете и используете</p>
+                </div>
+                <div class="example-box">
+                    <h3>❌ Слишком общие формулировки</h3>
+                    <p>"Быть хорошим человеком" → "Проявлять честность даже когда это невыгодно"</p>
+                </div>
+                <div class="example-box">
+                    <h3>❌ Копирование чужих ценностей</h3>
+                    <p>Миссия должна отражать ВАШИ истинные ценности, а не то, что "должно быть"</p>
+                </div>
+                <div class="example-box">
+                    <h3>❌ Фокус только на карьере</h3>
+                    <p>Успешная жизнь — это баланс всех ролей: семья, друзья, здоровье, духовность</p>
+                </div>
+                <div class="example-box">
+                    <h3>❌ Перфекционизм</h3>
+                    <p>Не откладывайте написание миссии до "идеального момента". Начните сейчас!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Real Life Examples -->
+        <div class="slide">
+            <h2>Примеры из жизни</h2>
+            <div class="content">
+                <div class="example-box">
+                    <h3>📖 Пример 1: Выбор работы</h3>
+                    <p><strong>Ситуация:</strong> Две оффера — один с большей зарплатой, другой с миссией компании, близкой к вашим ценностям</p>
+                    <p><strong>Без конечной цели:</strong> Выбор по деньгам → разочарование</p>
+                    <p><strong>С конечной целью:</strong> "Моя ценность — вносить вклад в образование" → осознанный выбор</p>
+                </div>
+                <div class="example-box">
+                    <h3>👨‍👩‍👧 Пример 2: Баланс работы и семьи</h3>
+                    <p><strong>Ситуация:</strong> Срочный проект vs день рождения ребёнка</p>
+                    <p><strong>Без конечной цели:</strong> Постоянный стресс, чувство вины</p>
+                    <p><strong>С конечной целью:</strong> "Быть хорошим родителем" в миссии → чёткий приоритет, делегирование задач</p>
+                </div>
+                <div class="example-box">
+                    <h3>💼 Пример 3: Этическая дилемма</h3>
+                    <p><strong>Ситуация:</strong> Руководитель просит скрыть информацию от клиента</p>
+                    <p><strong>Без конечной цели:</strong> Сомнения, страх, компромисс</p>
+                    <p><strong>С конечной целью:</strong> "Честность превыше всего" → смелость отказаться</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Connection to Other Habits -->
+        <div class="slide">
+            <h2>Связь с другими навыками</h2>
+            <div class="content">
+                <div class="highlight-box">
+                    <h3 style="margin-bottom: 30px; text-align: center;">Навык 2 строится на Навыке 1</h3>
+                    <div class="two-columns">
+                        <div>
+                            <h3>Навык 1: Проактивность</h3>
+                            <ul>
+                                <li>Осознание выбора</li>
+                                <li>Ответственность за жизнь</li>
+                                <li>Самосознание</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3>Навык 2: Конечная цель</h3>
+                            <ul>
+                                <li>Воображение будущего</li>
+                                <li>Определение направления</li>
+                                <li>Создание личной миссии</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 30px;">
+                    <h3 style="margin-bottom: 20px; text-align: center;">Навык 2 готовит к Навыку 3</h3>
+                    <p style="text-align: center; font-size: 1.3em;">
+                        Сначала определите КУДА идти (Навык 2),<br>
+                        затем расставьте приоритеты КАК туда добраться (Навык 3)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 20: Practical Steps -->
+        <div class="slide">
+            <h2>Практические шаги прямо сейчас</h2>
+            <div class="content">
+                <div class="grid-3">
+                    <div class="card">
+                        <div class="big-number">1️⃣</div>
+                        <h3>Упражнение "Старость"</h3>
+                        <p>Потратьте 20 минут на визуализацию</p>
+                    </div>
+                    <div class="card">
+                        <div class="big-number">2️⃣</div>
+                        <h3>Список ценностей</h3>
+                        <p>Запишите 10 главных ценностей</p>
+                    </div>
+                    <div class="card">
+                        <div class="big-number">3️⃣</div>
+                        <h3>Определите роли</h3>
+                        <p>5-7 ключевых ролей в жизни</p>
+                    </div>
+                    <div class="card">
+                        <div class="big-number">4️⃣</div>
+                        <h3>Черновик миссии</h3>
+                        <p>Первая версия за 30 минут</p>
+                    </div>
+                    <div class="card">
+                        <div class="big-number">5️⃣</div>
+                        <h3>Еженедельный ритуал</h3>
+                        <p>Перечитывайте и дополняйте</p>
+                    </div>
+                    <div class="card">
+                        <div class="big-number">6️⃣</div>
+                        <h3>Принимайте решения</h3>
+                        <p>Используйте миссию как фильтр</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 21: Questions for Reflection -->
+        <div class="slide">
+            <h2>Вопросы для размышления</h2>
+            <div class="content">
+                <div class="highlight-box">
+                    <h3>🤔 О настоящем:</h3>
+                    <ul>
+                        <li>Вокруг чего сейчас построена ваша жизнь?</li>
+                        <li>Есть ли у вас письменная личная миссия?</li>
+                        <li>Каковы ваши главные роли в жизни?</li>
+                        <li>Какие решения вы принимаете без связи с долгосрочными целями?</li>
+                    </ul>
+                </div>
+                <div class="highlight-box" style="margin-top: 30px;">
+                    <h3>🎯 О будущем:</h3>
+                    <ul>
+                        <li>Каким человеком вы хотите стать через 5 лет?</li>
+                        <li>О чём вы хотите вспоминать в старости с гордостью?</li>
+                        <li>Какое наследие вы хотите оставить детям и внукам?</li>
+                        <li>Живёте ли вы по своему сценарию или чужому?</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 22: Key Quote -->
+        <div class="slide">
+            <h2>Ключевая мысль</h2>
+            <div class="content">
+                <div class="highlight-box">
+                    <p class="quote">
+                        "Самый эффективный способ начать с мыслей о конце — это разработать личную миссию, философию или кредо.
+                        <br><br>
+                        Она фокусируется на том, каким вы хотите быть (характер) и что вы хотите делать (достижения и вклад), а также на ценностях и принципах, которые лежат в основе вашего бытия и действий."
+                    </p>
+                    <p style="text-align: right; font-size: 1.3em; margin-top: 30px;">— Стивен Кови</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 23: Summary -->
+        <div class="slide">
+            <h2>Резюме: Навык 2</h2>
+            <div class="content">
+                <div class="highlight-box">
+                    <h3 style="text-align: center; margin-bottom: 30px; font-size: 2em;">
+                        Начинайте, представляя конечную цель
+                    </h3>
+                    <div class="two-columns">
+                        <div>
+                            <h3>Суть навыка:</h3>
+                            <ul>
+                                <li>Всё создаётся дважды</li>
+                                <li>Мысленное лидерство первично</li>
+                                <li>Личная миссия как компас</li>
+                                <li>Принципы в центре жизни</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3>Результаты:</h3>
+                            <ul>
+                                <li>Ясность целей и ценностей</li>
+                                <li>Осознанные решения</li>
+                                <li>Баланс всех сфер жизни</li>
+                                <li>Внутренняя стабильность</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 30px;">
+                    <p style="font-size: 1.5em; text-align: center;">
+                        Не позволяйте другим писать сценарий вашей жизни.<br>
+                        Создайте свою личную конституцию и живите по ней!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 24: Final Call to Action -->
+        <div class="slide">
+            <h2>Ваш следующий шаг</h2>
+            <div class="content">
+                <div class="highlight-box">
+                    <p style="font-size: 1.8em; text-align: center; margin-bottom: 40px;">
+                        🎯 Задание на ближайшие 7 дней:
+                    </p>
+                    <div class="example-box">
+                        <h3>День 1-2: Рефлексия</h3>
+                        <p>Выполните упражнение "Ваша старость". Запишите ответы.</p>
+                    </div>
+                    <div class="example-box">
+                        <h3>День 3-4: Ценности и роли</h3>
+                        <p>Составьте список из 10 ключевых ценностей и 5-7 ролей.</p>
+                    </div>
+                    <div class="example-box">
+                        <h3>День 5-6: Черновик миссии</h3>
+                        <p>Напишите первую версию личной миссии (1-2 страницы).</p>
+                    </div>
+                    <div class="example-box">
+                        <h3>День 7: Планирование</h3>
+                        <p>Запланируйте следующую неделю с учётом ролей и целей.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 25: Thank You -->
+        <div class="slide">
+            <div class="content" style="text-align: center;">
+                <h1 style="margin-bottom: 50px;">Спасибо за внимание! 🙏</h1>
+                <div class="highlight-box">
+                    <p style="font-size: 1.8em; margin-bottom: 30px;">
+                        "Лучший способ предсказать будущее —<br>это создать его"
+                    </p>
+                    <p style="font-size: 1.3em; opacity: 0.9;">
+                        Начните создавать своё будущее сегодня!
+                    </p>
+                </div>
+                <div style="margin-top: 60px;">
+                    <p style="font-size: 1.4em;">📚 Книга: "7 навыков высокоэффективных людей"</p>
+                    <p style="font-size: 1.4em;">✍️ Автор: Стивен Кови</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">25</span>
+    </div>
+
+    <div class="navigation">
+        <button id="prevBtn" onclick="changeSlide(-1)">← Назад</button>
+        <button id="nextBtn" onclick="changeSlide(1)">Вперёд →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            
+            currentSlide = (n + totalSlides) % totalSlides;
+            
+            slides[currentSlide].classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            
+            // Update button states
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
