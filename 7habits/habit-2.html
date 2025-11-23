@@ -235,6 +235,181 @@
             margin-bottom: 15px;
             opacity: 0.9;
         }
+
+        .icon-large {
+            font-size: 5em;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(100, 200, 255, 0.5));
+        }
+
+        .visual-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            margin: 40px 0;
+        }
+
+        .visual-box {
+            background: rgba(100, 200, 255, 0.1);
+            border: 3px solid rgba(100, 200, 255, 0.4);
+            border-radius: 20px;
+            padding: 40px;
+            min-width: 250px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .visual-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(100, 200, 255, 0.3);
+        }
+
+        .arrow-animated {
+            font-size: 4em;
+            animation: pulse 2s infinite;
+            color: rgba(100, 200, 255, 0.8);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+
+        .ladder-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .ladder-step {
+            width: 200px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(100, 200, 255, 0.2), rgba(100, 150, 255, 0.3));
+            border: 2px solid rgba(100, 200, 255, 0.5);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .wall-wrong {
+            position: absolute;
+            right: -150px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3em;
+            color: #ff6b6b;
+        }
+
+        .wall-right {
+            position: absolute;
+            right: -150px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3em;
+            color: #51cf66;
+        }
+
+        .center-circle {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(100, 200, 255, 0.2), rgba(100, 150, 255, 0.05));
+            border: 3px solid rgba(100, 200, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .center-circle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(100, 200, 255, 0.4);
+        }
+
+        .orbit-item {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255, 100, 100, 0.2);
+            border: 2px solid rgba(255, 100, 100, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .process-flow {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto 1fr;
+            align-items: center;
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .process-step {
+            background: linear-gradient(135deg, rgba(100, 200, 255, 0.15), rgba(150, 100, 255, 0.15));
+            border: 2px solid rgba(100, 200, 255, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            position: relative;
+        }
+
+        .comparison-side {
+            padding: 30px;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .comparison-side.bad {
+            background: linear-gradient(135deg, rgba(255, 100, 100, 0.1), rgba(255, 150, 100, 0.05));
+            border: 2px solid rgba(255, 100, 100, 0.4);
+        }
+
+        .comparison-side.good {
+            background: linear-gradient(135deg, rgba(100, 255, 150, 0.1), rgba(100, 200, 255, 0.1));
+            border: 2px solid rgba(100, 255, 150, 0.4);
+        }
+
+        .vs-divider {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
@@ -252,17 +427,19 @@
                 <div class="highlight-box">
                     <p style="font-size: 1.6em; text-align: center;">Всё создаётся дважды:<br>сначала в уме, затем в реальности</p>
                 </div>
-                <div class="diagram">
-                    <div class="diagram-item">
+                <div class="visual-diagram">
+                    <div class="visual-box">
+                        <div class="icon-large">💭</div>
                         <h3>Первое творение</h3>
-                        <p>Мысленное</p>
-                        <p style="font-size: 1.1em;">Видение, план, замысел</p>
+                        <p style="font-size: 1.2em;">Мысленное</p>
+                        <p>Видение, план, замысел</p>
                     </div>
-                    <div class="arrow">→</div>
-                    <div class="diagram-item">
+                    <div class="arrow-animated">→</div>
+                    <div class="visual-box">
+                        <div class="icon-large">🏗️</div>
                         <h3>Второе творение</h3>
-                        <p>Физическое</p>
-                        <p style="font-size: 1.1em;">Реализация, действие</p>
+                        <p style="font-size: 1.2em;">Физическое</p>
+                        <p>Реализация, действие</p>
                     </div>
                 </div>
             </div>
@@ -296,17 +473,17 @@
             <div class="content">
                 <div class="grid-3">
                     <div class="card">
-                        <div class="big-number">🎯</div>
+                        <div class="icon-large">🎯</div>
                         <h3>Суета вместо движения</h3>
                         <p>Много действий, но нет результата</p>
                     </div>
                     <div class="card">
-                        <div class="big-number">🔄</div>
+                        <div class="icon-large">🔄</div>
                         <h3>Чужие приоритеты</h3>
                         <p>Живёте по сценариям других людей</p>
                     </div>
                     <div class="card">
-                        <div class="big-number">😰</div>
+                        <div class="icon-large">😰</div>
                         <h3>Постоянный стресс</h3>
                         <p>Не понимаете, что важно, а что нет</p>
                     </div>
@@ -321,22 +498,34 @@
         <div class="slide">
             <h2>Метафора лестницы</h2>
             <div class="content">
-                <div class="highlight-box">
-                    <p style="font-size: 1.8em; text-align: center; margin-bottom: 30px;">
-                        Лестница приставлена не к той стене
-                    </p>
-                    <div class="two-columns" style="margin-top: 30px;">
-                        <div>
-                            <p><strong>Эффективность</strong> — это скорость подъёма по лестнице</p>
-                            <p style="font-size: 1.2em; margin-top: 20px;">⬆️⬆️⬆️</p>
+                <div style="display: flex; gap: 80px; align-items: flex-end; justify-content: center; margin-top: 40px;">
+                    <div style="text-align: center;">
+                        <h3 style="color: #ff6b6b; margin-bottom: 30px; font-size: 2em;">❌ Неправильная стена</h3>
+                        <div style="position: relative; display: flex; flex-direction: column-reverse; gap: 10px;">
+                            <div class="ladder-step" style="background: rgba(255, 100, 100, 0.2); border-color: rgba(255, 100, 100, 0.5);">Старт 🏁</div>
+                            <div class="ladder-step" style="background: rgba(255, 100, 100, 0.25); border-color: rgba(255, 100, 100, 0.5);">↑ Эффективность</div>
+                            <div class="ladder-step" style="background: rgba(255, 100, 100, 0.3); border-color: rgba(255, 100, 100, 0.5);">↑ Скорость</div>
+                            <div class="ladder-step" style="background: rgba(255, 100, 100, 0.35); border-color: rgba(255, 100, 100, 0.5);">↑ Усилия</div>
+                            <div style="margin-top: 20px; font-size: 3em;">😞</div>
                         </div>
-                        <div>
-                            <p><strong>Результативность</strong> — это правильная стена</p>
-                            <p style="font-size: 1.2em; margin-top: 20px;">🎯</p>
-                        </div>
+                        <p style="margin-top: 20px; font-size: 1.3em; color: #ff6b6b;">Много работы,<br>но не там!</p>
                     </div>
-                    <p style="text-align: center; margin-top: 40px; font-size: 1.3em;">
-                        Без конечной цели вы можете быстро двигаться в неправильном направлении
+                    
+                    <div style="text-align: center;">
+                        <h3 style="color: #51cf66; margin-bottom: 30px; font-size: 2em;">✅ Правильная стена</h3>
+                        <div style="position: relative; display: flex; flex-direction: column-reverse; gap: 10px;">
+                            <div class="ladder-step" style="background: rgba(100, 255, 150, 0.2); border-color: rgba(100, 255, 150, 0.5);">Старт 🏁</div>
+                            <div class="ladder-step" style="background: rgba(100, 255, 150, 0.25); border-color: rgba(100, 255, 150, 0.5);">↑ Направление 🧭</div>
+                            <div class="ladder-step" style="background: rgba(100, 255, 150, 0.3); border-color: rgba(100, 255, 150, 0.5);">↑ Результативность 🎯</div>
+                            <div class="ladder-step" style="background: rgba(100, 255, 150, 0.35); border-color: rgba(100, 255, 150, 0.5);">↑ Успех 🏆</div>
+                            <div style="margin-top: 20px; font-size: 3em;">🎉</div>
+                        </div>
+                        <p style="margin-top: 20px; font-size: 1.3em; color: #51cf66;">Правильная цель<br>= Успех!</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 50px;">
+                    <p style="text-align: center; font-size: 1.5em;">
+                        💡 Без конечной цели вы можете быстро двигаться в неправильном направлении
                     </p>
                 </div>
             </div>
@@ -346,26 +535,42 @@
         <div class="slide">
             <h2>Центры жизни: вокруг чего вы строите свою жизнь?</h2>
             <div class="content">
-                <div class="two-columns">
-                    <div class="column">
-                        <h3>❌ Нестабильные центры</h3>
-                        <ul>
-                            <li>Работа/карьера</li>
-                            <li>Деньги</li>
-                            <li>Супруг/семья</li>
-                            <li>Удовольствия</li>
-                            <li>Друзья/враги</li>
-                            <li>Общественное мнение</li>
-                        </ul>
+                <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 60px; margin-top: 30px;">
+                    <div style="text-align: center;">
+                        <h3 style="color: #ff6b6b; margin-bottom: 40px; font-size: 1.8em;">❌ Нестабильные центры</h3>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                            <div class="card" style="background: rgba(255, 100, 100, 0.15); border-color: rgba(255, 100, 100, 0.4);">
+                                <div style="font-size: 3em; margin-bottom: 10px;">💼</div>
+                                <h4>Работа</h4>
+                            </div>
+                            <div class="card" style="background: rgba(255, 100, 100, 0.15); border-color: rgba(255, 100, 100, 0.4);">
+                                <div style="font-size: 3em; margin-bottom: 10px;">💰</div>
+                                <h4>Деньги</h4>
+                            </div>
+                            <div class="card" style="background: rgba(255, 100, 100, 0.15); border-color: rgba(255, 100, 100, 0.4);">
+                                <div style="font-size: 3em; margin-bottom: 10px;">🎉</div>
+                                <h4>Удовольствия</h4>
+                            </div>
+                            <div class="card" style="background: rgba(255, 100, 100, 0.15); border-color: rgba(255, 100, 100, 0.4);">
+                                <div style="font-size: 3em; margin-bottom: 10px;">👥</div>
+                                <h4>Мнение других</h4>
+                            </div>
+                        </div>
+                        <p style="margin-top: 30px; font-size: 1.2em; color: #ff6b6b;">Могут измениться или исчезнуть</p>
                     </div>
-                    <div class="column">
-                        <h3>✅ Стабильный центр</h3>
-                        <ul>
-                            <li>Принципы</li>
-                            <li>Ценности</li>
-                            <li>Внутренняя система координат</li>
-                        </ul>
-                        <p style="margin-top: 30px;">Принципы не меняются, они дают стабильность и направление</p>
+                    
+                    <div class="arrow-animated" style="font-size: 4em;">→</div>
+                    
+                    <div style="text-align: center;">
+                        <h3 style="color: #51cf66; margin-bottom: 40px; font-size: 1.8em;">✅ Стабильный центр</h3>
+                        <div style="margin: 0 auto;">
+                            <div class="center-circle" style="border-color: rgba(100, 255, 150, 0.6); background: radial-gradient(circle, rgba(100, 255, 150, 0.3), rgba(100, 200, 255, 0.15)); width: 320px; height: 320px; margin: 0 auto; box-shadow: 0 0 50px rgba(100, 255, 150, 0.3);">
+                                <div style="font-size: 5em; margin-bottom: 20px;">🧭</div>
+                                <h3 style="font-size: 2em; margin-bottom: 15px;">Принципы</h3>
+                                <p style="font-size: 1.2em;">• Ценности<br>• Внутренняя система<br>• Стабильная основа</p>
+                            </div>
+                        </div>
+                        <p style="margin-top: 30px; font-size: 1.2em; color: #51cf66;">Не меняются со временем</p>
                     </div>
                 </div>
             </div>
@@ -551,35 +756,44 @@
         <div class="slide">
             <h2>Лидерство vs Менеджмент</h2>
             <div class="content">
-                <div class="two-columns">
-                    <div class="column">
-                        <h3>👨‍💼 Менеджмент</h3>
-                        <p style="margin-bottom: 20px;"><em>Второе творение</em></p>
-                        <ul>
-                            <li>Как достичь цели?</li>
-                            <li>Эффективность</li>
-                            <li>Дисциплина</li>
-                            <li>Выполнение плана</li>
-                            <li>Управление ресурсами</li>
-                            <li>"Делать вещи правильно"</li>
+                <div class="comparison-container">
+                    <div class="comparison-side bad">
+                        <div class="icon-large">👨‍💼</div>
+                        <h3 style="font-size: 2em; margin-bottom: 20px;">Менеджмент</h3>
+                        <p style="margin-bottom: 25px; font-style: italic; font-size: 1.3em;">Второе творение</p>
+                        <ul style="font-size: 1.2em;">
+                            <li>❓ Как достичь цели?</li>
+                            <li>⚡ Эффективность</li>
+                            <li>📋 Дисциплина</li>
+                            <li>✅ Выполнение плана</li>
+                            <li>📊 Управление ресурсами</li>
                         </ul>
+                        <div style="margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 10px;">
+                            <p style="font-size: 1.3em; font-weight: bold;">"Делать вещи правильно"</p>
+                        </div>
                     </div>
-                    <div class="column">
-                        <h3>👑 Лидерство</h3>
-                        <p style="margin-bottom: 20px;"><em>Первое творение</em></p>
-                        <ul>
-                            <li>Куда мы идём?</li>
-                            <li>Результативность</li>
-                            <li>Видение</li>
-                            <li>Определение цели</li>
-                            <li>Направление движения</li>
-                            <li>"Делать правильные вещи"</li>
+                    
+                    <div class="comparison-side good">
+                        <div class="icon-large">👑</div>
+                        <h3 style="font-size: 2em; margin-bottom: 20px;">Лидерство</h3>
+                        <p style="margin-bottom: 25px; font-style: italic; font-size: 1.3em;">Первое творение</p>
+                        <ul style="font-size: 1.2em;">
+                            <li>🎯 Куда мы идём?</li>
+                            <li>🏆 Результативность</li>
+                            <li>🔭 Видение</li>
+                            <li>🎨 Определение цели</li>
+                            <li>🧭 Направление движения</li>
                         </ul>
+                        <div style="margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 10px;">
+                            <p style="font-size: 1.3em; font-weight: bold;">"Делать правильные вещи"</p>
+                        </div>
                     </div>
+                    
+                    <div class="vs-divider">VS</div>
                 </div>
-                <div class="highlight-box" style="margin-top: 30px;">
+                <div class="highlight-box" style="margin-top: 40px;">
                     <p style="font-size: 1.4em; text-align: center;">
-                        Навык 2 — это про лидерство: определить ПРАВИЛЬНОЕ направление,<br>
+                        ⚡ Навык 2 — это про лидерство: определить ПРАВИЛЬНОЕ направление,<br>
                         прежде чем начать эффективно двигаться
                     </p>
                 </div>
@@ -618,34 +832,37 @@
         <div class="slide">
             <h2>От миссии к еженедельному планированию</h2>
             <div class="content">
-                <div class="diagram">
-                    <div class="diagram-item">
+                <div class="process-flow">
+                    <div class="process-step">
+                        <div style="font-size: 3.5em; margin-bottom: 15px;">📜</div>
                         <h3>Личная миссия</h3>
-                        <p>Ценности и принципы</p>
+                        <p style="margin-top: 10px;">Ценности и принципы</p>
                     </div>
-                    <div class="arrow">→</div>
-                    <div class="diagram-item">
+                    <div class="arrow-animated">→</div>
+                    <div class="process-step">
+                        <div style="font-size: 3.5em; margin-bottom: 15px;">👤</div>
                         <h3>Роли</h3>
-                        <p>Ключевые области жизни</p>
+                        <p style="margin-top: 10px;">Ключевые области жизни</p>
                     </div>
-                    <div class="arrow">→</div>
-                    <div class="diagram-item">
+                    <div class="arrow-animated">→</div>
+                    <div class="process-step">
+                        <div style="font-size: 3.5em; margin-bottom: 15px;">🎯</div>
                         <h3>Цели для ролей</h3>
-                        <p>На эту неделю</p>
+                        <p style="margin-top: 10px;">На эту неделю</p>
                     </div>
                 </div>
                 <div class="highlight-box" style="margin-top: 40px;">
-                    <h3 style="margin-bottom: 20px;">Пример еженедельного планирования:</h3>
+                    <h3 style="margin-bottom: 20px; text-align: center; font-size: 1.8em;">Пример еженедельного планирования:</h3>
                     <div class="example-box">
-                        <p><strong>Роль: Родитель</strong><br>
+                        <p><strong>👨‍👩‍👧 Роль: Родитель</strong><br>
                         Цель на неделю: Провести вечер пятницы с детьми (настолки, без гаджетов)</p>
                     </div>
                     <div class="example-box">
-                        <p><strong>Роль: Руководитель</strong><br>
+                        <p><strong>💼 Роль: Руководитель</strong><br>
                         Цель на неделю: Провести 1-on-1 с каждым членом команды</p>
                     </div>
                     <div class="example-box">
-                        <p><strong>Роль: Личность</strong><br>
+                        <p><strong>🏃 Роль: Личность</strong><br>
                         Цель на неделю: 3 тренировки по 30 минут, дочитать книгу</p>
                     </div>
                 </div>
