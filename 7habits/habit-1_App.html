@@ -7,6 +7,22 @@
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Включаем режим по классу
+            theme: {
+                extend: {
+                    colors: {
+                        gray: {
+                            750: '#2d3748',
+                            850: '#1a202c',
+                            950: '#0d1117',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -16,31 +32,31 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
+        body { font-family: 'Inter', sans-serif; }
         .animate-in { animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        /* Стилизация скроллбара для меню */
+        
+        /* Скроллбар */
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #4b5563; }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
     <div id="root"></div>
 
     <script type="text/babel" data-type="module">
-        // --- Импорт Firebase через CDN ---
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-        // --- Получение переменных окружения ---
         const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'default-app-id';
         const firebaseConfigString = typeof window.__firebase_config !== 'undefined' ? window.__firebase_config : null;
         const firebaseConfig = firebaseConfigString ? JSON.parse(firebaseConfigString) : null;
         const initialAuthToken = typeof window.__initial_auth_token !== 'undefined' ? window.__initial_auth_token : null;
 
-        // --- Иконки (SVG) ---
+        // --- Иконки ---
         const IconBase = ({ children, size = 24, className = "", ...props }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
                 {children}
@@ -69,6 +85,9 @@
             RefreshCw: (props) => <IconBase {...props}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></IconBase>,
             Scale: (props) => <IconBase {...props}><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></IconBase>,
             AlertTriangle: (props) => <IconBase {...props}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></IconBase>,
+            Gift: (props) => <IconBase {...props}><polyline points="20 12 20 22 4 22 4 12" /><rect width="20" height="5" x="2" y="7" /><line x1="12" x2="12" y1="22" y2="7" /><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" /><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" /></IconBase>,
+            Moon: (props) => <IconBase {...props}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></IconBase>,
+            Sun: (props) => <IconBase {...props}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></IconBase>,
         };
 
         const { useState, useEffect } = React;
@@ -80,11 +99,28 @@
             const [db, setDb] = useState(null);
             const [userId, setUserId] = useState(null);
             const [loadingStatus, setLoadingStatus] = useState('Загрузка...');
+            
+            // Темная тема
+            const [isDarkMode, setIsDarkMode] = useState(false);
+
+            useEffect(() => {
+                // Проверка системных настроек
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    setIsDarkMode(true);
+                }
+            }, []);
+
+            useEffect(() => {
+                if (isDarkMode) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }, [isDarkMode]);
 
             useEffect(() => {
                 if (!firebaseConfig) {
-                    setLoadingStatus('Демо режим (без сохранения)');
-                    console.warn("Firebase config missing");
+                    setLoadingStatus('Демо');
                     return;
                 }
                 try {
@@ -97,7 +133,7 @@
                         try {
                             if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken);
                             else await signInAnonymously(auth);
-                        } catch (e) { console.error("Auth error:", e); }
+                        } catch (e) { console.error(e); }
                     };
                     initAuth();
 
@@ -106,7 +142,6 @@
                         setLoadingStatus(user ? '' : 'Вход...');
                     });
                 } catch (error) {
-                    console.error("Init error:", error);
                     setLoadingStatus('Ошибка');
                 }
             }, []);
@@ -126,59 +161,62 @@
                 if (db && userId) {
                     try {
                         await setDoc(doc(db, 'artifacts', appId, 'users', userId, 'proactive_data', 'progress_tracker'), { progress: newProgress }, { merge: true });
-                    } catch (e) { console.error("Save error", e); }
+                    } catch (e) {}
                 }
             };
 
             const completedDays = Object.values(challengeProgress).filter(Boolean).length;
 
+            // Обновленная структура: Дары вынесены в отдельный пункт
             const sections = [
-                { id: 'intro', title: '1. Самосознание', icon: Icons.Brain },
-                { id: 'mirror', title: '2. Социальное зеркало', icon: Icons.Users },
-                { id: 'determinism', title: '3. Три вида детерминизма', icon: Icons.AlertCircle },
-                { id: 'frankl', title: '4. Урок Виктора Франкла', icon: Icons.Heart },
-                { id: 'proactivity', title: '5. Суть проактивности', icon: Icons.Zap },
-                { id: 'initiative', title: '6. Брать инициативу', icon: Icons.Target },
-                { id: 'language', title: '7. Реактивная речь', icon: Icons.BookOpen },
-                { id: 'circles', title: '8. Круги Влияния', icon: Icons.TrendingUp },
-                { id: 'control', title: '9. Типы контроля', icon: Icons.Star },
-                { id: 'expanding', title: '10. Расширение влияния', icon: Icons.Lightbulb },
-                { id: 'havebe', title: '11. Иметь или Быть', icon: Icons.Smile },
-                { id: 'love', title: '12. Любовь — это глагол', icon: Icons.Heart },
-                { id: 'consequences', title: '13. Выбор и Последствия', icon: Icons.Scale },
-                { id: 'commitments', title: '14. Обязательства', icon: Icons.CheckCircle },
-                { id: 'challenge', title: '15. 30-дневный тест', icon: Icons.Award }
+                { id: 'intro', title: '1. Введение: Самосознание', icon: Icons.Brain },
+                { id: 'gifts', title: '2. 4 Уникальных дара', icon: Icons.Gift },
+                { id: 'mirror', title: '3. Социальное зеркало', icon: Icons.Users },
+                { id: 'determinism', title: '4. Три вида детерминизма', icon: Icons.AlertCircle },
+                { id: 'frankl', title: '5. Урок Виктора Франкла', icon: Icons.Heart },
+                { id: 'proactivity', title: '6. Суть проактивности', icon: Icons.Zap },
+                { id: 'initiative', title: '7. Брать инициативу', icon: Icons.Target },
+                { id: 'language', title: '8. Реактивная речь', icon: Icons.BookOpen },
+                { id: 'circles', title: '9. Круги Влияния', icon: Icons.TrendingUp },
+                { id: 'control', title: '10. Типы контроля', icon: Icons.Star },
+                { id: 'expanding', title: '11. Расширение влияния', icon: Icons.Lightbulb },
+                { id: 'havebe', title: '12. Иметь или Быть', icon: Icons.Smile },
+                { id: 'love', title: '13. Любовь — это глагол', icon: Icons.Heart },
+                { id: 'consequences', title: '14. Выбор и Последствия', icon: Icons.Scale },
+                { id: 'commitments', title: '15. Обязательства', icon: Icons.CheckCircle },
+                { id: 'challenge', title: '16. 30-дневный тест', icon: Icons.Award }
             ];
 
             const InfoCard = ({ icon: IconComp, title, text, color }) => (
-                <div className={`bg-white p-4 md:p-5 rounded-xl border-l-4 border-${color}-500 shadow-md hover:shadow-lg transition-shadow mb-4 md:mb-0`}>
+                <div className={`bg-white dark:bg-gray-800 p-4 md:p-5 rounded-xl border-l-4 border-${color}-500 shadow-md hover:shadow-lg transition-all mb-4 md:mb-0`}>
                     <div className="flex items-center gap-3 mb-2">
-                        <div className={`p-2 rounded-full bg-${color}-100 text-${color}-600 flex-shrink-0`}>
+                        <div className={`p-2 rounded-full bg-${color}-100 dark:bg-${color}-900/30 text-${color}-600 dark:text-${color}-400 flex-shrink-0`}>
                             <IconComp size={20} />
                         </div>
-                        <h4 className={`font-bold text-${color}-900 text-sm md:text-base`}>{title}</h4>
+                        <h4 className={`font-bold text-${color}-900 dark:text-${color}-200 text-sm md:text-base`}>{title}</h4>
                     </div>
-                    <p className="text-sm text-gray-700 leading-relaxed">{text}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{text}</p>
                 </div>
             );
 
             const QuoteBlock = ({ text, author }) => (
-                <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-l-4 border-purple-500 p-4 md:p-6 rounded-r-xl my-4 italic text-gray-700 shadow-sm text-sm md:text-base">
+                <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-l-4 border-purple-500 p-4 md:p-6 rounded-r-xl my-4 italic text-gray-700 dark:text-gray-300 shadow-sm text-sm md:text-base">
                     "{text}"
-                    {author && <div className="mt-2 text-xs font-bold text-purple-600 not-italic">— {author}</div>}
+                    {author && <div className="mt-2 text-xs font-bold text-purple-600 dark:text-purple-400 not-italic">— {author}</div>}
                 </div>
             );
 
+            // Визуализации адаптированы под темную тему
              const CirclesVisualization = () => (
-                <div className="my-6 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-inner">
-                    <h3 className="text-lg md:text-xl font-bold text-center mb-6 text-gray-800">Фокус внимания</h3>
+                <div className="my-6 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl shadow-inner">
+                    <h3 className="text-lg md:text-xl font-bold text-center mb-6 text-gray-800 dark:text-gray-200">Фокус внимания</h3>
                     <div className="flex flex-col md:flex-row justify-around items-center gap-8">
                         <div className="relative">
-                            <div className="w-48 h-48 md:w-64 md:h-64 rounded-full bg-red-100 border-4 border-red-300 flex items-center justify-center shadow-lg transition-all">
-                                <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-red-200 border-4 border-red-400 flex items-center justify-center">
+                            <div className="w-48 h-48 md:w-64 md:h-64 rounded-full bg-red-100 dark:bg-red-900/30 border-4 border-red-300 dark:border-red-700 flex items-center justify-center shadow-lg transition-all">
+                                <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-red-200 dark:bg-red-900/50 border-4 border-red-400 dark:border-red-600 flex items-center justify-center">
                                     <div className="text-center p-2">
-                                        <p className="font-bold text-red-900 text-sm md:text-base">Круг Забот</p>
-                                        <p className="text-[10px] md:text-xs mt-1 text-red-800 leading-tight">Внешние условия<br/>(Вне контроля)</p>
+                                        <p className="font-bold text-red-900 dark:text-red-200 text-sm md:text-base">Круг Забот</p>
+                                        <p className="text-[10px] md:text-xs mt-1 text-red-800 dark:text-red-300 leading-tight">Внешние условия<br/>(Вне контроля)</p>
                                     </div>
                                 </div>
                             </div>
@@ -186,13 +224,13 @@
                                 <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs md:text-sm shadow-md font-bold">Влияние сужается</span>
                             </div>
                         </div>
-                        <div className="md:hidden text-gray-300 rotate-90"><Icons.ChevronRight size={24}/></div>
+                        <div className="md:hidden text-gray-300 dark:text-gray-600 rotate-90"><Icons.ChevronRight size={24}/></div>
                         <div className="relative">
-                            <div className="w-48 h-48 md:w-64 md:h-64 rounded-full bg-green-100 border-4 border-green-300 flex items-center justify-center shadow-lg transition-all">
-                                <div className="w-36 h-36 md:w-48 md:h-48 rounded-full bg-green-200 border-4 border-green-400 flex items-center justify-center">
+                            <div className="w-48 h-48 md:w-64 md:h-64 rounded-full bg-green-100 dark:bg-green-900/30 border-4 border-green-300 dark:border-green-700 flex items-center justify-center shadow-lg transition-all">
+                                <div className="w-36 h-36 md:w-48 md:h-48 rounded-full bg-green-200 dark:bg-green-900/50 border-4 border-green-400 dark:border-green-600 flex items-center justify-center">
                                     <div className="text-center p-2">
-                                        <p className="font-bold text-green-900 text-sm md:text-base">Круг Влияния</p>
-                                        <p className="text-[10px] md:text-xs mt-1 text-green-800 leading-tight">Мой характер<br/>Мои решения</p>
+                                        <p className="font-bold text-green-900 dark:text-green-200 text-sm md:text-base">Круг Влияния</p>
+                                        <p className="text-[10px] md:text-xs mt-1 text-green-800 dark:text-green-300 leading-tight">Мой характер<br/>Мои решения</p>
                                     </div>
                                 </div>
                             </div>
@@ -206,14 +244,14 @@
             );
 
              const StimulusResponse = () => (
-                <div className="my-6 p-4 md:p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl shadow-lg">
-                    <h3 className="text-lg md:text-xl font-bold text-center mb-6 text-gray-800">Модель Свободы Выбора</h3>
+                <div className="my-6 p-4 md:p-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 rounded-xl shadow-lg">
+                    <h3 className="text-lg md:text-xl font-bold text-center mb-6 text-gray-800 dark:text-gray-200">Модель Свободы Выбора</h3>
                     <div className="flex flex-col md:flex-row items-center justify-center gap-4">
                         <div className="bg-orange-500 text-white px-6 py-3 rounded-lg font-bold text-center shadow-md w-full md:w-auto text-sm md:text-base">
                             Раздражитель
                         </div>
-                        <Icons.ChevronRight className="text-gray-400 hidden md:block" size={32} />
-                        <div className="text-gray-400 md:hidden text-xl rotate-90"><Icons.ChevronRight/></div>
+                        <Icons.ChevronRight className="text-gray-400 dark:text-gray-600 hidden md:block" size={32} />
+                        <div className="text-gray-400 dark:text-gray-600 md:hidden text-xl rotate-90"><Icons.ChevronRight/></div>
                         
                         <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 md:p-6 rounded-xl text-center flex-1 shadow-xl w-full md:w-auto">
                             <p className="font-extrabold mb-3 text-sm md:text-lg tracking-wider">СВОБОДА ВЫБОРА</p>
@@ -225,14 +263,14 @@
                             </div>
                         </div>
                         
-                        <Icons.ChevronRight className="text-gray-400 hidden md:block" size={32} />
-                        <div className="text-gray-400 md:hidden text-xl rotate-90"><Icons.ChevronRight/></div>
+                        <Icons.ChevronRight className="text-gray-400 dark:text-gray-600 hidden md:block" size={32} />
+                        <div className="text-gray-400 dark:text-gray-600 md:hidden text-xl rotate-90"><Icons.ChevronRight/></div>
 
                         <div className="bg-green-500 text-white px-6 py-3 rounded-lg font-bold text-center shadow-md w-full md:w-auto text-sm md:text-base">
                             Реакция
                         </div>
                     </div>
-                    <p className="text-center mt-4 md:mt-6 text-gray-600 italic text-xs md:text-sm">
+                    <p className="text-center mt-4 md:mt-6 text-gray-600 dark:text-gray-400 italic text-xs md:text-sm">
                         "Между раздражителем и реакцией человек имеет свободу выбора"
                     </p>
                 </div>
@@ -245,47 +283,62 @@
                 switch (activeSection) {
                     case 'intro': return (
                         <div className={fadeClass}>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">1. Самосознание: Дар человека</h2>
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">1. Введение: Самосознание</h2>
                             <QuoteBlock text="Не знаю в жизни ничего более воодушевляющего, чем бесспорная способность человека путем сознательных усилий возвышать жизнь свою." author="Генри Дэвид Торо" />
                             
-                            <div className="bg-blue-50 p-4 md:p-6 rounded-xl border-t-4 border-blue-400 shadow-sm">
-                                <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2 text-lg"><Icons.Brain size={24}/> Определение</h3>
-                                <p className="text-gray-700 leading-relaxed">
+                            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 md:p-6 rounded-xl border-t-4 border-blue-400 shadow-sm">
+                                <h3 className="font-bold text-blue-900 dark:text-blue-300 mb-2 flex items-center gap-2 text-lg"><Icons.Brain size={24}/> Определение</h3>
+                                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                                     <b>Самосознание</b> — это способность отстраниться и посмотреть на свои мысли, чувства и действия со стороны. Животные на это не способны; они живут инстинктами. Именно самосознание позволяет нам не быть рабами своих программ, а переписывать их.
                                 </p>
                             </div>
                             
-                            <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100">
-                                <h4 className="font-bold text-gray-800 mb-2 text-lg">💡 Пример из жизни</h4>
-                                <p className="text-gray-700 italic">
+                            <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-100 dark:border-gray-700">
+                                <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2 text-lg">💡 Пример из жизни</h4>
+                                <p className="text-gray-700 dark:text-gray-300 italic">
                                     "Попробуйте прямо сейчас мысленно перенестись в угол комнаты и посмотреть на себя, читающего этот текст. Вы можете оценить свою позу? Свое настроение? То, что вы сейчас сделали — это акт самосознания."
                                 </p>
                             </div>
                         </div>
                     );
+                    // Новый раздел!
+                    case 'gifts': return (
+                        <div className={fadeClass}>
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">2. 4 Уникальных дара человека</h2>
+                            <p className="text-gray-700 dark:text-gray-300 text-sm md:text-base">
+                                Это инструменты, которые дают нам власть над нашей реакцией. Они отличают нас от животного мира.
+                            </p>
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <InfoCard color="purple" icon={Icons.Brain} title="Самосознание" text="Понимание своих мыслей, настроений и парадигм. Способность отделить себя от своих эмоций." />
+                                <InfoCard color="green" icon={Icons.Heart} title="Совесть" text="Внутреннее чувство правильного и неправильного. Компас, который указывает на истинный север." />
+                                <InfoCard color="blue" icon={Icons.Zap} title="Воображение" text="Способность создавать в уме то, чего нет в реальности. Визуализация будущего успеха." />
+                                <InfoCard color="orange" icon={Icons.TrendingUp} title="Независимая воля" text="Способность действовать, опираясь на самосознание, а не на инстинкты или давление окружения." />
+                            </div>
+                        </div>
+                    );
                     case 'mirror': return (
                         <div className={fadeClass}>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">2. Социальное зеркало</h2>
-                             <div className="bg-purple-50 p-4 md:p-6 rounded-xl border-t-4 border-purple-400 shadow-sm">
-                                <h3 className="font-bold text-purple-900 mb-2 flex items-center gap-2 text-lg"><Icons.Users size={24}/> Определение</h3>
-                                <p className="text-gray-700 leading-relaxed">
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">3. Социальное зеркало</h2>
+                             <div className="bg-purple-50 dark:bg-purple-900/20 p-4 md:p-6 rounded-xl border-t-4 border-purple-400 shadow-sm">
+                                <h3 className="font-bold text-purple-900 dark:text-purple-300 mb-2 flex items-center gap-2 text-lg"><Icons.Users size={24}/> Определение</h3>
+                                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                                     Если наше представление о себе складывается только из того, что говорят о нас другие, мы видим себя в <b>«Социальном зеркале»</b>. Часто это зеркало кривое — оно отражает не нашу суть, а слабости и проекции других людей.
                                 </p>
                             </div>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="bg-white p-5 rounded-xl shadow-md border-l-4 border-red-400">
-                                    <h4 className="font-bold text-red-800 mb-2">Примеры отражений:</h4>
-                                    <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+                                <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border-l-4 border-red-400">
+                                    <h4 className="font-bold text-red-800 dark:text-red-400 mb-2">Примеры отражений:</h4>
+                                    <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 text-sm space-y-1">
                                         <li>«Ты всегда опаздываешь!»</li>
                                         <li>«Ты ешь, как лошадь!»</li>
                                         <li>«В этом ты вылитый отец!»</li>
                                     </ul>
-                                    <p className="text-xs text-gray-500 mt-2">Это ярлыки, которые нас ограничивают.</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Это ярлыки, которые нас ограничивают.</p>
                                 </div>
-                                <div className="bg-white p-5 rounded-xl shadow-md border-l-4 border-green-400">
-                                    <h4 className="font-bold text-green-800 mb-2">Проактивный взгляд:</h4>
-                                    <p className="text-sm text-gray-700">
+                                <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border-l-4 border-green-400">
+                                    <h4 className="font-bold text-green-800 dark:text-green-400 mb-2">Проактивный взгляд:</h4>
+                                    <p className="text-sm text-gray-700 dark:text-gray-300">
                                         Используя самосознание, мы понимаем: эти мнения — лишь данные. Мы сами решаем, принимать их или нет. Мы не есть то, что о нас говорят.
                                     </p>
                                 </div>
@@ -294,39 +347,39 @@
                     );
                     case 'determinism': return (
                         <div className={fadeClass}>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">3. Три вида детерминизма</h2>
-                             <p className="text-gray-700">Многие люди верят, что они не могут измениться, потому что их судьба предопределена (детерминирована). Существует три главных теории:</p>
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">4. Три вида детерминизма</h2>
+                             <p className="text-gray-700 dark:text-gray-300">Многие люди верят, что они не могут измениться, потому что их судьба предопределена. Существует три теории:</p>
                             
                             <div className="space-y-4">
                                 <InfoCard 
                                     icon={Icons.Key} color="blue" 
                                     title="1. Генетический детерминизм" 
-                                    text="Утверждает: «Это у меня в ДНК». Вариант оправдания: «Я вспыльчивый, потому что мой дед был вспыльчивым. Я ирландец, это у нас в крови»."
+                                    text="Утверждает: «Это у меня в ДНК». Оправдание: «Я вспыльчивый, потому что мой дед был вспыльчивым. Я ирландец, это у нас в крови»."
                                 />
                                 <InfoCard 
                                     icon={Icons.RefreshCw} color="orange" 
                                     title="2. Психический детерминизм" 
-                                    text="Утверждает: «Меня так воспитали». Вариант оправдания: «Я боюсь выступать на публике, потому что в детстве родители меня высмеивали. Это травма прошлого»."
+                                    text="Утверждает: «Меня так воспитали». Оправдание: «Я боюсь выступать на публике, потому что в детстве родители меня высмеивали. Это травма прошлого»."
                                 />
                                 <InfoCard 
                                     icon={Icons.Users} color="green" 
                                     title="3. Детерминизм окружения" 
-                                    text="Утверждает: «Виноваты обстоятельства». Вариант оправдания: «Я ничего не добился, потому что у меня плохой начальник / жена / правительство»."
+                                    text="Утверждает: «Виноваты обстоятельства». Оправдание: «Я ничего не добился, потому что у меня плохой начальник / жена / правительство»."
                                 />
                             </div>
-                            <div className="bg-yellow-50 p-3 rounded border-l-4 border-yellow-500 text-sm text-gray-700 italic">
+                            <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded border-l-4 border-yellow-500 text-sm text-gray-700 dark:text-gray-300 italic">
                                 Все эти теории основаны на рефлексе «Раздражитель — Реакция» (как у собак Павлова). Но мы не собаки. У нас есть выбор.
                             </div>
                         </div>
                     );
                     case 'frankl': return (
                         <div className={fadeClass}>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">4. Урок Виктора Франкла</h2>
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">5. Урок Виктора Франкла</h2>
                             <QuoteBlock text="У человека можно отнять все, кроме одного: последней свободы человека — выбирать собственное отношение к любым обстоятельствам." author="Виктор Франкл" />
                             
-                             <div className="bg-purple-50 p-4 md:p-6 rounded-xl border-t-4 border-purple-400 shadow-sm">
-                                <h3 className="font-bold text-purple-900 mb-2 flex items-center gap-2 text-lg"><Icons.Heart size={24}/> История</h3>
-                                <p className="text-gray-700 leading-relaxed">
+                             <div className="bg-purple-50 dark:bg-purple-900/20 p-4 md:p-6 rounded-xl border-t-4 border-purple-400 shadow-sm">
+                                <h3 className="font-bold text-purple-900 dark:text-purple-300 mb-2 flex items-center gap-2 text-lg"><Icons.Heart size={24}/> История</h3>
+                                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                                     Виктор Франкл, психиатр, прошел ужасы нацистских лагерей смерти. Его пытали, его семья погибла. Но он открыл <b>Внутреннюю Свободу</b>. В своей голове он представлял, как после войны читает лекции студентам об уроках лагеря. Нацисты могли контролировать его тело, но не его разум.
                                 </p>
                             </div>
@@ -336,7 +389,7 @@
                     );
                     case 'proactivity': return (
                         <div className={fadeClass}>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">5. Суть проактивности</h2>
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">6. Суть проактивности</h2>
                             <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6 md:p-8 rounded-2xl text-center shadow-xl mb-4">
                                 <p className="text-2xl md:text-3xl font-extrabold tracking-widest mb-2">RESPONSIBILITY</p>
                                 <div className="h-1 w-16 md:w-24 bg-white/30 mx-auto mb-2 rounded"></div>
@@ -344,16 +397,16 @@
                             </div>
                             
                             <div className="space-y-4">
-                                <div className="bg-white p-5 rounded-xl shadow-md border-l-4 border-yellow-400">
-                                    <h4 className="font-bold text-gray-800 mb-2 text-lg">Определение</h4>
-                                    <p className="text-gray-700">
+                                <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border-l-4 border-yellow-400">
+                                    <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2 text-lg">Определение</h4>
+                                    <p className="text-gray-700 dark:text-gray-300">
                                         Проактивность — это не просто активность. Это осознание того, что <b>мы несем ответственность за свою жизнь</b>. Наше поведение — это результат наших решений, основанных на ценностях, а не продукт условий, основанный на чувствах.
                                     </p>
                                 </div>
 
-                                <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
-                                    <h4 className="font-bold text-gray-800 mb-2 text-lg">💡 Пример: «Своя погода»</h4>
-                                    <p className="text-gray-700">
+                                <div className="bg-gray-50 dark:bg-gray-800/50 p-5 rounded-xl border border-gray-200 dark:border-gray-700">
+                                    <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2 text-lg">💡 Пример: «Своя погода»</h4>
+                                    <p className="text-gray-700 dark:text-gray-300">
                                         Реактивные люди зависят от «социальной погоды»: если к ним хорошо относятся, они рады; если плохо — они занимают оборону. <br/>
                                         <b>Проактивные люди носят свою погоду внутри.</b> Им все равно, идет ли дождь или светит солнце. Ими движет ценность — например, качественно делать работу, независимо от того, контролирует их кто-то или нет.
                                     </p>
@@ -363,46 +416,46 @@
                     );
                     case 'initiative': return (
                         <div className={fadeClass}>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">6. Брать инициативу</h2>
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">7. Брать инициативу</h2>
                             
-                            <div className="bg-green-50 p-4 md:p-6 rounded-xl border-t-4 border-green-500 shadow-sm">
-                                <h3 className="font-bold text-green-900 mb-2 flex items-center gap-2 text-lg"><Icons.Target size={24}/> Определение</h3>
-                                <p className="text-gray-700 leading-relaxed">
+                            <div className="bg-green-50 dark:bg-green-900/20 p-4 md:p-6 rounded-xl border-t-4 border-green-500 shadow-sm">
+                                <h3 className="font-bold text-green-900 dark:text-green-300 mb-2 flex items-center gap-2 text-lg"><Icons.Target size={24}/> Определение</h3>
+                                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                                     Брать инициативу — не значит быть назойливым или агрессивным. Это значит осознавать свою ответственность за то, чтобы события развивались нужным образом. Большинство людей ждут, что что-то произойдет или кто-то о них позаботится. Проактивные люди <b>действуют</b>.
                                 </p>
                             </div>
 
-                            <h4 className="font-bold text-gray-800 text-lg mt-4 mb-2">Пример: Прохождение собеседования</h4>
+                            <h4 className="font-bold text-gray-800 dark:text-gray-200 text-lg mt-4 mb-2">Пример: Прохождение собеседования</h4>
                             <div className="grid grid-cols-1 gap-4">
-                                <div className="bg-white p-4 rounded-lg border border-red-200 shadow-sm">
-                                    <span className="font-bold text-red-600 block mb-1">Реактивный подход:</span>
-                                    <p className="text-gray-600 text-sm">Ждет объявления вакансии. Рассылает стандартные резюме. Жалуется: «Работы нет, никто не звонит».</p>
+                                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-red-200 dark:border-red-900 shadow-sm">
+                                    <span className="font-bold text-red-600 dark:text-red-400 block mb-1">Реактивный подход:</span>
+                                    <p className="text-gray-600 dark:text-gray-400 text-sm">Ждет объявления вакансии. Рассылает стандартные резюме. Жалуется: «Работы нет, никто не звонит».</p>
                                 </div>
-                                <div className="bg-white p-4 rounded-lg border border-green-200 shadow-sm">
-                                    <span className="font-bold text-green-600 block mb-1">Проактивный подход (Продажа решений):</span>
-                                    <p className="text-gray-600 text-sm">Изучает проблемы компании. Проходит тесты на способности. Готовит презентацию о том, как его навыки решат проблемы компании. Звонит сам и добивается встречи.</p>
+                                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-green-200 dark:border-green-900 shadow-sm">
+                                    <span className="font-bold text-green-600 dark:text-green-400 block mb-1">Проактивный подход (Продажа решений):</span>
+                                    <p className="text-gray-600 dark:text-gray-400 text-sm">Изучает проблемы компании. Проходит тесты на способности. Готовит презентацию о том, как его навыки решат проблемы компании. Звонит сам и добивается встречи.</p>
                                 </div>
                             </div>
                         </div>
                     );
                     case 'language': return (
                         <div className={fadeClass}>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">7. Реактивная речь</h2>
-                            <p className="text-gray-700">Речь — верный индикатор того, насколько мы проактивны. Реактивная речь становится <i>самоисполняющимся пророчеством</i>.</p>
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">8. Реактивная речь</h2>
+                            <p className="text-gray-700 dark:text-gray-300">Речь — верный индикатор того, насколько мы проактивны. Реактивная речь становится <i>самоисполняющимся пророчеством</i>.</p>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                <div className="bg-white p-5 rounded-xl shadow-lg border-l-4 border-red-500">
-                                    <h4 className="font-bold text-red-600 mb-3 flex items-center gap-2"><Icons.X size={20}/> Язык Жертвы</h4>
-                                    <ul className="space-y-3 text-gray-700 text-sm">
+                                <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-lg border-l-4 border-red-500">
+                                    <h4 className="font-bold text-red-600 dark:text-red-400 mb-3 flex items-center gap-2"><Icons.X size={20}/> Язык Жертвы</h4>
+                                    <ul className="space-y-3 text-gray-700 dark:text-gray-300 text-sm">
                                         <li>«Я ничего не могу поделать» <span className="text-gray-400">(Детерминизм)</span></li>
                                         <li>«Вот такой я есть» <span className="text-gray-400">(Я не могу расти)</span></li>
                                         <li>«Он меня так бесит» <span className="text-gray-400">(Он управляет мной)</span></li>
                                         <li>«Я вынужден это сделать» <span className="text-gray-400">(Нет выбора)</span></li>
                                     </ul>
                                 </div>
-                                <div className="bg-white p-5 rounded-xl shadow-lg border-l-4 border-green-500">
-                                    <h4 className="font-bold text-green-600 mb-3 flex items-center gap-2"><Icons.CheckCircle size={20}/> Язык Лидера</h4>
-                                    <ul className="space-y-3 text-gray-700 text-sm">
+                                <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-lg border-l-4 border-green-500">
+                                    <h4 className="font-bold text-green-600 dark:text-green-400 mb-3 flex items-center gap-2"><Icons.CheckCircle size={20}/> Язык Лидера</h4>
+                                    <ul className="space-y-3 text-gray-700 dark:text-gray-300 text-sm">
                                         <li>«Посмотрим, какие есть варианты»</li>
                                         <li>«Я могу выбрать другой подход»</li>
                                         <li>«Я контролирую свои чувства»</li>
@@ -411,7 +464,7 @@
                                 </div>
                             </div>
 
-                            <div className="bg-gray-100 p-4 rounded-xl mt-4 italic text-gray-600 text-sm">
+                            <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-xl mt-4 italic text-gray-600 dark:text-gray-400 text-sm">
                                 <b>Пример со студентом:</b><br/>
                                 Студент: «Я вынужден ехать на теннисный турнир, иначе меня выгонят».<br/>
                                 Кови: «Вы не вынуждены. Вы выбираете поехать, потому что хотите остаться в команде. Вы взвесили последствия и сделали выбор. Так что говорите: "Я выбираю поехать"».
@@ -420,10 +473,10 @@
                     );
                     case 'circles': return (
                         <div className={fadeClass}>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">8. Круги Влияния и Забот</h2>
-                            <div className="bg-blue-50 p-4 md:p-6 rounded-xl border-t-4 border-blue-400 shadow-sm">
-                                <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2 text-lg"><Icons.TrendingUp size={24}/> Определение</h3>
-                                <p className="text-gray-700">
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">9. Круги Влияния и Забот</h2>
+                            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 md:p-6 rounded-xl border-t-4 border-blue-400 shadow-sm">
+                                <h3 className="font-bold text-blue-900 dark:text-blue-300 mb-2 flex items-center gap-2 text-lg"><Icons.TrendingUp size={24}/> Определение</h3>
+                                <p className="text-gray-700 dark:text-gray-300">
                                     <b>Круг Забот</b> — это все, что нас беспокоит (здоровье, дети, политика, погода).<br/>
                                     <b>Круг Влияния</b> — это те вещи из Круга Забот, которые мы реально можем контролировать или изменить.
                                 </p>
@@ -431,9 +484,9 @@
 
                             <CirclesVisualization />
 
-                            <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100">
-                                <h4 className="font-bold text-gray-800 mb-2 text-lg">💡 Пример с сыном</h4>
-                                <p className="text-gray-700 text-sm">
+                            <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-100 dark:border-gray-700">
+                                <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2 text-lg">💡 Пример с сыном</h4>
+                                <p className="text-gray-700 dark:text-gray-300 text-sm">
                                     Кови рассказывал о своем сыне, у которого были проблемы в школе. Родители сначала переживали (Круг Забот) и пытались защитить его, что делало сына еще более зависимым. Когда они сфокусировались на <b>своем отношении</b> (Круг Влияния) и перестали видеть в нем жертву, сын начал меняться сам.
                                 </p>
                             </div>
@@ -441,39 +494,39 @@
                     );
                     case 'control': return (
                         <div className={fadeClass}>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">9. Типы контроля</h2>
-                            <p className="text-gray-700 mb-4">У проактивного человека есть ключ к решению любого типа проблем:</p>
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">10. Типы контроля</h2>
+                            <p className="text-gray-700 dark:text-gray-300 mb-4">У проактивного человека есть ключ к решению любого типа проблем:</p>
                             
                             <div className="space-y-4">
-                                <div className="bg-white p-4 rounded-xl border-l-8 border-blue-500 shadow-sm">
-                                    <h4 className="font-bold text-gray-800 flex items-center gap-2"><Icons.Star className="text-blue-500"/> 1. Прямой контроль</h4>
-                                    <p className="text-sm text-gray-600 mt-1">Проблемы, зависящие от нашего поведения.</p>
-                                    <p className="text-sm font-bold text-blue-700 mt-2">Пример: Мои привычки (питание, режим). Решение: Работа над Навыками 1-3.</p>
+                                <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border-l-8 border-blue-500 shadow-sm">
+                                    <h4 className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2"><Icons.Star className="text-blue-500"/> 1. Прямой контроль</h4>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Проблемы, зависящие от нашего поведения.</p>
+                                    <p className="text-sm font-bold text-blue-700 dark:text-blue-400 mt-2">Пример: Мои привычки (питание, режим). Решение: Работа над Навыками 1-3.</p>
                                 </div>
-                                <div className="bg-white p-4 rounded-xl border-l-8 border-indigo-500 shadow-sm">
-                                    <h4 className="font-bold text-gray-800 flex items-center gap-2"><Icons.Users className="text-indigo-500"/> 2. Косвенный контроль</h4>
-                                    <p className="text-sm text-gray-600 mt-1">Проблемы, зависящие от других людей.</p>
-                                    <p className="text-sm font-bold text-indigo-700 mt-2">Пример: Поведение ребенка. Решение: Смена методов влияния (эмпатия вместо критики).</p>
+                                <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border-l-8 border-indigo-500 shadow-sm">
+                                    <h4 className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2"><Icons.Users className="text-indigo-500"/> 2. Косвенный контроль</h4>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Проблемы, зависящие от других людей.</p>
+                                    <p className="text-sm font-bold text-indigo-700 dark:text-indigo-400 mt-2">Пример: Поведение ребенка. Решение: Смена методов влияния (эмпатия вместо критики).</p>
                                 </div>
-                                <div className="bg-white p-4 rounded-xl border-l-8 border-gray-500 shadow-sm">
-                                    <h4 className="font-bold text-gray-800 flex items-center gap-2"><Icons.AlertCircle className="text-gray-500"/> 3. Нет контроля</h4>
-                                    <p className="text-sm text-gray-600 mt-1">Наше прошлое или неизбежные обстоятельства.</p>
-                                    <p className="text-sm font-bold text-gray-700 mt-2">Пример: Погода, экономический кризис. Решение: Принятие (Молитва о спокойствии).</p>
+                                <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border-l-8 border-gray-500 shadow-sm">
+                                    <h4 className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2"><Icons.AlertCircle className="text-gray-500"/> 3. Нет контроля</h4>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Наше прошлое или неизбежные обстоятельства.</p>
+                                    <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mt-2">Пример: Погода, экономический кризис. Решение: Принятие (Молитва о спокойствии).</p>
                                 </div>
                             </div>
                         </div>
                     );
                     case 'expanding': return (
                         <div className={fadeClass}>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">10. Расширение влияния</h2>
-                            <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-5 rounded-xl shadow-lg mb-4">
-                                <h3 className="text-lg font-bold text-green-900 mb-2">Подход «Изнутри — Наружу»</h3>
-                                <p className="text-gray-800 text-sm">Реактивные люди хотят, чтобы изменился мир («Если бы начальник был добрее...»). Проактивные меняют <b>себя</b>, чтобы изменить ситуацию.</p>
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">11. Расширение влияния</h2>
+                            <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/50 dark:to-emerald-900/50 p-5 rounded-xl shadow-lg mb-4">
+                                <h3 className="text-lg font-bold text-green-900 dark:text-green-200 mb-2">Подход «Изнутри — Наружу»</h3>
+                                <p className="text-gray-800 dark:text-gray-300 text-sm">Реактивные люди хотят, чтобы изменился мир («Если бы начальник был добрее...»). Проактивные меняют <b>себя</b>, чтобы изменить ситуацию.</p>
                             </div>
 
-                            <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100">
-                                <h4 className="font-bold text-gray-800 mb-2 text-lg">💡 История про инициативного работника</h4>
-                                <p className="text-gray-700 text-sm italic leading-relaxed">
+                            <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-100 dark:border-gray-700">
+                                <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2 text-lg">💡 История про инициативного работника</h4>
+                                <p className="text-gray-700 dark:text-gray-300 text-sm italic leading-relaxed">
                                     В одной компании был диктатор-президент. Все сотрудники критиковали его в кулуарах (Круг Забот). Но один проактивный менеджер пошел другим путем. Он компенсировал слабости босса: предугадывал его нужды, предоставлял блестящий анализ, предлагал готовые решения с уважением. В итоге президент спрашивал только его мнение: «А что думает Билл?». Билл расширил свой круг влияния, работая над собой, а не критикуя босса.
                                 </p>
                             </div>
@@ -481,27 +534,27 @@
                     );
                     case 'havebe': return (
                         <div className={fadeClass}>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">11. Иметь или Быть</h2>
-                             <div className="bg-blue-50 p-4 rounded-xl border-t-4 border-blue-400 shadow-sm mb-4">
-                                <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2 text-lg"><Icons.Smile size={24}/> Определение</h3>
-                                <p className="text-gray-700">
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">12. Иметь или Быть</h2>
+                             <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border-t-4 border-blue-400 shadow-sm mb-4">
+                                <h3 className="font-bold text-blue-900 dark:text-blue-300 mb-2 flex items-center gap-2 text-lg"><Icons.Smile size={24}/> Определение</h3>
+                                <p className="text-gray-700 dark:text-gray-300">
                                     Круг Забот наполнен словом <b>«Иметь»</b> (желание изменить внешние обстоятельства).<br/>
                                     Круг Влияния наполнен словом <b>«Быть»</b> (изменение своего характера).
                                 </p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="bg-gray-100 p-5 rounded-xl border border-gray-300">
-                                    <h4 className="font-bold text-gray-600 mb-2 text-center">КРУГ ЗАБОТ («Иметь»)</h4>
-                                    <ul className="space-y-2 text-sm text-gray-600 italic">
+                                <div className="bg-gray-100 dark:bg-gray-800 p-5 rounded-xl border border-gray-300 dark:border-gray-600">
+                                    <h4 className="font-bold text-gray-600 dark:text-gray-400 mb-2 text-center">КРУГ ЗАБОТ («Иметь»)</h4>
+                                    <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400 italic">
                                         <li>«Если бы я <b>имел</b> начальника, который не орет...»</li>
                                         <li>«Если бы я <b>имел</b> послушных детей...»</li>
                                         <li>«Если бы я <b>имел</b> больше времени...»</li>
                                     </ul>
                                 </div>
-                                <div className="bg-green-50 p-5 rounded-xl border border-green-300">
-                                    <h4 className="font-bold text-green-700 mb-2 text-center">КРУГ ВЛИЯНИЯ («Быть»)</h4>
-                                    <ul className="space-y-2 text-sm text-green-800 italic">
+                                <div className="bg-green-50 dark:bg-green-900/20 p-5 rounded-xl border border-green-300 dark:border-green-700">
+                                    <h4 className="font-bold text-green-700 dark:text-green-400 mb-2 text-center">КРУГ ВЛИЯНИЯ («Быть»)</h4>
+                                    <ul className="space-y-2 text-sm text-green-800 dark:text-green-300 italic">
                                         <li>«Я могу <b>быть</b> более терпеливым».</li>
                                         <li>«Я могу <b>быть</b> более мудрым».</li>
                                         <li>«Я могу <b>быть</b> более любящим».</li>
@@ -509,8 +562,8 @@
                                 </div>
                             </div>
                             
-                             <div className="mt-4 p-4 bg-white rounded-lg shadow-sm border-l-4 border-yellow-400">
-                                <p className="text-sm text-gray-700">
+                             <div className="mt-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border-l-4 border-yellow-400">
+                                <p className="text-sm text-gray-700 dark:text-gray-300">
                                     <b>Пример:</b> Иосиф в Египте. Был рабом, но сфокусировался на том, чтобы <b>быть</b> лучшим управляющим. Попал в тюрьму, но сфокусировался на том, чтобы <b>быть</b> полезным. В итоге стал вторым человеком в государстве.
                                 </p>
                             </div>
@@ -518,10 +571,10 @@
                     );
                     case 'love': return (
                         <div className={fadeClass}>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">12. Любовь — это глагол</h2>
-                             <div className="bg-pink-50 p-4 md:p-6 rounded-xl border-l-8 border-pink-500 shadow-md">
-                                <h3 className="font-bold text-pink-900 mb-2 text-lg">Диалог с семинара</h3>
-                                <p className="text-gray-700 italic leading-relaxed text-sm md:text-base">
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">13. Любовь — это глагол</h2>
+                             <div className="bg-pink-50 dark:bg-pink-900/20 p-4 md:p-6 rounded-xl border-l-8 border-pink-500 shadow-md">
+                                <h3 className="font-bold text-pink-900 dark:text-pink-300 mb-2 text-lg">Диалог с семинара</h3>
+                                <p className="text-gray-700 dark:text-gray-300 italic leading-relaxed text-sm md:text-base">
                                     — Стивен, мне больше не нравится моя жена. Чувства ушли. Что мне делать?<br/>
                                     — Люби её, — ответил я.<br/>
                                     — Ты не понял. Чувства любви больше нет.<br/>
@@ -529,35 +582,35 @@
                                 </p>
                             </div>
 
-                            <div className="mt-6 bg-white p-5 rounded-xl shadow-md border border-pink-100">
-                                <h4 className="font-bold text-gray-800 mb-2 text-lg">Разбор</h4>
-                                <p className="text-gray-700 text-sm mb-3">
+                            <div className="mt-6 bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-pink-100 dark:border-pink-900">
+                                <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2 text-lg">Разбор</h4>
+                                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                                     В реактивном языке любовь — это чувство, которым управляют гормоны или обстоятельства. В проактивном языке <b>любовь — это глагол</b>. Любовь-чувство есть плод любви-действия.
                                 </p>
-                                <p className="font-bold text-green-700 text-sm">Пример любви-глагола: служить, жертвовать собой, слушать, сопереживать, ценить.</p>
+                                <p className="font-bold text-green-700 dark:text-green-400 text-sm">Пример любви-глагола: служить, жертвовать собой, слушать, сопереживать, ценить.</p>
                             </div>
                         </div>
                     );
                     case 'consequences': return (
                         <div className={fadeClass}>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">13. Выбор и Последствия</h2>
-                             <div className="bg-orange-50 p-4 md:p-6 rounded-xl border-t-4 border-orange-400 shadow-sm">
-                                <h3 className="font-bold text-orange-900 mb-2 flex items-center gap-2 text-lg"><Icons.Scale size={24}/> Закон Палки</h3>
-                                <p className="text-gray-700">
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">14. Выбор и Последствия</h2>
+                             <div className="bg-orange-50 dark:bg-orange-900/20 p-4 md:p-6 rounded-xl border-t-4 border-orange-400 shadow-sm">
+                                <h3 className="font-bold text-orange-900 dark:text-orange-300 mb-2 flex items-center gap-2 text-lg"><Icons.Scale size={24}/> Закон Палки</h3>
+                                <p className="text-gray-700 dark:text-gray-300">
                                     Мы свободны в выборе наших действий, но мы <b>не свободны</b> в выборе последствий этих действий. Последствия управляются естественными законами.
                                 </p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                <div className="bg-white p-5 rounded-xl shadow-md">
-                                    <h4 className="font-bold text-gray-800 mb-2">Пример с поездом</h4>
-                                    <p className="text-sm text-gray-600">
+                                <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md">
+                                    <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2">Пример с поездом</h4>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">
                                         Мы можем решить встать на пути мчащегося поезда (свободный выбор действия), но мы не можем решить, что будет, когда он на нас наедет (неизбежное последствие). Поднимая один конец палки, мы поднимаем и другой.
                                     </p>
                                 </div>
-                                <div className="bg-white p-5 rounded-xl shadow-md">
-                                    <h4 className="font-bold text-gray-800 mb-2">Отношение к ошибкам</h4>
-                                    <p className="text-sm text-gray-600">
+                                <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md">
+                                    <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2">Отношение к ошибкам</h4>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">
                                         Если выбор принес плохие последствия (ошибка), проактивный подход: <b>мгновенно признать, исправить и извлечь урок</b>. Утаивание ошибки — это уже вторая ошибка.
                                     </p>
                                 </div>
@@ -566,20 +619,20 @@
                     );
                     case 'commitments': return (
                         <div className={fadeClass}>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">14. Обязательства</h2>
-                             <div className="bg-indigo-50 p-4 md:p-6 rounded-xl border-t-4 border-indigo-500 shadow-sm">
-                                <h3 className="font-bold text-indigo-900 mb-2 flex items-center gap-2 text-lg"><Icons.Key size={24}/> Суть роста</h3>
-                                <p className="text-gray-700">
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100">15. Обязательства</h2>
+                             <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 md:p-6 rounded-xl border-t-4 border-indigo-500 shadow-sm">
+                                <h3 className="font-bold text-indigo-900 dark:text-indigo-300 mb-2 flex items-center gap-2 text-lg"><Icons.Key size={24}/> Суть роста</h3>
+                                <p className="text-gray-700 dark:text-gray-300">
                                     В самом центре нашего Круга Влияния находится способность <b>давать обещания и держать их</b>. Это и есть проактивность.
                                 </p>
                             </div>
                             
-                            <div className="mt-4 bg-white p-5 rounded-xl shadow-md border border-gray-100">
-                                <h4 className="font-bold text-gray-800 mb-2">Пример: Малые победы</h4>
-                                <p className="text-sm text-gray-700 mb-2">
+                            <div className="mt-4 bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-100 dark:border-gray-700">
+                                <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-2">Пример: Малые победы</h4>
+                                <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
                                     Не нужно сразу обещать "никогда больше не есть сладкого". Начните с малого. Пообещайте себе не есть десерт <i>сегодня</i> в обед. Или встать ровно по первому звонку будильника.
                                 </p>
-                                <p className="text-sm text-indigo-700 font-medium">
+                                <p className="text-sm text-indigo-700 dark:text-indigo-400 font-medium">
                                     Выполняя эти малые обещания, вы развиваете свою внутреннюю целостность. Ваше чувство чести становится сильнее ваших сиюминутных настроений.
                                 </p>
                             </div>
@@ -587,7 +640,7 @@
                     );
                     case 'challenge': return (
                         <div className={fadeClass}>
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">15. 30-дневный тест</h2>
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">16. 30-дневный тест</h2>
                             <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 md:p-8 rounded-2xl shadow-2xl mb-6 relative overflow-hidden">
                                 <Icons.Award className="absolute -right-6 -bottom-6 opacity-30 transform rotate-12" size={150}/>
                                 <h3 className="text-lg md:text-xl font-bold mb-2 relative z-10 text-purple-200 uppercase tracking-widest">Ваш прогресс</h3>
@@ -606,9 +659,9 @@
                                     "11. Превратите жалобу в план", "12. Сохраните спокойствие в стрессе", "13. Помогите тому, кто вам не нравится", "14. Отметьте 5 проактивных решений", "15. Фокус на «БЫТЬ» (характер)", "16. Несите свою «погоду» в душе", "17. Поступите по совести, а не по выгоде", "18. Анонимное доброе дело", "19. Изучите что-то новое (Круг Влияния)", "20. Станьте частью решения дома",
                                     "21. 3 недели! Наградите себя", "22. Возьмите ответственность за сбой", "23. Влияйте примером, а не спором", "24. Улыбнитесь проблеме, которую не решить", "25. Извлеките урок из неудачи", "26. Исправьте чужую ошибку молча", "27. Сделайте чью-то ношу легче", "28. Записывайте проактивные мысли", "29. Расскажите другу о проактивности", "30. Финиш! Вы — творец своей жизни!"
                                 ].map((task, i) => (
-                                    <div key={i} onClick={() => toggleDay(i + 1)} className={`p-3 md:p-4 rounded-xl border-2 flex items-center gap-3 md:gap-4 transition-all cursor-pointer hover:shadow-md active:scale-[0.98] ${challengeProgress[i + 1] ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100 hover:border-purple-200'}`}>
-                                        {challengeProgress[i + 1] ? <div className="bg-green-500 text-white p-1 rounded-full flex-shrink-0"><Icons.CheckCircle size={16}/></div> : <Icons.Circle className="w-6 h-6 text-gray-200 flex-shrink-0"/>}
-                                        <span className={`text-xs md:text-base ${challengeProgress[i+1] ? 'text-gray-400 line-through decoration-2' : 'text-gray-700 font-medium'}`}>{task}</span>
+                                    <div key={i} onClick={() => toggleDay(i + 1)} className={`p-3 md:p-4 rounded-xl border-2 dark:border-gray-700 flex items-center gap-3 md:gap-4 transition-all cursor-pointer hover:shadow-md active:scale-[0.98] ${challengeProgress[i + 1] ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : 'bg-white dark:bg-gray-800 hover:border-purple-200 dark:hover:border-purple-900'}`}>
+                                        {challengeProgress[i + 1] ? <div className="bg-green-500 text-white p-1 rounded-full flex-shrink-0"><Icons.CheckCircle size={16}/></div> : <Icons.Circle className="w-6 h-6 text-gray-200 dark:text-gray-600 flex-shrink-0"/>}
+                                        <span className={`text-xs md:text-base ${challengeProgress[i+1] ? 'text-gray-400 dark:text-gray-500 line-through decoration-2' : 'text-gray-700 dark:text-gray-300 font-medium'}`}>{task}</span>
                                     </div>
                                 ))}
                             </div>
@@ -619,25 +672,30 @@
             };
 
             return (
-                <div className="bg-gray-50 min-h-screen font-sans text-gray-900">
-                    <header className="bg-white sticky top-0 z-30 shadow-md border-b border-gray-100 px-4 py-3 flex items-center justify-between md:hidden">
+                <div className="min-h-screen font-sans">
+                    <header className="bg-white dark:bg-gray-900 sticky top-0 z-30 shadow-md border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex items-center justify-between md:hidden">
                         <div className="flex items-center gap-2">
                             <div className="bg-gradient-to-br from-purple-600 to-indigo-600 text-white p-2 rounded-lg shadow-sm"><Icons.BookOpen size={20}/></div>
-                            <span className="font-bold text-gray-800 text-lg">Навык 1</span>
+                            <span className="font-bold text-gray-800 dark:text-white text-lg">Навык 1</span>
                         </div>
-                        <button onClick={() => setShowMenu(true)} className="p-2 bg-gray-100 rounded-full active:bg-gray-200 text-gray-700"><Icons.Menu size={24}/></button>
+                         <div className="flex items-center gap-2">
+                            <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-700 dark:text-gray-300">
+                                {isDarkMode ? <Icons.Sun size={20}/> : <Icons.Moon size={20}/>}
+                            </button>
+                            <button onClick={() => setShowMenu(true)} className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full active:bg-gray-200 text-gray-700 dark:text-gray-300"><Icons.Menu size={24}/></button>
+                        </div>
                     </header>
 
                     {showMenu && (
                         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm animate-in fade-in" onClick={() => setShowMenu(false)}>
-                            <div className="absolute right-0 top-0 bottom-0 w-[85%] max-w-xs bg-white shadow-2xl p-6 overflow-y-auto" onClick={e => e.stopPropagation()}>
+                            <div className="absolute right-0 top-0 bottom-0 w-[85%] max-w-xs bg-white dark:bg-gray-900 shadow-2xl p-6 overflow-y-auto" onClick={e => e.stopPropagation()}>
                                 <div className="flex justify-between items-center mb-8">
-                                    <h2 className="font-bold text-2xl text-gray-900">Меню</h2>
-                                    <button onClick={() => setShowMenu(false)} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200"><Icons.X size={24}/></button>
+                                    <h2 className="font-bold text-2xl text-gray-900 dark:text-white">Меню</h2>
+                                    <button onClick={() => setShowMenu(false)} className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200"><Icons.X size={24}/></button>
                                 </div>
                                 <div className="space-y-2">
                                     {sections.map(s => (
-                                        <button key={s.id} onClick={() => {setActiveSection(s.id); setShowMenu(false); window.scrollTo(0,0);}} className={`w-full text-left p-4 rounded-xl flex items-center gap-4 transition-all ${activeSection === s.id ? 'bg-purple-100 text-purple-700 font-bold shadow-sm' : 'text-gray-600 hover:bg-gray-50'}`}>
+                                        <button key={s.id} onClick={() => {setActiveSection(s.id); setShowMenu(false); window.scrollTo(0,0);}} className={`w-full text-left p-4 rounded-xl flex items-center gap-4 transition-all ${activeSection === s.id ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 font-bold shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}>
                                             <s.icon size={20}/> <span className="text-base">{s.title}</span>
                                         </button>
                                     ))}
@@ -648,32 +706,37 @@
 
                     <div className="max-w-7xl mx-auto md:p-8 flex items-start gap-8">
                         <aside className="hidden md:block w-80 shrink-0 sticky top-8">
-                            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                                <div className="flex items-center gap-4 mb-8 px-2">
-                                    <div className="bg-gradient-to-br from-purple-600 to-indigo-600 p-3 rounded-xl text-white shadow-lg"><Icons.BookOpen size={28}/></div>
-                                    <div><h1 className="font-bold text-gray-900 text-xl leading-tight">Будьте<br/>проактивны</h1><p className="text-xs text-purple-500 font-bold uppercase tracking-wider mt-1">Навык 1</p></div>
+                            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 p-6">
+                                <div className="flex items-center justify-between mb-8 px-2">
+                                    <div className="flex items-center gap-4">
+                                        <div className="bg-gradient-to-br from-purple-600 to-indigo-600 p-3 rounded-xl text-white shadow-lg"><Icons.BookOpen size={28}/></div>
+                                        <div><h1 className="font-bold text-gray-900 dark:text-white text-xl leading-tight">Будьте<br/>проактивны</h1><p className="text-xs text-purple-500 dark:text-purple-400 font-bold uppercase tracking-wider mt-1">Навык 1</p></div>
+                                    </div>
+                                     <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-400">
+                                        {isDarkMode ? <Icons.Sun size={20}/> : <Icons.Moon size={20}/>}
+                                    </button>
                                 </div>
                                 <nav className="space-y-1 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
                                     {sections.map(s => (
-                                        <button key={s.id} onClick={() => {setActiveSection(s.id); window.scrollTo(0,0);}} className={`w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 transition-all text-sm font-medium ${activeSection === s.id ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md transform scale-105' : 'text-gray-600 hover:bg-gray-50 hover:pl-5'}`}>
+                                        <button key={s.id} onClick={() => {setActiveSection(s.id); window.scrollTo(0,0);}} className={`w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 transition-all text-sm font-medium ${activeSection === s.id ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md transform scale-105' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:pl-5'}`}>
                                             <s.icon size={18}/> <span>{s.title}</span>
                                         </button>
                                     ))}
                                 </nav>
-                                <div className="mt-6 pt-6 border-t border-gray-100 px-2">
+                                <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800 px-2">
                                     <p className="text-xs text-gray-400 uppercase font-bold mb-3 tracking-widest">Ваш прогресс</p>
-                                    <div className="flex items-center gap-3 text-sm font-bold text-gray-700">
-                                        <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden"><div className="h-full bg-green-500 transition-all duration-500" style={{ width: `${(completedDays / 30) * 100}%` }}></div></div>
+                                    <div className="flex items-center gap-3 text-sm font-bold text-gray-700 dark:text-gray-300">
+                                        <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden"><div className="h-full bg-green-500 transition-all duration-500" style={{ width: `${(completedDays / 30) * 100}%` }}></div></div>
                                         <span>{Math.round((completedDays / 30) * 100)}%</span>
                                     </div>
                                 </div>
                             </div>
                         </aside>
 
-                        <main className="flex-1 w-full min-w-0 bg-white md:rounded-3xl md:shadow-xl md:border md:border-gray-100 min-h-screen md:min-h-[800px] overflow-hidden">
-                             <div className="hidden md:flex border-b border-gray-100 p-8 justify-between items-center bg-gray-50/30">
+                        <main className="flex-1 w-full min-w-0 bg-white dark:bg-gray-900 md:rounded-3xl md:shadow-xl md:border md:border-gray-100 dark:border-gray-800 min-h-screen md:min-h-[800px] overflow-hidden transition-colors duration-300">
+                             <div className="hidden md:flex border-b border-gray-100 dark:border-gray-800 p-8 justify-between items-center bg-gray-50/30 dark:bg-gray-800/30">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-white rounded-lg shadow-sm border border-gray-100">{React.createElement(sections.find(s => s.id === activeSection)?.icon || Icons.BookOpen, { size: 20, className: "text-purple-600" })}</div>
+                                    <div className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">{React.createElement(sections.find(s => s.id === activeSection)?.icon || Icons.BookOpen, { size: 20, className: "text-purple-600 dark:text-purple-400" })}</div>
                                     <h2 className="font-bold text-gray-400 text-xs uppercase tracking-widest">{sections.find(s => s.id === activeSection)?.title}</h2>
                                 </div>
                              </div>
