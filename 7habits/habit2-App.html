@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Навык 2: Начинайте, представляя конечную цель</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        },
+                        dark: {
+                            bg: '#0f172a',
+                            card: '#1e293b',
+                            text: '#f1f5f9'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 12s linear infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 transition-colors duration-300">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // --- ICONS (SVG) ---
+        const Icons = {
+            Compass: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>,
+            Menu: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>,
+            X: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>,
+            Sun: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>,
+            Moon: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>,
+            Check: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>,
+            Skull: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>,
+            Brain: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" /></svg>,
+            Scroll: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>,
+            Jungle: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>,
+            Target: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zm-7.518-.267A8.25 8.25 0 1120.25 10.5M8.288 14.212A5.25 5.25 0 1117.25 10.5" /></svg>,
+            Shield: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" /></svg>,
+            Generic: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>,
+            Ladder: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" /></svg>,
+            Users: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>,
+            Lightbulb: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-1.946c2.836-1.01 4.865-3.848 4.865-6.874 0-4.142-3.507-7.5-7.5-7.5s-7.5 3.358-7.5 7.5c0 3.026 2.029 5.864 4.865 6.874V18m-2.25 0h4.5m-4.5 0a2.25 2.25 0 004.5 0m-4.5 2.25h4.5m-4.5 0a2.25 2.25 0 004.5 0" /></svg>,
+            Briefcase: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>,
+            Globe: () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>
+        };
+
+        // --- DATA CONSTANTS ---
+        const sectionsData = [
+            { id: 0, title: 'Персональное лидерство', icon: Icons.Compass },
+            { id: 1, title: 'Конечная цель', icon: Icons.Skull },
+            { id: 2, title: 'Два творения', icon: Icons.Brain },
+            { id: 3, title: 'План или умолчание', icon: Icons.Scroll },
+            { id: 4, title: 'Лидерство и управление', icon: Icons.Jungle },
+            { id: 5, title: 'Переписывание сценария', icon: Icons.Generic },
+            { id: 6, title: 'Личная миссия', icon: Icons.Target },
+            { id: 7, title: 'Центр влияния', icon: Icons.Shield },
+            { id: 8, title: 'Альтернативные центры', icon: Icons.Users },
+            { id: 9, title: 'Определение центра', icon: Icons.Lightbulb },
+            { id: 10, title: 'Центр принципов', icon: Icons.Compass },
+            { id: 11, title: 'Написание миссии', icon: Icons.Scroll },
+            { id: 12, title: 'Два полушария', icon: Icons.Brain },
+            { id: 13, title: 'Визуализация', icon: Icons.Target },
+            { id: 14, title: 'Роли и цели', icon: Icons.Briefcase },
+            { id: 15, title: 'Миссия семьи', icon: Icons.Users },
+            { id: 16, title: 'Практика 30 дней', icon: Icons.Check }
+        ];
+
+        const challengeTasks = [
+            "Выделите время для уединения", "Визуализация похорон: запишите речи", "Проанализируйте свой центр жизни",
+            "Начните черновик личной миссии", "Определите 5-7 главных ролей", "Напишите цели для каждой роли",
+            "Определите дела для делегирования", "Утренняя визуализация дня", "Напишите аффирмацию для стресса",
+            "Соберите вдохновляющие цитаты", "Проверьте баланс ролей", "Расходы отражают ценности?",
+            "Куда уходит ваше время?", "Творческое упражнение (правое полушарие)", "Оцените успехи через призму миссии",
+            "Перепишите негативный сценарий", "Помогите другу найти цели", "Миссия для рабочего проекта",
+            "Семейное обсуждение ценностей", "Обновите черновик миссии", "Перечитайте миссию вслух",
+            "Визуализация через 10 лет", "Аффирмация перед трудным делом", "Откажитесь от непродуктивного дела",
+            "Какой след я хочу оставить?", "Обновите цели на неделю", "Решение на основе принципов",
+            "Поделитесь опытом с близким", "Финализируйте миссию", "Живите по своему сценарию!"
+        ];
+
+        // --- VISUALIZATION COMPONENTS (SVG) ---
+
+        const DiagramTwoCreations = () => (
+            <svg viewBox="0 0 400 150" className="w-full h-auto bg-gray-50 dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700">
+                <defs>
+                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#64748b" />
+                    </marker>
+                </defs>
+                {/* 1st Creation */}
+                <circle cx="80" cy="75" r="40" fill="#dbeafe" stroke="#3b82f6" strokeWidth="2" />
+                <text x="80" y="75" textAnchor="middle" dy=".3em" fontSize="10" fill="#1e40af">ИДЕЯ</text>
+                <text x="80" y="130" textAnchor="middle" fontSize="12" fill="#475569" fontWeight="bold">Ментальное</text>
+                
+                {/* Arrow */}
+                <line x1="130" y1="75" x2="260" y2="75" stroke="#64748b" strokeWidth="2" markerEnd="url(#arrow)" strokeDasharray="5,5" />
+                <text x="200" y="65" textAnchor="middle" fontSize="10" fill="#64748b">Проектирование</text>
+
+                {/* 2nd Creation */}
+                <rect x="280" y="35" width="80" height="80" rx="8" fill="#dcfce7" stroke="#22c55e" strokeWidth="2" />
+                <text x="320" y="75" textAnchor="middle" dy=".3em" fontSize="10" fill="#15803d">ФОРМА</text>
+                <text x="320" y="130" textAnchor="middle" fontSize="12" fill="#475569" fontWeight="bold">Физическое</text>
+            </svg>
+        );
+
+        const DiagramBrain = () => (
+            <svg viewBox="0 0 400 200" className="w-full h-auto bg-white dark:bg-dark-card rounded-lg">
+                <path d="M200,20 Q120,20 80,60 Q20,100 80,160 Q120,200 200,180 Z" fill="#f1f5f9" stroke="#cbd5e1" strokeWidth="2" />
+                <path d="M200,20 Q280,20 320,60 Q380,100 320,160 Q280,200 200,180 Z" fill="#eff6ff" stroke="#3b82f6" strokeWidth="2" />
+                
+                {/* Divider */}
+                <line x1="200" y1="20" x2="200" y2="180" stroke="#94a3b8" strokeWidth="2" strokeDasharray="4" />
+
+                {/* Left Text */}
+                <text x="140" y="60" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#475569">ЛЕВОЕ</text>
+                <text x="140" y="90" textAnchor="middle" fontSize="10" fill="#64748b">Логика</text>
+                <text x="140" y="105" textAnchor="middle" fontSize="10" fill="#64748b">Анализ</text>
+                <text x="140" y="120" textAnchor="middle" fontSize="10" fill="#64748b">Слова</text>
+                <text x="140" y="135" textAnchor="middle" fontSize="10" fill="#64748b">Время</text>
+
+                {/* Right Text */}
+                <text x="260" y="60" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#1d4ed8">ПРАВОЕ</text>
+                <text x="260" y="90" textAnchor="middle" fontSize="10" fill="#3b82f6">Чувства</text>
+                <text x="260" y="105" textAnchor="middle" fontSize="10" fill="#3b82f6">Образы</text>
+                <text x="260" y="120" textAnchor="middle" fontSize="10" fill="#3b82f6">Интуиция</text>
+                <text x="260" y="135" textAnchor="middle" fontSize="10" fill="#3b82f6">Мечты</text>
+            </svg>
+        );
+
+        const DiagramCenter = () => (
+            <svg viewBox="0 0 300 300" className="w-full max-w-xs mx-auto animate-spin-slow">
+                <circle cx="150" cy="150" r="100" fill="none" stroke="#e2e8f0" strokeWidth="2" strokeDasharray="5,5" />
+                
+                {/* 4 Circles */}
+                <g transform="translate(150, 150)">
+                    <circle cx="0" cy="-60" r="40" fill="#dbeafe" opacity="0.8" />
+                    <text x="0" y="-60" textAnchor="middle" dy=".3em" fontSize="10" fontWeight="bold">Мудрость</text>
+                    
+                    <circle cx="60" cy="0" r="40" fill="#dcfce7" opacity="0.8" />
+                    <text x="60" y="0" textAnchor="middle" dy=".3em" fontSize="10" fontWeight="bold">Власть</text>
+                    
+                    <circle cx="0" cy="60" r="40" fill="#fef9c3" opacity="0.8" />
+                    <text x="0" y="60" textAnchor="middle" dy=".3em" fontSize="10" fontWeight="bold">Ориентиры</text>
+                    
+                    <circle cx="-60" cy="0" r="40" fill="#fee2e2" opacity="0.8" />
+                    <text x="-60" y="0" textAnchor="middle" dy=".3em" fontSize="10" fontWeight="bold">Безопасность</text>
+                    
+                    {/* Center Core */}
+                    <circle cx="0" cy="0" r="25" fill="#3b82f6" />
+                    <text x="0" y="0" textAnchor="middle" dy=".3em" fontSize="8" fill="white" fontWeight="bold">ПРИНЦИПЫ</text>
+                </g>
+            </svg>
+        );
+
+        const DiagramCompass = () => (
+             <svg viewBox="0 0 200 200" className="w-32 h-32 mx-auto">
+                <circle cx="100" cy="100" r="90" fill="none" stroke="#cbd5e1" strokeWidth="2" />
+                <path d="M100,20 L120,100 L100,180 L80,100 Z" fill="#3b82f6" />
+                <path d="M100,20 L120,100 L100,180 L80,100 Z" fill="url(#grad1)" opacity="0.5" />
+                <circle cx="100" cy="100" r="5" fill="white" />
+                <text x="100" y="15" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#64748b">N (Лидерство)</text>
+             </svg>
+        );
+
+        // --- COMPONENTS ---
+
+        const QuoteBlock = ({ text, author }) => (
+            <div className="border-l-4 border-brand-500 bg-white dark:bg-dark-card p-6 my-6 rounded-r shadow-sm">
+                <p className="text-xl italic font-serif text-gray-700 dark:text-gray-300 mb-2">"{text}"</p>
+                <p className="text-right font-bold text-gray-900 dark:text-brand-100">— {author}</p>
+            </div>
+        );
+
+        const InfoCard = ({ title, children, icon: Icon, color = "blue" }) => {
+            const colors = {
+                blue: "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800",
+                green: "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800",
+                purple: "bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800",
+                yellow: "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800",
+                red: "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800",
+            };
+            
+            return (
+                <div className={`p-6 rounded-xl border ${colors[color]} my-4 transition-transform hover:scale-[1.01]`}>
+                    <div className="flex items-center mb-3">
+                        {Icon && <div className="mr-3 text-brand-600 dark:text-brand-400"><Icon /></div>}
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h3>
+                    </div>
+                    <div className="text-gray-700 dark:text-gray-300">
+                        {children}
+                    </div>
+                </div>
+            );
+        };
+
+        const CenterCard = ({ title, description, risk, safety, icon: Icon }) => (
+            <div className="bg-white dark:bg-dark-card p-5 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-all h-full">
+                <div className="flex items-center mb-3 text-brand-600 dark:text-brand-400">
+                    <Icon />
+                    <h4 className="ml-2 font-bold text-lg">{title}</h4>
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-3 italic">{description}</div>
+                <div className="space-y-2 text-sm">
+                    <p><span className="font-semibold text-red-500">Симптом (Риск):</span> {risk}</p>
+                    <p><span className="font-semibold text-green-500">Ощущение (Безопасность):</span> {safety}</p>
+                </div>
+            </div>
+        );
+
+        const ChallengeGrid = ({ progress, toggleDay }) => {
+            return (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mt-6">
+                    {challengeTasks.map((task, idx) => {
+                        const isDone = progress[idx];
+                        return (
+                            <div 
+                                key={idx}
+                                onClick={() => toggleDay(idx)}
+                                className={`p-3 rounded border cursor-pointer select-none transition-all duration-200 flex flex-col justify-between h-32
+                                    ${isDone 
+                                        ? 'bg-brand-600 border-brand-700 text-white' 
+                                        : 'bg-white dark:bg-dark-card border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-brand-300'}`}
+                            >
+                                <div className="flex justify-between items-start">
+                                    <span className="text-xs font-bold opacity-70">День {idx + 1}</span>
+                                    {isDone && <Icons.Check />}
+                                </div>
+                                <p className={`text-sm leading-tight mt-2 ${isDone ? 'font-medium' : ''}`}>{task}</p>
+                            </div>
+                        )
+                    })}
+                </div>
+            );
+        };
+
+        const Sidebar = ({ activeSection, setActiveSection, isOpen, setIsOpen, progressPercent, toggleTheme, isDark }) => {
+            const navClass = `fixed inset-y-0 left-0 transform ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:static lg:inset-0 z-30 w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition duration-300 ease-in-out flex flex-col`;
+
+            return (
+                <div className={navClass}>
+                    <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
+                        <div className="flex items-center text-brand-600 dark:text-brand-400 font-bold text-xl">
+                            <Icons.Compass />
+                            <span className="ml-2">Навык 2</span>
+                        </div>
+                        <button onClick={() => setIsOpen(false)} className="lg:hidden text-gray-500"><Icons.X /></button>
+                    </div>
+
+                    <nav className="flex-1 overflow-y-auto p-4 space-y-1">
+                        {sectionsData.map((section) => (
+                            <button
+                                key={section.id}
+                                onClick={() => { setActiveSection(section.id); setIsOpen(false); }}
+                                className={`w-full flex items-center p-3 text-sm font-medium rounded-lg transition-colors text-left
+                                    ${activeSection === section.id 
+                                        ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300' 
+                                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
+                            >
+                                <div className="mr-3 h-5 w-5 shrink-0">{<section.icon />}</div>
+                                {section.title}
+                            </button>
+                        ))}
+                    </nav>
+
+                    <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
+                         <div className="flex justify-between items-center mb-4">
+                            <span className="text-xs font-semibold uppercase text-gray-500">Тема</span>
+                            <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                                {isDark ? <Icons.Sun /> : <Icons.Moon />}
+                            </button>
+                        </div>
+                        <div className="mb-2 flex justify-between text-xs font-semibold text-gray-500">
+                            <span>Прогресс</span>
+                            <span>{Math.round(progressPercent)}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                            <div className="bg-brand-600 h-2.5 rounded-full transition-all duration-500" style={{ width: `${progressPercent}%` }}></div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const MainContent = ({ activeSection, challengeProgress, toggleDay }) => {
+            const section = sectionsData.find(s => s.id === activeSection);
+
+            const renderContent = () => {
+                switch(activeSection) {
+                    case 0: return (
+                        <>
+                            <h2 className="text-2xl font-bold mb-4 text-brand-700 dark:text-brand-400">Суть навыка</h2>
+                            <p className="lead text-lg mb-4">Начинать, представляя конечную цель, означает начинать с четкого понимания того, к чему вы стремитесь.</p>
+                            <QuoteBlock text="То, что лежит позади нас, и то, что лежит впереди нас, — сущая мелочь по сравнению с тем, что лежит внутри нас." author="Оливер Уэнделл Холмс" />
+                            
+                            <h3 className="text-xl font-bold mt-6 mb-3">Определение:</h3>
+                            <p className="mb-4">Это основа привычки персонального лидерства. Она означает, что вы знаете, куда идете, чтобы лучше понимать, где находитесь сейчас, и чтобы каждый шаг был шагом в нужном направлении.</p>
+                            
+                            <InfoCard title="Пример из жизни" icon={Icons.Compass} color="blue">
+                                Легко попасть в ловушку активности, в круговорот дел, работать все усерднее и усерднее, карабкаясь по лестнице успеха, только для того, чтобы в конце обнаружить, что лестница была приставлена не к той стене.
+                            </InfoCard>
+                        </>
+                    );
+                    case 1: return (
+                        <>
+                            <h2 className="text-2xl font-bold mb-4 text-brand-700 dark:text-brand-400">Упражнение: Похороны</h2>
+                            <p className="mb-6 font-medium text-lg">Это самое мощное упражнение для понимания Навыка 2.</p>
+                            
+                            <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg mb-6 border-l-4 border-gray-600">
+                                <p>Представьте, что вы идете на похороны. Вы видите цветы, слышите музыку, чувствуете скорбь. Вы подходите к гробу и видите... <strong>самого себя</strong>. Это ваши похороны через 3 года.</p>
+                                <p className="mt-4 font-bold">Вы садитесь и смотрите на программу. Выступят 4 человека. Что бы вы хотели услышать от каждого из них?</p>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <InfoCard title="1. Семья" icon={Icons.Users} color="purple">
+                                    <strong>Определение:</strong> Близкие родственники, дети, супруги, родители.<br/>
+                                    <strong>Пример:</strong> Хотите ли вы, чтобы они помнили вашу любовь, или только то, что вы всегда были на работе?
+                                </InfoCard>
+                                <InfoCard title="2. Друзья" icon={Icons.Users} color="green">
+                                    <strong>Определение:</strong> Те, кто знал вас как личность.<br/>
+                                    <strong>Пример:</strong> Были ли вы надежным другом? Умели ли слушать? Было ли с вами весело?
+                                </InfoCard>
+                                <InfoCard title="3. Коллеги" icon={Icons.Briefcase} color="blue">
+                                    <strong>Определение:</strong> Люди из вашей профессиональной среды.<br/>
+                                    <strong>Пример:</strong> Помнят ли они вашу честность, креативность, трудолюбие? Или только интриги?
+                                </InfoCard>
+                                <InfoCard title="4. Общество" icon={Icons.Globe} color="yellow">
+                                    <strong>Определение:</strong> Церковь, общественные организации, соседи.<br/>
+                                    <strong>Пример:</strong> Какой след вы оставили в жизни города? Кому вы помогли бескорыстно?
+                                </InfoCard>
+                            </div>
+                        </>
+                    );
+                    case 2: return (
+                        <>
+                            <h2 className="text-2xl font-bold mb-4 text-brand-700 dark:text-brand-400">Принцип двух творений</h2>
+                            <p className="mb-4 text-lg">"Начинайте, представляя конечную цель" основано на принципе, что <strong>все вещи создаются дважды</strong>.</p>
+                            
+                            {/* VISUALIZATION ADDED */}
+                            <div className="mb-6">
+                                <DiagramTwoCreations />
+                            </div>
+
+                            <div className="grid gap-6 my-6">
+                                <div className="border border-brand-200 dark:border-brand-800 rounded-lg p-5 bg-white dark:bg-dark-card">
+                                    <h3 className="font-bold text-brand-600 text-lg flex items-center"><Icons.Brain /><span className="ml-2">Первое творение (Ментальное)</span></h3>
+                                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Это проект, план, замысел. Лидерство.</p>
+                                    <div className="mt-3 bg-brand-50 dark:bg-brand-900/30 p-3 rounded">
+                                        <strong>Пример:</strong> Перед строительством дома вы создаете чертеж. Вы продумываете каждую деталь, пока не увидите дом ясно в своем воображении. Если вы не сделаете это, вам придется перестраивать стены (дорого и долго).
+                                    </div>
+                                </div>
+
+                                <div className="border border-green-200 dark:border-green-800 rounded-lg p-5 bg-white dark:bg-dark-card">
+                                    <h3 className="font-bold text-green-600 text-lg flex items-center"><Icons.Generic /><span className="ml-2">Второе творение (Физическое)</span></h3>
+                                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Это реализация, строительство, действие. Управление.</p>
+                                    <div className="mt-3 bg-green-50 dark:bg-green-900/30 p-3 rounded">
+                                        <strong>Пример:</strong> Само строительство дома: кладка кирпича, забивание гвоздей. Плотник следует правилу: "Семь раз отмерь (1-е творение), один раз отрежь (2-е творение)".
+                                    </div>
+                                </div>
+                            </div>
+                            <p>В бизнесе: Первое творение — это бизнес-план и стратегия рынка. Второе творение — операционная деятельность.</p>
+                        </>
+                    );
+                    case 3: return (
+                        <>
+                            <h2 className="text-2xl font-bold mb-4 text-brand-700 dark:text-brand-400">По замыслу или по умолчанию?</h2>
+                            <InfoCard title="Определение" icon={Icons.Scroll} color="green">
+                                Не все первые творения совершаются сознательно. Если мы не берем ответственность за первое творение своей жизни, мы по умолчанию живем по сценариям, написанным другими.
+                            </InfoCard>
+                            
+                            <h3 className="font-bold mt-6 mb-3">Сравнение подходов:</h3>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left text-sm border-collapse">
+                                    <thead>
+                                        <tr className="bg-gray-100 dark:bg-gray-800">
+                                            <th className="p-3 border dark:border-gray-700">По замыслу (Проактивность)</th>
+                                            <th className="p-3 border dark:border-gray-700">По умолчанию (Реактивность)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td className="p-3 border dark:border-gray-700">Вы сами пишете сценарий своей жизни.</td>
+                                            <td className="p-3 border dark:border-gray-700">Сценарий пишут родители, коллеги, обстоятельства.</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="p-3 border dark:border-gray-700">Основано на самосознании и воображении.</td>
+                                            <td className="p-3 border dark:border-gray-700">Основано на потребности в одобрении и страхах.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p className="mt-4 italic">"Мы либо сами творим свою жизнь, либо позволяем обстоятельствам творить ее за нас."</p>
+                        </>
+                    );
+                    case 4: return (
+                        <>
+                             <h2 className="text-2xl font-bold mb-4 text-brand-700 dark:text-brand-400">Лидерство vs Управление</h2>
+                             <div className="flex justify-center mb-6">
+                                <DiagramCompass />
+                             </div>
+                             <p className="mb-4 font-medium">Навык 2 — это навык персонального лидерства, а не управления.</p>
+                             
+                             <div className="grid md:grid-cols-2 gap-6 my-6">
+                                <div className="p-5 bg-white dark:bg-dark-card rounded shadow border-l-4 border-blue-500">
+                                    <h3 className="font-bold text-xl mb-2">Управление</h3>
+                                    <p className="mb-2 italic text-sm">"Как мне сделать это лучше и быстрее?"</p>
+                                    <ul className="list-disc pl-5 space-y-1 text-sm">
+                                        <li>Эффективность в подъеме по лестнице.</li>
+                                        <li>Нижнее звено: методы, логистика.</li>
+                                        <li>Фокус на скорости и КПД.</li>
+                                    </ul>
+                                </div>
+                                <div className="p-5 bg-white dark:bg-dark-card rounded shadow border-l-4 border-red-500">
+                                    <h3 className="font-bold text-xl mb-2">Лидерство</h3>
+                                    <p className="mb-2 italic text-sm">"Что именно я хочу сделать?"</p>
+                                    <ul className="list-disc pl-5 space-y-1 text-sm">
+                                        <li>Определение: приставлена ли лестница к той стене?</li>
+                                        <li>Верхнее звено: направление, ценности.</li>
+                                        <li>Фокус на правильности выбора.</li>
+                                    </ul>
+                                </div>
+                             </div>
+
+                            <QuoteBlock text="Менеджеры рубят джунгли. Они точат мачете, создают графики, качают мышцы. Лидер залезает на самое высокое дерево, оглядывает местность и кричит: 'МЫ НЕ В ТЕХ ДЖУНГЛЯХ!'" author="Стивен Кови" />
+                            <p className="mt-2 text-sm text-gray-500">Менеджеры обычно отвечают: "Замолчи! Мы успешно продвигаемся вперед!"</p>
+                        </>
+                    );
+                    case 5: return (
+                        <>
+                            <h2 className="text-2xl font-bold mb-4 text-brand-700 dark:text-brand-400">Переписывание сценария</h2>
+                            <p className="mb-4">Мы не можем изменить прошлое, но мы можем изменить интерпретацию и сценарий будущего. Это называется <strong>Рескриптинг</strong>.</p>
+                            
+                            <InfoCard title="Пример: Анвар Садат" icon={Icons.Generic} color="purple">
+                                Анвар Садат, президент Египта, был воспитан в ненависти к Израилю. Это был его сценарий "по умолчанию". В одиночной камере тюрьмы он использовал самосознание, чтобы увидеть этот сценарий, и переписал его, выбрав путь мира. Это привело к историческим соглашениям в Кэмп-Дэвиде.
+                            </InfoCard>
+
+                            <h3 className="font-bold mt-6 mb-2">Инструменты рескриптинга (Человеческие дарования):</h3>
+                            <ul className="space-y-2 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                                <li className="flex items-start"><span className="text-brand-600 mr-2">1.</span> <strong>Самосознание:</strong> Способность отделиться от сценария и наблюдать за ним.</li>
+                                <li className="flex items-start"><span className="text-brand-600 mr-2">2.</span> <strong>Воображение:</strong> Способность увидеть новый сценарий, которого еще нет.</li>
+                                <li className="flex items-start"><span className="text-brand-600 mr-2">3.</span> <strong>Совесть:</strong> Внутренний компас, указывающий на истинные принципы.</li>
+                            </ul>
+                            <p className="mt-4 text-sm italic">Метафора: Вы — программист. Сценарии детства — это старый код. Вы можете переписать программу.</p>
+                        </>
+                    );
+                    case 6: return (
+                        <>
+                             <h2 className="text-2xl font-bold mb-4 text-brand-700 dark:text-brand-400">Личная Миссия</h2>
+                             <p className="text-lg mb-4">Самый эффективный способ применения Навыка 2 — это создание <strong>Личной Миссии</strong> (или личного кредо, личной конституции).</p>
+                             
+                             <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
+                                <h3 className="font-bold mb-3">Определение:</h3>
+                                <p>Это письменный документ, утверждающий, каким вы хотите быть (характер), что вы хотите делать (вклад и достижения) и на каких ценностях будут основаны ваши поступки.</p>
+                             </div>
+
+                             <h3 className="font-bold mt-6 mb-3">3 Фокуса Миссии:</h3>
+                             <div className="space-y-4">
+                                <div className="flex items-start p-3 bg-white dark:bg-dark-card rounded shadow-sm">
+                                    <div className="bg-brand-100 text-brand-700 font-bold rounded-full w-8 h-8 flex items-center justify-center mr-4 shrink-0">1</div>
+                                    <div><strong>Характер:</strong> Кем я хочу стать? (Например: честным, добрым, смелым).</div>
+                                </div>
+                                <div className="flex items-start p-3 bg-white dark:bg-dark-card rounded shadow-sm">
+                                    <div className="bg-brand-100 text-brand-700 font-bold rounded-full w-8 h-8 flex items-center justify-center mr-4 shrink-0">2</div>
+                                    <div><strong>Вклад:</strong> Что я хочу оставить после себя? (Например: воспитать детей, создать бизнес, помочь бедным).</div>
+                                </div>
+                                <div className="flex items-start p-3 bg-white dark:bg-dark-card rounded shadow-sm">
+                                    <div className="bg-brand-100 text-brand-700 font-bold rounded-full w-8 h-8 flex items-center justify-center mr-4 shrink-0">3</div>
+                                    <div><strong>Ценности:</strong> На чем основаны мои решения? (Например: справедливость, трудолюбие, любовь).</div>
+                                </div>
+                             </div>
+                             <p className="mt-4 text-sm text-gray-500">Пример: "Моя миссия — жить честно и оказывать позитивное влияние на жизнь каждого, с кем я встречаюсь."</p>
+                        </>
+                    );
+                    case 7: return (
+                        <>
+                             <h2 className="text-2xl font-bold mb-4 text-brand-700 dark:text-brand-400">Центр Влияния</h2>
+                             <p className="mb-6">То, что находится в центре вашей жизни, является источником вашей стабильности и движущей силой. Кови выделяет 4 фактора:</p>
+                             
+                             {/* VISUALIZATION ADDED */}
+                             <div className="flex justify-center mb-8">
+                                <DiagramCenter />
+                             </div>
+
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="p-4 bg-white dark:bg-dark-card rounded shadow border-l-4 border-red-200">
+                                    <h4 className="font-bold text-lg mb-1 flex items-center"><Icons.Shield /><span className="ml-2">1. Безопасность</span></h4>
+                                    <p className="text-sm">Чувство собственного достоинства, самооценка, эмоциональный якорь. Ваша базовая сила.</p>
+                                </div>
+                                <div className="p-4 bg-white dark:bg-dark-card rounded shadow border-l-4 border-yellow-200">
+                                    <h4 className="font-bold text-lg mb-1 flex items-center"><Icons.Compass /><span className="ml-2">2. Внутренние ориентиры</span></h4>
+                                    <p className="text-sm">Источник направления. Ваша карта и совесть. Критерии принятия решений.</p>
+                                </div>
+                                <div className="p-4 bg-white dark:bg-dark-card rounded shadow border-l-4 border-blue-200">
+                                    <h4 className="font-bold text-lg mb-1 flex items-center"><Icons.Brain /><span className="ml-2">3. Мудрость</span></h4>
+                                    <p className="text-sm">Жизненная перспектива. Чувство баланса. Понимание того, как части соотносятся с целым.</p>
+                                </div>
+                                <div className="p-4 bg-white dark:bg-dark-card rounded shadow border-l-4 border-green-200">
+                                    <h4 className="font-bold text-lg mb-1 flex items-center"><Icons.Generic /><span className="ml-2">4. Власть</span></h4>
+                                    <p className="text-sm">Способность действовать. Энергия для совершения выбора и изменений.</p>
+                                </div>
+                             </div>
+                             <p className="mt-4 text-sm italic">Если эти факторы гармоничны, вы получаете сильную, цельную личность (Благородный характер).</p>
+                        </>
+                    );
+                    case 8: return (
+                        <>
+                            <h2 className="text-2xl font-bold mb-6 text-brand-700 dark:text-brand-400">Альтернативные центры</h2>
+                            <p className="mb-4">Большинство людей центрированы на чем-то внешнем, что делает их жизнь нестабильной.</p>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <CenterCard 
+                                    icon={Icons.Users} 
+                                    title="Супруг(а)" 
+                                    description="Самый распространенный центр."
+                                    risk="Сильная эмоциональная зависимость. Конфликты разрушают личность." 
+                                    safety="Зависит от настроения и поведения партнера." 
+                                />
+                                <CenterCard 
+                                    icon={Icons.Briefcase} 
+                                    title="Работа" 
+                                    description="Трудоголизм."
+                                    risk="Потеря работы = потеря смысла жизни. Пренебрежение здоровьем и семьей." 
+                                    safety="Основана на профессиональном статусе и признании." 
+                                />
+                                <CenterCard 
+                                    icon={Icons.Generic} 
+                                    title="Деньги" 
+                                    description="Фокус на накоплении."
+                                    risk="Тревога и страх потери капитала. Семья воспринимается как статья расходов." 
+                                    safety="Зависит от экономической ситуации и суммы на счете." 
+                                />
+                                <CenterCard 
+                                    icon={Icons.Generic} 
+                                    title="Удовольствия" 
+                                    description="Гедонизм, 'прожигание жизни'."
+                                    risk="Скука, пресыщение, потребность во все более сильных стимулах." 
+                                    safety="Краткосрочная, только в момент удовольствия." 
+                                />
+                                <CenterCard 
+                                    icon={Icons.Generic} 
+                                    title="Враг" 
+                                    description="Одержимость местью или соперничеством."
+                                    risk="Жизнь контролируется ненавистным человеком. Вы становитесь реактивным." 
+                                    safety="Зависит от действий врага." 
+                                />
+                                <CenterCard 
+                                    icon={Icons.Generic} 
+                                    title="Я (Эго)" 
+                                    description="Эгоцентризм."
+                                    risk="Изоляция, неспособность служить другим." 
+                                    safety="Нестабильна, постоянно требует внешней подпитки." 
+                                />
+                            </div>
+                        </>
+                    );
+                    case 9: return (
+                        <>
+                            <h2 className="text-2xl font-bold mb-4 text-brand-700 dark:text-brand-400">Как определить свой центр?</h2>
+                            <p className="mb-4">Часто мы не осознаем свой центр или колеблемся между разными центрами. Используйте эти вопросы для самодиагностики:</p>
+                            
+                            <div className="space-y-4">
+                                <InfoCard title="1. Одиночество" icon={Icons.Lightbulb} color="yellow">
+                                    О чем вы думаете, когда остаетесь одни и вас ничто не отвлекает? Куда естественным образом устремляются ваши мысли?
+                                </InfoCard>
+                                <InfoCard title="2. Значимость" icon={Icons.Lightbulb} color="blue">
+                                    Что заставляет вас чувствовать себя значимым? Чья похвала или одобрение для вас важнее всего?
+                                </InfoCard>
+                                <InfoCard title="3. Страх" icon={Icons.Lightbulb} color="red">
+                                    Чего вы боитесь потерять больше всего? Потеря чего лишит вашу жизнь смысла?
+                                </InfoCard>
+                                <InfoCard title="4. Раздражение" icon={Icons.Lightbulb} color="purple">
+                                    Что может вывести вас из себя быстрее всего? Когда кто-то прерывает что? (Работу? Отдых? Разговор с другом?)
+                                </InfoCard>
+                            </div>
+                        </>
+                    );
+                    case 10: return (
+                        <>
+                            <div className="text-center mb-8">
+                                <div className="inline-block p-4 rounded-full bg-brand-100 dark:bg-brand-900 text-brand-600 mb-4">
+                                    <Icons.Compass />
+                                </div>
+                                <h2 className="text-3xl font-bold text-brand-700 dark:text-brand-400">Центр, основанный на Принципах</h2>
+                            </div>
+                            <p className="text-lg mb-6">Это единственная надежная основа. Принципы (справедливость, честность, человеческое достоинство) — это объективные законы вселенной. Они не меняются.</p>
+                            
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="bg-green-50 dark:bg-green-900/20 p-5 rounded border border-green-200 dark:border-green-800">
+                                    <h4 className="font-bold text-green-700 dark:text-green-400 text-lg mb-2">Безопасность</h4>
+                                    <p className="text-sm">Основана на том, что вы живете в гармонии с неизменными законами. Принципы нельзя "потерять", их нельзя украсть, они не умирают и не предают.</p>
+                                </div>
+                                <div className="bg-blue-50 dark:bg-blue-900/20 p-5 rounded border border-blue-200 dark:border-blue-800">
+                                    <h4 className="font-bold text-blue-700 dark:text-blue-400 text-lg mb-2">Ориентиры</h4>
+                                    <p className="text-sm">Ваша карта точно соответствует территории. Вы принимаете решения, основываясь на долгосрочных последствиях и совести, а не на эмоциях момента.</p>
+                                </div>
+                                <div className="bg-yellow-50 dark:bg-yellow-900/20 p-5 rounded border border-yellow-200 dark:border-yellow-800">
+                                    <h4 className="font-bold text-yellow-700 dark:text-yellow-400 text-lg mb-2">Мудрость</h4>
+                                    <p className="text-sm">Вы видите вещи объективно. Вы видите мир не через призму "что мне выгодно" (как в центре Денег) или "что он подумает" (центр Супруга), а "что правильно".</p>
+                                </div>
+                                <div className="bg-red-50 dark:bg-red-900/20 p-5 rounded border border-red-200 dark:border-red-800">
+                                    <h4 className="font-bold text-red-700 dark:text-red-400 text-lg mb-2">Власть</h4>
+                                    <p className="text-sm">Это сила проактивной личности. Вы не ограничены привычками или обстоятельствами. Вы свободны выбирать ответ, соответствующий принципам.</p>
+                                </div>
+                            </div>
+                        </>
+                    );
+                    case 11: return (
+                        <>
+                            <h2 className="text-2xl font-bold mb-4 text-brand-700 dark:text-brand-400">Как написать миссию?</h2>
+                            <InfoCard title="Процесс, а не событие" icon={Icons.Scroll}>
+                                Написание миссии — это глубокий самоанализ. Это требует времени. Вы будете переписывать ее много раз.
+                            </InfoCard>
+                            
+                            <h3 className="font-bold mt-6 mb-3">Метод Виктора Франкла:</h3>
+                            <p className="mb-4">Франкл говорил, что мы не <em>изобретаем</em> смысл своей жизни, а <em>обнаруживаем</em> его.</p>
+                            
+                            <h3 className="font-bold mb-3">Этапы создания:</h3>
+                            <ol className="list-decimal pl-6 space-y-4 bg-white dark:bg-dark-card p-6 rounded shadow-sm">
+                                <li><strong>Сбор идей:</strong> Вспомните моменты вдохновения. Просмотрите упражнение "Похороны".</li>
+                                <li><strong>Черновик:</strong> Просто пишите все, что приходит в голову. Не думайте о грамматике. "Я хочу быть человеком, который..."</li>
+                                <li><strong>Отдых:</strong> Отложите черновик на неделю.</li>
+                                <li><strong>Редактирование:</strong> Используйте точные, вдохновляющие слова. Миссия должна вызывать у вас слезы или прилив сил.</li>
+                                <li><strong>Тестирование:</strong> Применяйте ее при принятии решений. Помогает ли она?</li>
+                            </ol>
+                            <p className="mt-4 italic text-sm">Пример миссии: "Добиваться успеха дома в первую очередь. Искать и заслуживать божественной помощи. Быть честным. Слушать обе стороны перед суждением."</p>
+                        </>
+                    );
+                    case 12: return (
+                        <>
+                            <h2 className="text-2xl font-bold mb-4 text-brand-700 dark:text-brand-400">Два полушария мозга</h2>
+                            <p className="mb-6">Навык 2 в основном задействует <strong>правое полушарие</strong> мозга. Мир требует от нас развития левого, но для лидерства нужно правое.</p>
+                            
+                            {/* VISUALIZATION ADDED */}
+                            <div className="mb-8">
+                                <DiagramBrain />
+                            </div>
+
+                            <div className="flex flex-col md:flex-row gap-6">
+                                <div className="flex-1 border-2 border-gray-200 dark:border-gray-700 p-5 rounded bg-gray-50 dark:bg-gray-800">
+                                    <h3 className="font-bold text-xl mb-3 border-b border-gray-300 pb-2">Левое (Управление)</h3>
+                                    <ul className="space-y-2 text-sm">
+                                        <li>Слова (Вербальное)</li>
+                                        <li>Логика и анализ</li>
+                                        <li>Последовательность (Шаг за шагом)</li>
+                                        <li>Детали и части</li>
+                                        <li>Время (Сроки)</li>
+                                    </ul>
+                                </div>
+                                <div className="flex-1 border-2 border-brand-500 p-5 rounded bg-white dark:bg-dark-card shadow-lg transform md:-translate-y-2 relative">
+                                    <div className="absolute top-0 right-0 bg-brand-500 text-white text-xs px-2 py-1 rounded-bl">Навык 2</div>
+                                    <h3 className="font-bold text-brand-600 text-xl mb-3 border-b border-brand-200 pb-2">Правое (Лидерство)</h3>
+                                    <ul className="space-y-2 text-sm">
+                                        <li>Образы (Визуальное)</li>
+                                        <li>Интуиция и чувства</li>
+                                        <li>Целостность (Холистическое)</li>
+                                        <li>Синтез (Соединение частей)</li>
+                                        <li>Вне времени</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <p className="mt-6"><strong>Как расширить правое полушарие?</strong><br/>1. Расширяйте перспективу (похороны).<br/>2. Визуализируйте и утверждайте.</p>
+                        </>
+                    );
+                    case 13: return (
+                        <>
+                            <h2 className="text-2xl font-bold mb-4 text-brand-700 dark:text-brand-400">Визуализация и Аффирмации</h2>
+                            <p className="mb-4">Вы можете создать сценарий своего дня или сложной ситуации заранее, используя воображение (правое полушарие).</p>
+                            
+                            <div className="bg-yellow-50 dark:bg-yellow-900/20 p-5 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                                <h4 className="font-bold text-yellow-800 dark:text-yellow-400 mb-2">5 Критериев хорошей аффирмации:</h4>
+                                <ul className="list-disc pl-5 space-y-2 text-sm">
+                                    <li><strong>Личная:</strong> Начинается с "Я".</li>
+                                    <li><strong>Позитивная:</strong> Утверждает то, что есть, а не то, чего нет (без "не").</li>
+                                    <li><strong>В настоящем времени:</strong> "Я делаю", а не "Я буду делать".</li>
+                                    <li><strong>Визуальная:</strong> Вы должны видеть картинку.</li>
+                                    <li><strong>Эмоциональная:</strong> Вы должны чувствовать эмоции.</li>
+                                </ul>
+                            </div>
+                            
+                            <div className="mt-6">
+                                <h3 className="font-bold mb-2">Пример из книги:</h3>
+                                <p className="italic bg-white dark:bg-dark-card p-4 rounded border-l-4 border-brand-500">
+                                    "Мне (личное) доставляет огромное удовольствие (эмоциональное) спокойно (позитивное) реагировать на выходки детей, когда я вижу (визуальное), как они разбрасывают игрушки."
+                                </p>
+                                <p className="mt-4 text-sm">Пиковые переживания спортсменов (когда они визуализируют победу) — это пример работы этого принципа.</p>
+                            </div>
+                        </>
+                    );
+                    case 14: return (
+                        <>
+                            <h2 className="text-2xl font-bold mb-4 text-brand-700 dark:text-brand-400">Роли и Цели</h2>
+                            <p className="mb-4">Миссия может стать слишком абстрактной. Чтобы сделать ее практичной, разбейте жизнь на <strong>Роли</strong> и поставьте <strong>Цели</strong> для каждой из них.</p>
+                            
+                            <InfoCard title="Баланс ролей" icon={Icons.Briefcase} color="green">
+                                Проблема многих людей в том, что они преуспевают в одной роли (например, Работа) за счет других (Отец, Муж, Здоровье).
+                            </InfoCard>
+
+                            <h3 className="font-bold mt-6 mb-3">Примеры ролей и целей:</h3>
+                            <div className="grid gap-3">
+                                <div className="p-4 bg-white dark:bg-dark-card rounded shadow border-l-4 border-indigo-400">
+                                    <h4 className="font-bold">Роль: Личность</h4>
+                                    <p className="text-sm mt-1"><strong>Цель:</strong> Заниматься спортом 3 раза в неделю, читать 1 книгу в месяц.</p>
+                                </div>
+                                <div className="p-4 bg-white dark:bg-dark-card rounded shadow border-l-4 border-pink-400">
+                                    <h4 className="font-bold">Роль: Супруг(а)</h4>
+                                    <p className="text-sm mt-1"><strong>Цель:</strong> Ходить на свидание каждую пятницу. Слушать с эмпатией.</p>
+                                </div>
+                                <div className="p-4 bg-white dark:bg-dark-card rounded shadow border-l-4 border-blue-400">
+                                    <h4 className="font-bold">Роль: Менеджер по продажам</h4>
+                                    <p className="text-sm mt-1"><strong>Цель:</strong> Внедрить новую CRM-систему к концу месяца.</p>
+                                </div>
+                                <div className="p-4 bg-white dark:bg-dark-card rounded shadow border-l-4 border-orange-400">
+                                    <h4 className="font-bold">Роль: Член сообщества</h4>
+                                    <p className="text-sm mt-1"><strong>Цель:</strong> Участвовать в совете дома раз в месяц.</p>
+                                </div>
+                            </div>
+                        </>
+                    );
+                    case 15: return (
+                        <>
+                            <h2 className="text-2xl font-bold mb-4 text-brand-700 dark:text-brand-400">Миссия Семьи</h2>
+                            <p className="mb-4">Принцип "Начинайте, представляя конечную цель" применим и к коллективам. Семейная миссия — это "конституция" семьи.</p>
+                            
+                            <InfoCard title="Зачем она нужна?" icon={Icons.Users} color="purple">
+                                Без миссии семья похожа на корабль без штурвала. При шторме (кризис) каждый спасает себя. С миссией у вас есть общие ценности, к которым можно вернуться.
+                            </InfoCard>
+                            
+                            <h3 className="font-bold mt-6 mb-3">Как создать?</h3>
+                            <ul className="list-disc pl-6 space-y-2">
+                                <li>Вовлеките всех членов семьи (даже детей).</li>
+                                <li>Не пишите её в одиночку — нет вовлеченности, нет приверженности.</li>
+                                <li>Спросите: "Какой семьей мы хотим быть?", "Как мы относимся друг к другу?".</li>
+                                <li>Повесьте её на видном месте.</li>
+                            </ul>
+
+                            <div className="mt-6 p-6 border-2 border-dashed border-gray-400 rounded bg-brand-50 dark:bg-brand-900/10 text-center italic font-serif text-lg">
+                                "Миссия нашей семьи — создавать среду любви, где каждый чувствует себя понятым и принятым. Мы ценим честность, поддерживаем друг друга в развитии и всегда находим время для юмора."
+                            </div>
+                        </>
+                    );
+                    case 16: return (
+                        <>
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-2xl font-bold">Практика 30 дней</h2>
+                                <div className="text-xl font-bold text-brand-600">
+                                    {challengeProgress.filter(Boolean).length} / 30
+                                </div>
+                            </div>
+                            <p className="mb-4 text-gray-600 dark:text-gray-400">Ежедневные задания для интеграции Навыка 2 в вашу жизнь. Отмечайте выполненное.</p>
+                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-6">
+                                <div className="bg-brand-500 h-4 rounded-full transition-all duration-700" 
+                                     style={{ width: `${(challengeProgress.filter(Boolean).length / 30) * 100}%` }}>
+                                </div>
+                            </div>
+                            <ChallengeGrid progress={challengeProgress} toggleDay={toggleDay} />
+                        </>
+                    );
+                    default: return <div>Контент загружается...</div>;
+                }
+            };
+
+            return (
+                <div className="p-6 md:p-10 max-w-4xl mx-auto pb-20 animate-fade-in">
+                    <div className="flex items-center text-gray-400 text-sm mb-2 uppercase tracking-wide font-semibold">
+                        <span className="mr-2 text-brand-500"><Icons.Compass /></span>
+                        Раздел {activeSection + 1} из {sectionsData.length}
+                    </div>
+                    <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-6">
+                        {section?.title}
+                    </h1>
+                    
+                    <div className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 leading-relaxed">
+                        {renderContent()}
+                    </div>
+
+                    {/* Footer Buttons Removed as per request */}
+                    <div className="h-12"></div> 
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [activeSection, setActiveSection] = useState(0);
+            const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+            const [isDark, setIsDark] = useState(false);
+            const [challengeProgress, setChallengeProgress] = useState(Array(30).fill(false));
+
+            // Load from LocalStorage
+            useEffect(() => {
+                const savedProgress = localStorage.getItem('coveyHabit2Progress');
+                if (savedProgress) {
+                    setChallengeProgress(JSON.parse(savedProgress));
+                }
+                const savedTheme = localStorage.getItem('coveyTheme');
+                if (savedTheme === 'dark') {
+                    setIsDark(true);
+                    document.documentElement.classList.add('dark');
+                }
+            }, []);
+
+            // Save to LocalStorage
+            useEffect(() => {
+                localStorage.setItem('coveyHabit2Progress', JSON.stringify(challengeProgress));
+            }, [challengeProgress]);
+
+            const toggleTheme = () => {
+                const newTheme = !isDark;
+                setIsDark(newTheme);
+                if (newTheme) {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('coveyTheme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('coveyTheme', 'light');
+                }
+            };
+
+            const toggleDay = (index) => {
+                const newProgress = [...challengeProgress];
+                newProgress[index] = !newProgress[index];
+                setChallengeProgress(newProgress);
+            };
+
+            const progressPercent = (challengeProgress.filter(Boolean).length / 30) * 100;
+
+            return (
+                <div className="flex h-screen bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-dark-text overflow-hidden transition-colors duration-300">
+                    
+                    {/* Mobile Header */}
+                    <div className="lg:hidden fixed top-0 w-full bg-white dark:bg-gray-900 border-b dark:border-gray-800 z-20 px-4 py-3 flex justify-between items-center shadow-sm">
+                        <div className="font-bold text-lg flex items-center text-brand-600 dark:text-brand-400">
+                            <Icons.Compass />
+                            <span className="ml-2">Навык 2</span>
+                        </div>
+                        <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-gray-600 dark:text-gray-300">
+                            <Icons.Menu />
+                        </button>
+                    </div>
+
+                    {/* Sidebar Overlay for Mobile */}
+                    {isSidebarOpen && (
+                        <div 
+                            className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden backdrop-blur-sm"
+                            onClick={() => setIsSidebarOpen(false)}
+                        ></div>
+                    )}
+
+                    <Sidebar 
+                        activeSection={activeSection} 
+                        setActiveSection={setActiveSection} 
+                        isOpen={isSidebarOpen} 
+                        setIsOpen={setIsSidebarOpen}
+                        progressPercent={progressPercent}
+                        toggleTheme={toggleTheme}
+                        isDark={isDark}
+                    />
+
+                    <main className="flex-1 overflow-y-auto w-full pt-16 lg:pt-0 scroll-smooth">
+                        <MainContent 
+                            activeSection={activeSection} 
+                            challengeProgress={challengeProgress}
+                            toggleDay={toggleDay}
+                        />
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
