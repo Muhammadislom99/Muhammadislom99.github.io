@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авесто - Презентация</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e8e8e8;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .presentation {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            padding: 40px 60px;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 4px solid #ff6b6b;
+        }
+
+        .slide-header h1 {
+            font-size: 3em;
+            color: #ffd93d;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+        }
+
+        .slide-header h2 {
+            font-size: 1.6em;
+            color: #a8dadc;
+            font-weight: 300;
+        }
+
+        .slide-content {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .content-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px 35px;
+            margin: 20px 0;
+            border-radius: 15px;
+            border-left: 6px solid #4ecdc4;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .content-item:hover {
+            transform: translateX(10px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 30px rgba(78, 205, 196, 0.3);
+        }
+
+        .content-item h3 {
+            color: #4ecdc4;
+            font-size: 1.6em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon {
+            font-size: 1.4em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 8px 12px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .content-item p {
+            color: #e0e0e0;
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-left: 50px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 25px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 40px;
+            background: rgba(255, 107, 107, 0.9);
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1.3em;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .highlight {
+            color: #ffd93d;
+            font-weight: bold;
+        }
+
+        .quote {
+            background: rgba(255, 107, 107, 0.2);
+            border-left: 6px solid #ff6b6b;
+            padding: 20px 30px;
+            margin: 20px 0;
+            border-radius: 12px;
+            font-style: italic;
+            color: #f0f0f0;
+            font-size: 1.15em;
+        }
+
+        .grid-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.2) 0%, rgba(102, 126, 234, 0.2) 100%);
+            padding: 30px;
+            border-radius: 20px;
+            border: 3px solid #4ecdc4;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.05) rotate(1deg);
+            box-shadow: 0 10px 40px rgba(78, 205, 196, 0.4);
+        }
+
+        .card h4 {
+            color: #ffd93d;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .card p {
+            color: #e0e0e0;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        .intro-text {
+            font-size: 1.4em;
+            text-align: center;
+            color: #a8dadc;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide.active .content-item,
+        .slide.active .card {
+            animation: slideIn 0.6s ease-out forwards;
+        }
+
+        .slide.active .content-item:nth-child(1) { animation-delay: 0.1s; }
+        .slide.active .content-item:nth-child(2) { animation-delay: 0.2s; }
+        .slide.active .content-item:nth-child(3) { animation-delay: 0.3s; }
+        .slide.active .content-item:nth-child(4) { animation-delay: 0.4s; }
+        .slide.active .content-item:nth-child(5) { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">10</span>
+        </div>
+
+        <!-- Слайд 1 -->
+        <div class="slide active">
+            <div class="slide-header">
+                <h1>📜 Пайдоиши «Авесто»</h1>
+                <h2>Происхождение «Авесты»</h2>
+            </div>
+            <div class="slide-content">
+                <div class="intro-text">
+                    Дар адабиёти илмӣ ақидаҳои гуногун мавҷуданд:
+                </div>
+                
+                <div class="content-item">
+                    <h3><span class="icon">🌍</span> Гурӯҳи якум</h3>
+                    <p>Олимон <span class="highlight">Дюперон, Мейе ва ғайра</span> пайдоиши онро ба <span class="highlight">Мидия</span> (Эрони Ғарбӣ) нисбат медиҳанд.</p>
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">🏛️</span> Гурӯҳи дуюм</h3>
+                    <p>Олимон <span class="highlight">Бартоломе, Нюберг</span> онро ба <span class="highlight">Бохтар</span> (Бактрия) вобаста медонанд.</p>
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">🗺️</span> Гурӯҳи сеюм</h3>
+                    <p>Макони пайдоишро <span class="highlight">Мовароуннаҳр ва Хоразм</span> меҳисобанд.</p>
+                </div>
+
+                <div class="quote">
+                    ⚠️ Нуктаи муҳим: «Авесто» дар тӯли асрҳои зиёд ташаккул ёфтааст, бинобар ин қисмҳои он аз ҷиҳати хронологӣ ва ҷуғрофӣ фарқ мекунанд.
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 2 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1>🇪🇺 Омӯзиши «Авесто» дар Аврупо</h1>
+                <h2>Изучение в Европе</h2>
+            </div>
+            <div class="slide-content">
+                <div class="content-item">
+                    <h3><span class="icon">📖</span> Оғози омӯзиши илмӣ</h3>
+                    <p>Соли <span class="highlight">1771</span> олими фаронсавӣ <span class="highlight">А. Дюперон</span> бори аввал «Авесто»-ро ба забони фаронсавӣ тарҷума кард.</p>
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">💡</span> Диққати файласуфон</h3>
+                    <p>Файласуфи немис <span class="highlight">Гегел</span> ба ин сарчашма баҳои баланд дода, онро асоси дини зардуштӣ ва <span class="highlight">«дини рӯшноӣ»</span> номидааст.</p>
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">👥</span> Олимони дигар</h3>
+                    <p><span class="highlight">Мэри Бойс</span> (Англия) ва <span class="highlight">Ф. Нитше</span> низ дар бораи Зардушт ва таълимоти ӯ асарҳо навиштаанд.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 3 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1>🇷🇺 Саҳми олимони рус</h1>
+                <h2>Вклад российских учёных</h2>
+            </div>
+            <div class="slide-content">
+                <div class="content-item">
+                    <h3><span class="icon">📚</span> Омӯзиши дар Русия</h3>
+                    <p>Омӯзиши «Авесто» дар Русия аз <span class="highlight">асри XIX</span> оғоз шудааст.</p>
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">👨‍🎓</span> Олимони маъруф</h3>
+                    <p><span class="highlight">Кассович, Зелеман, Тураев, Атаев, Бертелс, Стеблин-Каменский</span> — онҳо матнҳои алоҳидаи «Авесто»-ро тарҷума ва таҳлили филологӣ намудаанд.</p>
+                </div>
+
+                <div class="grid-content">
+                    <div class="card">
+                        <h4>📝 Тарҷума</h4>
+                        <p>Тарҷумаи матнҳои алоҳида</p>
+                    </div>
+                    <div class="card">
+                        <h4>🔍 Таҳлил</h4>
+                        <p>Таҳлили филологӣ</p>
+                    </div>
+                    <div class="card">
+                        <h4>🔬 Таҳқиқ</h4>
+                        <p>Таҳқиқоти илмӣ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 4 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1>🇹🇯 Омӯзиши «Авесто» дар Тоҷикистон</h1>
+                <h2>Изучение в Таджикистане</h2>
+            </div>
+            <div class="slide-content">
+                <div class="content-item">
+                    <h3><span class="icon">⭐</span> Бобоҷон Ғафуров</h3>
+                    <p>Дар асари <span class="highlight">«Тоҷикон»</span> ба «Авесто» ҳамчун сарчашмаи маънавии ниёгони мо баҳои баланд додааст.</p>
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">🏺</span> Исботи илмӣ</h3>
+                    <p>Ӯ исбот кард, ки «Авесто» дар <span class="highlight">Суғду Бохтар</span> пайдо шуда, асоси бозёфтҳои бостоншиносӣ мебошад.</p>
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">👥</span> Дигар олимон</h3>
+                    <p><span class="highlight">С. Айнӣ, Б. Бобохон, Ю. Ёқубов</span> ва дигарон дар таҳқиқи қисматҳои ҷудогонаи китоб саҳм гузоштаанд.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 5 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1>🎉 Аҳамияти «Авесто» ва ҷашнвораҳо</h1>
+                <h2>Значение и юбилеи</h2>
+            </div>
+            <div class="slide-content">
+                <div class="content-item">
+                    <h3><span class="icon">🎊</span> Таҷлили 2700-солагӣ</h3>
+                    <p>Дар арафаи ин ҷашн таҳқиқоти зиёде нашр шуданд.</p>
+                </div>
+
+                <div class="quote">
+                    💬 Фикри Эмомалӣ Раҳмон: Пешвои миллат дар китоби «Тоҷикон дар оинаи таърих» «Авесто»-ро бо шоҳкорҳои ҷаҳонӣ мисли «Илиада» ва «Одиссея»-и Гомер муқоиса карда, онро ифтихори миллӣ номидаанд.
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">📊</span> Ҳаҷми китоб</h3>
+                    <p>Мувофиқи таҳқиқи <span class="highlight">Е.В. Вест</span>, «Занд Авесто» (тафсири паҳлавӣ) аз <span class="highlight">2 миллион калима</span> иборат аст, ки аз «Шоҳнома»-и Фирдавсӣ бузургтар мебошад.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 6 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1>💎 «Авесто» ҳамчун сарчашма</h1>
+                <h2>Источник идей и духовности</h2>
+            </div>
+            <div class="slide-content">
+                <div class="content-item">
+                    <h3><span class="icon">🌟</span> Нахустфарҳанг</h3>
+                    <p>«Авесто» намунаи безаволи осори фарҳанги ҷаҳонӣ ба шумор меравад — нахустфарҳанги мардумони ориёнасл.</p>
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">📜</span> «Шаҳристонҳои Эрон»</h3>
+                    <p>Оид ба таърихи навишта шудани «Авесто» маълумот медиҳад.</p>
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">📚</span> «Динкард» (Кори дин)</h3>
+                    <p>Ин китобро чун қомуси афкори диниву асотирии ориёиҳо медонанд, ки дар он «Авесто» аз <span class="highlight">1200 боб</span> ва <span class="highlight">21 китоб (наск)</span> иборат нишон дода шудааст.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 7 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1>✍️ Таърихи китобат ва таҳрири «Авесто»</h1>
+                <h2>История написания и редактирования</h2>
+            </div>
+            <div class="slide-content">
+                <div class="content-item">
+                    <h3><span class="icon">👑</span> Хидмати Сосониён</h3>
+                    <p><span class="highlight">Ардашери Бобакон (224-241)</span> дар такмилу таҳрири «Авесто» саҳми бузург гузошта, донандагони онро водор намуд, ки матнҳои сӯзонидашудаи замони Искандари Мақдуниро барқарор кунанд.</p>
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">🔤</span> Алифбои махсус (Динлабирӣ)</h3>
+                    <p>Барои сабти дақиқи талаффузи авестоӣ алифбои махсусе ихтироъ шуд, ки бо тамоми ҷузъиёташ садоҳоро ифода мекард.</p>
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">📖</span> Нусхаҳои имрӯза</h3>
+                    <p>Аз <span class="highlight">21 китоби</span> аслӣ то имрӯз танҳо <span class="highlight">5 китоб</span> расидааст: Ясно, Виспарад, Вандидот, Яштҳо ва Хурд-Авесто.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 8 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1>🌅 Ватани Зардушт ва шахсияти ӯ</h1>
+                <h2>Родина Заратустры и его личность</h2>
+            </div>
+            <div class="slide-content">
+                <div class="content-item">
+                    <h3><span class="icon">👨</span> Насаб ва зодгоҳ</h3>
+                    <p>Зардушт писари <span class="highlight">Поурушасп</span> аз қабилаи Спитам буд. Модараш <span class="highlight">Дуғдова</span> аз Роғ (Афғонистони имрӯза) буд.</p>
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">🏔️</span> Макони зуҳур</h3>
+                    <p>Ватани ӯ <span class="highlight">Суғду Бохтар</span> ба шумор меравад. Ӯ тахминан дар охири <span class="highlight">асри VII то мелод</span> зиндагӣ кардааст.</p>
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">⚡</span> Пайғамбарӣ</h3>
+                    <p>Дар синни <span class="highlight">30-33 солагӣ</span> ба пайғамбарӣ расида, барои тарғиби яккахудоӣ (Аҳурамаздо) кӯшиш намудааст.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 9 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1>☯️ Таълимоти динию ахлоқии Зардушт</h1>
+                <h2>Религиозно-нравственное учение</h2>
+            </div>
+            <div class="slide-content">
+                <div class="content-item">
+                    <h3><span class="icon">⚔️</span> Асоси фалсафӣ</h3>
+                    <p>Муборизаи ду ҷавҳари ҳамзод — <span class="highlight">Хурмузд</span> (некӣ) ва <span class="highlight">Аҳриман</span> (бадӣ).</p>
+                </div>
+
+                <div class="quote">
+                    ✨ Шиори асосӣ: «Рафтори нек, кирдори нек ва гуфтори нек» — ин сарчашмаи зиндагии ҳар як пайрави оин аст.
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">🌍</span> Эҳтироми табиат</h3>
+                    <p>Дар оини зардуштӣ ифлос кардани чаҳор унсури муқаддас — <span class="highlight">оташ, об, хок ва ҳаво</span> гуноҳи азим ба шумор меравад.</p>
+                </div>
+
+                <div class="content-item">
+                    <h3><span class="icon">💭</span> Андешаи мутафаккирон</h3>
+                    <p><span class="highlight">Ф. Нитше</span> Зардуштро «ростгӯйтарин мутафаккир» ва <span class="highlight">Р. Такур</span> ӯро аввалин касе номидааст, ки «динро ба як шакли ахлоқӣ даровард».</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Слайд 10 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h1>📚 Сохтори китобҳои расидаи «Авесто»</h1>
+                <h2>Структура сохранившихся книг</h2>
+            </div>
+            <div class="slide-content">
+                <div class="grid-content">
+                    <div class="card">
+                        <h4>📜 Ясно</h4>
+                        <p>Қадимтарин қисм, иборат аз 72 боб, ки сурудҳои худи Зардушт («Готҳо»)-ро дар бар мегирад.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🎵 Яштҳо</h4>
+                        <p>Сурудҳои муқаддас дар васфи худоёни ҷудогона (21 яшт).</p>
+                    </div>
+                    <div class="card">
+                        <h4>⚖️ Вандидот</h4>
+                        <p>Қонуни зидди девҳо, иборат аз 22 фаргард.</p>
+                    </div>
+                    <div class="card">
+                        <h4>🙏 Виспарад</h4>
+                        <p>Маҷмӯи ибодатҳои динӣ ва асотир.</p>
+                    </div>
+                    <div class="card">
+                        <h4>📖 Хурд-Авесто</h4>
+                        <p>Таълимоти умумии гигиенӣ ва дуоҳои рӯзмарра.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Пеш</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Баъд →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && currentSlide > 0) {
+                changeSlide(-1);
+            } else if (e.key === 'ArrowRight' && currentSlide < totalSlides - 1) {
+                changeSlide(1);
+            }
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
