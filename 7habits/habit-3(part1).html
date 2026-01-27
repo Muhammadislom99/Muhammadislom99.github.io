@@ -49,7 +49,7 @@
         }
 
         h1 {
-            font-size: 3.2em; /* Немного меньше */
+            font-size: 3.2em;
             margin-bottom: 20px;
             text-align: center;
             color: #ffca28;
@@ -57,7 +57,7 @@
         }
 
         h2 {
-            font-size: 2.2em; /* Сбалансированный размер */
+            font-size: 2.2em;
             margin-bottom: 30px;
             text-align: center;
             color: #64c8ff;
@@ -70,7 +70,7 @@
         }
 
         p, li {
-            font-size: 1.5em; /* Крупнее для читабельности */
+            font-size: 1.5em;
             line-height: 1.6;
             margin-bottom: 15px;
         }
@@ -97,12 +97,11 @@
         }
 
         .icon-large {
-            font-size: 6em; /* Увеличено */
+            font-size: 6em;
             margin-bottom: 25px;
             filter: drop-shadow(0 0 20px rgba(100, 200, 255, 0.5));
         }
 
-        /* Diary Visualization */
         .diary-container {
             display: flex;
             align-items: center;
@@ -136,7 +135,7 @@
             border: 2px solid rgba(100, 200, 255, 0.5);
             padding: 12px 25px;
             border-radius: 50px;
-            font-size: 1.2em; /* Крупнее */
+            font-size: 1.2em;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -262,6 +261,34 @@
             justify-content: center;
             font-size: 1.4em;
             font-weight: bold;
+        }
+
+        .example-chain {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .chain-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 25px;
+            border-radius: 15px;
+            border-left: 5px solid #ffca28;
+        }
+
+        .chain-part {
+            flex: 1;
+        }
+
+        .chain-label {
+            font-size: 0.7em;
+            text-transform: uppercase;
+            color: #64c8ff;
+            margin-bottom: 5px;
         }
 
         .arrow-animated {
@@ -470,19 +497,61 @@
             </div>
         </div>
 
-        <!-- Slide 9 -->
+        <!-- Slide 9 (RESTORED: How to start) -->
         <div class="slide">
-            <h2>Как начать?</h2>
+            <h2>Как начать? (Планирование недели)</h2>
             <div class="content">
                 <div class="grid-3" style="gap: 40px;">
-                    <div class="card"><h3>1️⃣ Выходной</h3><p>30 минут тишины для обзора</p></div>
-                    <div class="card"><h3>2️⃣ По ролям</h3><p>1 важное дело для каждой роли</p></div>
-                    <div class="card"><h3>3️⃣ Бронь</h3><p>Внесите это в календарь как встречу</p></div>
+                    <div class="card">
+                        <h3>1️⃣ Выходной</h3>
+                        <p>30 минут тишины для обзора всей недели</p>
+                    </div>
+                    <div class="card">
+                        <h3>2️⃣ По ролям</h3>
+                        <p>Выберите 1 важное дело (Кв. II) для каждой роли</p>
+                    </div>
+                    <div class="card">
+                        <h3>3️⃣ Бронь</h3>
+                        <p>Внесите это в календарь как "встречу с собой"</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="padding: 20px; margin-top: 10px;">
+                    <p style="text-align: center; font-size: 1.2em;">Двигайте "камни" (важное), а не "песок" (мелочи)!</p>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 10 -->
+        <!-- Slide 10 (NEW: Chain examples) -->
+        <div class="slide">
+            <h2>Примеры: От Миссии к Цели</h2>
+            <div class="content">
+                <div class="example-chain">
+                    <div class="chain-item">
+                        <div class="chain-part"><div class="chain-label">Миссия</div><p>Жить в гармонии</p></div>
+                        <div style="font-size: 1.5em; color: #ffca28;">→</div>
+                        <div class="chain-part"><div class="chain-label">Роль</div><p>👤 Личность</p></div>
+                        <div style="font-size: 1.5em; color: #ffca28;">→</div>
+                        <div class="chain-part"><div class="chain-label">Цель (Кв. II)</div><p>3 тренировки</p></div>
+                    </div>
+                    <div class="chain-item" style="border-left-color: #64c8ff;">
+                        <div class="chain-part"><div class="chain-label">Миссия</div><p>Быть любящим</p></div>
+                        <div style="font-size: 1.5em; color: #64c8ff;">→</div>
+                        <div class="chain-part"><div class="chain-label">Роль</div><p>🏠 Семья</p></div>
+                        <div style="font-size: 1.5em; color: #64c8ff;">→</div>
+                        <div class="chain-part"><div class="chain-label">Цель (Кв. II)</div><p>Вечер без гаджетов</p></div>
+                    </div>
+                    <div class="chain-item" style="border-left-color: #51cf66;">
+                        <div class="chain-part"><div class="chain-label">Миссия</div><p>Создавать ценность</p></div>
+                        <div style="font-size: 1.5em; color: #51cf66;">→</div>
+                        <div class="chain-part"><div class="chain-label">Роль</div><p>💼 Профессионал</p></div>
+                        <div style="font-size: 1.5em; color: #51cf66;">→</div>
+                        <div class="chain-part"><div class="chain-label">Цель (Кв. II)</div><p>Новое обучение</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11 -->
         <div class="slide">
             <h2>Резюме Навыка 3</h2>
             <div class="content">
@@ -502,7 +571,7 @@
             </div>
         </div>
 
-        <!-- Slide 11 -->
+        <!-- Slide 12 -->
         <div class="slide">
             <h2>Ваш следующий шаг</h2>
             <div class="content">
@@ -514,7 +583,7 @@
             </div>
         </div>
 
-        <!-- Slide 12 -->
+        <!-- Slide 13 -->
         <div class="slide">
             <h1>Спасибо! 🙏</h1>
             <div class="highlight-box" style="margin-top: 50px;">
@@ -525,7 +594,7 @@
     </div>
 
     <div class="slide-counter">
-        <span id="currentSlide">1</span> / <span id="totalSlides">12</span>
+        <span id="currentSlide">1</span> / <span id="totalSlides">13</span>
     </div>
 
     <div class="navigation">
