@@ -31,7 +31,7 @@
             top: 0;
             left: 0;
             display: none;
-            padding: 60px;
+            padding: 40px 80px;
             color: white;
         }
 
@@ -44,152 +44,154 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         h1 {
-            font-size: 3.5em;
-            margin-bottom: 30px;
+            font-size: 3.2em; /* Немного меньше */
+            margin-bottom: 20px;
             text-align: center;
+            color: #ffca28;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         h2 {
-            font-size: 2.5em;
-            margin-bottom: 40px;
+            font-size: 2.2em; /* Сбалансированный размер */
+            margin-bottom: 30px;
             text-align: center;
+            color: #64c8ff;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
+        h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
         p, li {
-            font-size: 1.4em;
-            line-height: 1.8;
-            margin-bottom: 20px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            font-size: 1.5em; /* Крупнее для читабельности */
+            line-height: 1.6;
+            margin-bottom: 15px;
         }
 
         .subtitle {
-            font-size: 1.5em;
+            font-size: 1.6em;
             opacity: 0.9;
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .content {
-            max-width: 1200px;
+            max-width: 1300px;
             width: 100%;
         }
 
         .highlight-box {
-            background: rgba(100, 200, 255, 0.08);
-            padding: 30px;
-            border-radius: 15px;
-            margin: 20px 0;
+            background: rgba(100, 200, 255, 0.12);
+            padding: 40px;
+            border-radius: 20px;
+            margin: 25px 0;
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(100, 200, 255, 0.3);
+            border: 2px solid rgba(100, 200, 255, 0.4);
         }
 
         .icon-large {
-            font-size: 5em;
-            margin-bottom: 20px;
+            font-size: 6em; /* Увеличено */
+            margin-bottom: 25px;
             filter: drop-shadow(0 0 20px rgba(100, 200, 255, 0.5));
+        }
+
+        /* Diary Visualization */
+        .diary-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 20px;
+        }
+
+        .mission-center {
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, rgba(255, 200, 100, 0.35), rgba(255, 150, 50, 0.15));
+            border: 5px solid #ffca28;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(255, 202, 40, 0.3);
+        }
+
+        .roles-branch {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .role-tag {
+            background: rgba(100, 200, 255, 0.2);
+            border: 2px solid rgba(100, 200, 255, 0.5);
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1.2em; /* Крупнее */
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
         }
 
         .matrix-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             grid-template-rows: 1fr 1fr;
-            gap: 20px;
+            gap: 25px;
             width: 100%;
-            max-width: 1000px;
-            height: 600px;
-            margin: 30px auto;
+            max-width: 1100px;
+            height: 650px;
+            margin: 20px auto;
         }
 
         .matrix-quadrant {
-            border-radius: 20px;
-            padding: 30px;
+            border-radius: 25px;
+            padding: 35px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
             position: relative;
-            transition: all 0.3s;
-            border: 3px solid;
+            border: 4px solid;
         }
 
-        .matrix-quadrant:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
+        .quadrant-1 { background: linear-gradient(135deg, rgba(255, 100, 100, 0.35), rgba(255, 150, 100, 0.25)); border-color: rgba(255, 100, 100, 0.7); }
+        .quadrant-2 { background: linear-gradient(135deg, rgba(100, 255, 150, 0.35), rgba(100, 200, 255, 0.25)); border-color: rgba(100, 255, 150, 0.7); box-shadow: 0 0 50px rgba(100, 255, 150, 0.3); }
+        .quadrant-3 { background: linear-gradient(135deg, rgba(255, 200, 100, 0.35), rgba(255, 220, 150, 0.25)); border-color: rgba(255, 200, 100, 0.7); }
+        .quadrant-4 { background: linear-gradient(135deg, rgba(150, 150, 150, 0.35), rgba(180, 180, 180, 0.25)); border-color: rgba(150, 150, 150, 0.7); }
 
-        .quadrant-1 {
-            background: linear-gradient(135deg, rgba(255, 100, 100, 0.3), rgba(255, 150, 100, 0.2));
-            border-color: rgba(255, 100, 100, 0.6);
-        }
-
-        .quadrant-2 {
-            background: linear-gradient(135deg, rgba(100, 255, 150, 0.3), rgba(100, 200, 255, 0.2));
-            border-color: rgba(100, 255, 150, 0.6);
-            box-shadow: 0 0 40px rgba(100, 255, 150, 0.4);
-        }
-
-        .quadrant-3 {
-            background: linear-gradient(135deg, rgba(255, 200, 100, 0.3), rgba(255, 220, 150, 0.2));
-            border-color: rgba(255, 200, 100, 0.6);
-        }
-
-        .quadrant-4 {
-            background: linear-gradient(135deg, rgba(150, 150, 150, 0.3), rgba(180, 180, 180, 0.2));
-            border-color: rgba(150, 150, 150, 0.6);
-        }
-
-        .quadrant-number {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            font-size: 3em;
-            font-weight: bold;
-            opacity: 0.7;
-        }
-
-        .quadrant-icon {
-            font-size: 4em;
-            margin: 15px 0;
-        }
-
-        .quadrant-title {
-            font-size: 1.8em;
-            font-weight: bold;
-            margin: 15px 0;
-        }
-
-        .quadrant-desc {
-            font-size: 1.2em;
-            margin: 10px 0;
-        }
-
-        .arrow-animated {
-            font-size: 4em;
-            animation: pulse 2s infinite;
-            color: rgba(100, 200, 255, 0.8);
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.2); opacity: 1; }
-        }
+        .quadrant-number { position: absolute; top: 20px; left: 20px; font-size: 3.5em; font-weight: bold; opacity: 0.6; }
+        .quadrant-icon { font-size: 4.5em; margin-bottom: 10px; }
+        .quadrant-title { font-size: 2em; font-weight: bold; margin-bottom: 10px; }
+        .quadrant-desc { font-size: 1.3em; line-height: 1.4; }
 
         .card {
-            background: rgba(100, 200, 255, 0.08);
-            padding: 25px;
-            border-radius: 15px;
+            background: rgba(100, 200, 255, 0.12);
+            padding: 35px;
+            border-radius: 20px;
             backdrop-filter: blur(10px);
             text-align: center;
-            border: 1px solid rgba(100, 200, 255, 0.3);
+            border: 2px solid rgba(100, 200, 255, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
+
+        .card h3 { font-size: 1.8em; margin-bottom: 10px; }
+        .card p { font-size: 1.2em; margin-bottom: 0; }
+        .card div { font-size: 3.5em; margin-bottom: 15px; }
 
         .grid-3 {
             display: grid;
@@ -208,534 +210,317 @@
         }
 
         button {
-            padding: 15px 30px;
-            font-size: 1.2em;
-            background: rgba(100, 200, 255, 0.15);
+            padding: 18px 35px;
+            font-size: 1.3em;
+            background: rgba(100, 200, 255, 0.2);
             color: white;
-            border: 2px solid rgba(100, 200, 255, 0.5);
-            border-radius: 10px;
+            border: 2px solid rgba(100, 200, 255, 0.6);
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s;
             backdrop-filter: blur(10px);
+            font-weight: bold;
         }
 
         button:hover {
-            background: rgba(100, 200, 255, 0.25);
+            background: rgba(100, 200, 255, 0.4);
             transform: scale(1.05);
-            border-color: rgba(100, 200, 255, 0.8);
         }
 
-        button:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
+        button:disabled { opacity: 0.3; cursor: not-allowed; }
 
         .slide-counter {
             position: fixed;
             bottom: 30px;
             left: 30px;
-            font-size: 1.3em;
+            font-size: 1.4em;
             background: rgba(100, 200, 255, 0.15);
-            padding: 15px 25px;
-            border-radius: 10px;
+            padding: 15px 30px;
+            border-radius: 12px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(100, 200, 255, 0.3);
+            font-weight: bold;
         }
 
         .process-flow {
             display: grid;
             grid-template-columns: 1fr auto 1fr auto 1fr;
             align-items: center;
-            gap: 20px;
+            gap: 30px;
             margin: 40px 0;
         }
 
         .process-step {
-            background: linear-gradient(135deg, rgba(100, 200, 255, 0.15), rgba(150, 100, 255, 0.15));
-            border: 2px solid rgba(100, 200, 255, 0.4);
-            border-radius: 15px;
-            padding: 30px;
+            background: linear-gradient(135deg, rgba(100, 200, 255, 0.2), rgba(150, 100, 255, 0.15));
+            border: 3px solid rgba(100, 200, 255, 0.5);
+            border-radius: 20px;
+            padding: 40px 20px;
             text-align: center;
-            position: relative;
-            min-height: 180px;
+            min-height: 220px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-        }
-
-        .role-card {
-            background: linear-gradient(135deg, rgba(100, 200, 255, 0.15), rgba(150, 100, 255, 0.1));
-            border: 2px solid rgba(100, 200, 255, 0.4);
-            border-radius: 15px;
-            padding: 25px;
-            margin: 15px 0;
-        }
-
-        .big-number {
-            font-size: 4em;
+            font-size: 1.4em;
             font-weight: bold;
-            margin-bottom: 15px;
-            opacity: 0.9;
+        }
+
+        .arrow-animated {
+            font-size: 3.5em;
+            color: #64c8ff;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
         }
     </style>
 </head>
 <body>
     <div class="presentation">
-        <!-- Slide 1: Title -->
+        <!-- Slide 1 -->
         <div class="slide active">
             <h1>Навык 3: Главное в главное</h1>
-            <h3>Часть 1 - Квадрант личного лидерства </h3>
-            <p class="subtitle">Сначала делайте то, что необходимо делать сначала</p>
-            <div style="font-size: 8em; margin-top: 40px;">⏰</div>
-            <p class="subtitle" style="margin-top: 40px;">По книге Стивена Кови "7 навыков высокоэффективных людей"</p>
+            <h2 style="color: white; opacity: 0.8;">Часть 1 - Квадрант личного лидерства</h2>
+            <p class="subtitle" style="font-size: 1.8em; margin-top: 10px;">Сначала делайте то, что необходимо делать сначала</p>
+            <div style="font-size: 9em; margin-top: 20px;">⏰</div>
+            <p class="subtitle" style="margin-top: 30px; font-weight: bold; color: #ffca28;">Стивен Кови</p>
         </div>
 
-        <!-- Slide 2: Connection to Previous Habits -->
+        <!-- Slide 2 -->
         <div class="slide">
             <h2>Связь с Навыками 1 и 2</h2>
             <div class="content">
                 <div class="process-flow">
-                    <div class="process-step" style="background: linear-gradient(135deg, rgba(255, 150, 100, 0.2), rgba(255, 100, 150, 0.15));">
-                        <div style="font-size: 3.5em; margin-bottom: 15px;">1️⃣</div>
-                        <h3>Проактивность</h3>
-                        <p style="margin-top: 15px; font-size: 1.1em;">💪 Я выбираю<br>🎯 Ответственность</p>
+                    <div class="process-step" style="background: rgba(255, 150, 100, 0.15);">
+                        <div style="font-size: 3em; margin-bottom: 10px;">1️⃣</div>
+                        <div style="font-size: 1.2em;">Проактивность</div>
+                        <p style="font-size: 0.8em; margin-top: 10px;">Я выбираю и отвечаю</p>
                     </div>
                     <div class="arrow-animated">+</div>
-                    <div class="process-step" style="background: linear-gradient(135deg, rgba(100, 200, 255, 0.2), rgba(100, 150, 255, 0.15));">
-                        <div style="font-size: 3.5em; margin-bottom: 15px;">2️⃣</div>
-                        <h3>Конечная цель</h3>
-                        <p style="margin-top: 15px; font-size: 1.1em;">🎯 Миссия<br>👤 Роли</p>
+                    <div class="process-step" style="background: rgba(100, 200, 255, 0.15);">
+                        <div style="font-size: 3em; margin-bottom: 10px;">2️⃣</div>
+                        <div style="font-size: 1.2em;">Конечная цель</div>
+                        <p style="font-size: 0.8em; margin-top: 10px;">Моя миссия и роли</p>
                     </div>
                     <div class="arrow-animated">+</div>
-                    <div class="process-step" style="background: linear-gradient(135deg, rgba(100, 255, 150, 0.2), rgba(100, 200, 255, 0.15)); border: 3px solid rgba(100, 255, 150, 0.5);">
-                        <div style="font-size: 3.5em; margin-bottom: 15px;">3️⃣</div>
-                        <h3>Главное в главное</h3>
-                        <p style="margin-top: 15px; font-size: 1.1em;">⏰ Приоритеты<br>✅ Действие</p>
+                    <div class="process-step" style="background: rgba(100, 255, 150, 0.15); border-color: #51cf66;">
+                        <div style="font-size: 3em; margin-bottom: 10px;">3️⃣</div>
+                        <div style="font-size: 1.2em;">Действие</div>
+                        <p style="font-size: 0.8em; margin-top: 10px;">Главное в приоритете</p>
                     </div>
-                </div>
-                <div class="highlight-box" style="margin-top: 50px;">
-                    <p style="font-size: 1.6em; text-align: center;">
-                        💡 Навык 1: Вы делаете выбор<br>
-                        💡 Навык 2: Вы знаете КУДА идти<br>
-                        💡 Навык 3: Вы расставляете приоритеты КАК туда добраться
-                    </p>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 3: The Problem -->
+        <!-- Slide 3 -->
         <div class="slide">
-            <h2>Проблема: Почему мы всегда заняты?</h2>
+            <h2>Дневник Навыка 2: Ваши роли</h2>
+            <div class="content">
+                <div class="diary-container">
+                    <div class="mission-center">
+                        <div style="font-size: 4em; margin-bottom: 5px;">📜</div>
+                        <h3 style="color: #ffca28; margin-bottom: 5px;">МИССИЯ</h3>
+                        <p style="font-size: 0.9em; padding: 0 15px; line-height: 1.2;">Ваша внутренняя конституция</p>
+                    </div>
+                    <div class="arrow-animated">➡️</div>
+                    <div class="roles-branch">
+                        <div class="role-tag">👤 Личность</div>
+                        <div class="role-tag">👨‍👩‍👧 Семья</div>
+                        <div class="role-tag">💼 Профессионал</div>
+                        <div class="role-tag">👦 Сын / Дочь</div>
+                        <div class="role-tag">🌍 Гражданин</div>
+                        <div class="role-tag">🏘️ Сосед</div>
+                        <div class="role-tag">🤝 Друг</div>
+                        <div class="role-tag">🎓 Наставник</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide">
+            <h2>Баланс ключевых ролей</h2>
             <div class="content">
                 <div class="grid-3">
                     <div class="card">
+                        <div>🧘</div>
+                        <h3>Я сам</h3>
+                        <p>Здоровье и дух</p>
+                    </div>
+                    <div class="card">
+                        <div>🏠</div>
+                        <h3>Семья</h3>
+                        <p>Близкие люди</p>
+                    </div>
+                    <div class="card">
+                        <div>💼</div>
+                        <h3>Работа</h3>
+                        <p>Карьера и созидание</p>
+                    </div>
+                    <div class="card">
+                        <div>🌍</div>
+                        <h3>Общество</h3>
+                        <p>Ваш вклад</p>
+                    </div>
+                    <div class="card">
+                        <div>🤝</div>
+                        <h3>Социум</h3>
+                        <p>Друзья</p>
+                    </div>
+                    <div class="card">
+                        <div>📚</div>
+                        <h3>Рост</h3>
+                        <p>Ученик и учитель</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide">
+            <h2>Почему мы вечно заняты?</h2>
+            <div class="content">
+                <div class="grid-3" style="gap: 40px;">
+                    <div class="card">
                         <div class="icon-large">🔥</div>
-                        <h3>Тушим пожары</h3>
-                        <p>Живём в режиме "срочно-срочно"</p>
+                        <h3>Тушение пожаров</h3>
+                        <p>Режим "срочно"</p>
                     </div>
                     <div class="card">
                         <div class="icon-large">📱</div>
                         <h3>Отвлечения</h3>
-                        <p>Чужие приоритеты становятся нашими</p>
+                        <p>Чужие задачи</p>
                     </div>
                     <div class="card">
                         <div class="icon-large">😰</div>
-                        <h3>Нет времени</h3>
-                        <p>На важное для НАС</p>
-                    </div>
-                </div>
-                <div class="highlight-box" style="margin-top: 50px;">
-                    <p style="font-size: 1.8em; text-align: center;">
-                        ❌ Мы знаем свою миссию и роли (Навык 2),<br>
-                        но НЕ НАХОДИМ ВРЕМЕНИ их реализовать!
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 4: Matrix Introduction -->
-        <div class="slide">
-            <h2>Матрица управления временем</h2>
-            <div class="content">
-                <div class="highlight-box" style="margin-bottom: 30px;">
-                    <p style="font-size: 1.5em; text-align: center;">
-                        Все дела можно разделить по двум критериям:
-                    </p>
-                </div>
-                <div style="display: flex; justify-content: space-around; align-items: center; gap: 60px; margin-top: 50px;">
-                    <div style="text-align: center;">
-                        <div class="icon-large" style="font-size: 7em;">⚡</div>
-                        <h3 style="font-size: 2.2em; margin-top: 20px;">Срочность</h3>
-                        <p style="font-size: 1.3em; margin-top: 15px;">Требует немедленного<br>внимания СЕЙЧАС</p>
-                    </div>
-                    <div class="arrow-animated" style="font-size: 5em;">×</div>
-                    <div style="text-align: center;">
-                        <div class="icon-large" style="font-size: 7em;">🎯</div>
-                        <h3 style="font-size: 2.2em; margin-top: 20px;">Важность</h3>
-                        <p style="font-size: 1.3em; margin-top: 15px;">Приближает к вашим<br>целям и МИССИИ</p>
+                        <h3>Стресс</h3>
+                        <p>Нет времени на важное</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 5: The Full Matrix -->
+        <!-- Slide 6 -->
         <div class="slide">
-            <h2>Матрица: 4 квадрата вашей жизни</h2>
+            <h2>Матрица: 4 Квадрата жизни</h2>
             <div class="content">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <div style="display: inline-flex; gap: 100px; font-size: 1.3em;">
-                        <div>← <strong>НЕ СРОЧНОЕ</strong></div>
-                        <div><strong>СРОЧНОЕ</strong> →</div>
-                    </div>
-                </div>
                 <div class="matrix-container">
                     <div class="matrix-quadrant quadrant-2">
                         <div class="quadrant-number">II</div>
                         <div class="quadrant-icon">🌱</div>
-                        <div class="quadrant-title">НЕ СРОЧНО<br>ВАЖНО</div>
-                        <div class="quadrant-desc">
-                            • Планирование<br>
-                            • Обучение<br>
-                            • Отношения<br>
-                            • Здоровье<br>
-                            • Профилактика
-                        </div>
-                        <div style="margin-top: 15px; font-size: 1.5em; color: #51cf66; font-weight: bold;">
-                            ✅ ЖИВИТЕ ЗДЕСЬ!
-                        </div>
+                        <div class="quadrant-title">ВАЖНО / НЕ СРОЧНО</div>
+                        <div class="quadrant-desc">Планирование • Отношения • Здоровье</div>
+                        <div style="margin-top: 20px; font-size: 1.4em; color: #51cf66; font-weight: bold;">✅ ВАША ЦЕЛЬ ЗДЕСЬ!</div>
                     </div>
-
                     <div class="matrix-quadrant quadrant-1">
                         <div class="quadrant-number">I</div>
                         <div class="quadrant-icon">🔥</div>
-                        <div class="quadrant-title">СРОЧНО<br>ВАЖНО</div>
-                        <div class="quadrant-desc">
-                            • Кризисы<br>
-                            • Дедлайны<br>
-                            • Проблемы<br>
-                            • Аварии
-                        </div>
-                        <div style="margin-top: 15px; font-size: 1.3em; color: #ff6b6b;">
-                            Минимизируйте
-                        </div>
+                        <div class="quadrant-title">ВАЖНО / СРОЧНО</div>
+                        <div class="quadrant-desc">Кризисы • Дедлайны • Проблемы</div>
                     </div>
-
                     <div class="matrix-quadrant quadrant-4">
                         <div class="quadrant-number">IV</div>
                         <div class="quadrant-icon">📺</div>
-                        <div class="quadrant-title">НЕ СРОЧНО<br>НЕ ВАЖНО</div>
-                        <div class="quadrant-desc">
-                            • Соцсети<br>
-                            • Трата времени<br>
-                            • Бесцельность
-                        </div>
-                        <div style="margin-top: 15px; font-size: 1.3em; color: #aaa;">
-                            Избегайте
-                        </div>
+                        <div class="quadrant-title">НЕ ВАЖНО / НЕ СРОЧНО</div>
+                        <div class="quadrant-desc">Соцсети • Пустая трата времени</div>
                     </div>
-
                     <div class="matrix-quadrant quadrant-3">
                         <div class="quadrant-number">III</div>
                         <div class="quadrant-icon">📞</div>
-                        <div class="quadrant-title">СРОЧНО<br>НЕ ВАЖНО</div>
-                        <div class="quadrant-desc">
-                            • Звонки<br>
-                            • Прерывания<br>
-                            • Чужие дела
-                        </div>
-                        <div style="margin-top: 15px; font-size: 1.3em; color: #ffa94d;">
-                            Делегируйте
-                        </div>
+                        <div class="quadrant-title">НЕ ВАЖНО / СРОЧНО</div>
+                        <div class="quadrant-desc">Звонки • Чужие ожидания</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 6: Quadrant II Focus -->
+        <!-- Slide 7 -->
         <div class="slide">
-            <h2>Квадрат II — Ключ к эффективности</h2>
+            <h2>Квадрат II — Ключ к успеху</h2>
             <div class="content">
-                <div class="highlight-box" style="background: linear-gradient(135deg, rgba(100, 255, 150, 0.2), rgba(100, 200, 255, 0.15)); border-color: rgba(100, 255, 150, 0.6); margin-bottom: 40px;">
-                    <div style="text-align: center;">
-                        <div style="font-size: 7em; margin-bottom: 20px;">🌱</div>
-                        <h3 style="font-size: 2.5em; color: #51cf66;">НЕ СРОЧНОЕ, НО ВАЖНОЕ</h3>
-                    </div>
+                <div class="grid-3">
+                    <div class="card"><div>📋</div><h3>План</h3></div>
+                    <div class="card"><div>🤝</div><h3>Связи</h3></div>
+                    <div class="card"><div>📚</div><h3>Учеба</h3></div>
+                    <div class="card"><div>🛡️</div><h3>Защита</h3></div>
+                    <div class="card"><div>🏃</div><h3>Спорт</h3></div>
+                    <div class="card"><div>💡</div><h3>Идеи</h3></div>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px;">
-                    <div class="card">
-                        <div style="font-size: 3em; margin-bottom: 15px;">📋</div>
-                        <h4 style="font-size: 1.5em; margin-bottom: 10px;">Планирование</h4>
-                        <p>Стратегия, недельные цели</p>
-                    </div>
-                    <div class="card">
-                        <div style="font-size: 3em; margin-bottom: 15px;">📚</div>
-                        <h4 style="font-size: 1.5em; margin-bottom: 10px;">Обучение</h4>
-                        <p>Развитие навыков, книги</p>
-                    </div>
-                    <div class="card">
-                        <div style="font-size: 3em; margin-bottom: 15px;">🤝</div>
-                        <h4 style="font-size: 1.5em; margin-bottom: 10px;">Отношения</h4>
-                        <p>Время с семьёй, друзьями</p>
-                    </div>
-                    <div class="card">
-                        <div style="font-size: 3em; margin-bottom: 15px;">🏃</div>
-                        <h4 style="font-size: 1.5em; margin-bottom: 10px;">Здоровье</h4>
-                        <p>Спорт, питание, сон</p>
-                    </div>
-                    <div class="card">
-                        <div style="font-size: 3em; margin-bottom: 15px;">🛡️</div>
-                        <h4 style="font-size: 1.5em; margin-bottom: 10px;">Профилактика</h4>
-                        <p>Предотвращение проблем</p>
-                    </div>
-                    <div class="card">
-                        <div style="font-size: 3em; margin-bottom: 15px;">💡</div>
-                        <h4 style="font-size: 1.5em; margin-bottom: 10px;">Творчество</h4>
-                        <p>Новые идеи, проекты</p>
-                    </div>
-                </div>
-                <div class="highlight-box" style="margin-top: 30px;">
-                    <p style="font-size: 1.5em; text-align: center;">
-                        ⭐ Чем больше времени в Квадрате II → меньше кризисов в Квадрате I
-                    </p>
+                <div class="highlight-box">
+                    <p style="font-size: 1.8em; text-align: center; font-weight: bold;">Инвестируйте в Квадрат II, чтобы Квадрат I перестал гореть!</p>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 7: Weekly Planning Introduction -->
+        <!-- Slide 8 -->
         <div class="slide">
             <h2>Еженедельное планирование</h2>
             <div class="content">
-                <div class="highlight-box" style="margin-bottom: 40px;">
-                    <p style="font-size: 1.6em; text-align: center;">
-                        📅 Планируйте неделю, а не день!<br>
-                        Неделя дает баланс между ролями
-                    </p>
-                </div>
                 <div class="process-flow">
-                    <div class="process-step">
-                        <div style="font-size: 3.5em; margin-bottom: 15px;">📜</div>
-                        <h3>Ваша миссия</h3>
-                        <p style="margin-top: 10px;">Из Навыка 2</p>
-                    </div>
+                    <div class="process-step">📜 Миссия</div>
                     <div class="arrow-animated">→</div>
-                    <div class="process-step">
-                        <div style="font-size: 3.5em; margin-bottom: 15px;">👤</div>
-                        <h3>Ваши роли</h3>
-                        <p style="margin-top: 10px;">5-7 ролей</p>
-                    </div>
+                    <div class="process-step">👤 Роли</div>
                     <div class="arrow-animated">→</div>
-                    <div class="process-step" style="border: 3px solid rgba(100, 255, 150, 0.6);">
-                        <div style="font-size: 3.5em; margin-bottom: 15px;">🎯</div>
-                        <h3>Цели на неделю</h3>
-                        <p style="margin-top: 10px;">Квадрат II</p>
-                    </div>
+                    <div class="process-step" style="border-color: #51cf66; color: #51cf66;">🎯 Цели</div>
                 </div>
-                <div class="highlight-box" style="margin-top: 40px;">
-                    <p style="font-size: 1.4em; text-align: center;">
-                        💡 Каждая роль получает внимание → баланс жизни
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 8: Weekly Planning Example -->
-        <div class="slide">
-            <h2>Пример еженедельного планирования</h2>
-            <div class="content">
-                <div class="role-card">
-                    <div style="display: flex; align-items: center; gap: 20px;">
-                        <div style="font-size: 3em;">👨‍👩‍👧</div>
-                        <div style="flex: 1;">
-                            <h3 style="font-size: 1.6em; margin-bottom: 10px;">Роль: Родитель</h3>
-                            <p style="font-size: 1.2em;">🎯 Цель на неделю: Вечер пятницы — семейный ужин и настолки (без гаджетов)</p>
-                        </div>
-                        <div style="background: rgba(100, 255, 150, 0.2); padding: 15px; border-radius: 10px; font-size: 1.3em;">
-                            Квадрат II
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="role-card">
-                    <div style="display: flex; align-items: center; gap: 20px;">
-                        <div style="font-size: 3em;">💼</div>
-                        <div style="flex: 1;">
-                            <h3 style="font-size: 1.6em; margin-bottom: 10px;">Роль: Руководитель</h3>
-                            <p style="font-size: 1.2em;">🎯 Цель на неделю: 1-on-1 с каждым членом команды (30 мин)</p>
-                        </div>
-                        <div style="background: rgba(100, 255, 150, 0.2); padding: 15px; border-radius: 10px; font-size: 1.3em;">
-                            Квадрат II
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="role-card">
-                    <div style="display: flex; align-items: center; gap: 20px;">
-                        <div style="font-size: 3em;">🏃</div>
-                        <div style="flex: 1;">
-                            <h3 style="font-size: 1.6em; margin-bottom: 10px;">Роль: Личное здоровье</h3>
-                            <p style="font-size: 1.2em;">🎯 Цель на неделю: 3 тренировки по 40 минут (пн, ср, пт утром)</p>
-                        </div>
-                        <div style="background: rgba(100, 255, 150, 0.2); padding: 15px; border-radius: 10px; font-size: 1.3em;">
-                            Квадрат II
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="role-card">
-                    <div style="display: flex; align-items: center; gap: 20px;">
-                        <div style="font-size: 3em;">📚</div>
-                        <div style="flex: 1;">
-                            <h3 style="font-size: 1.6em; margin-bottom: 10px;">Роль: Саморазвитие</h3>
-                            <p style="font-size: 1.2em;">🎯 Цель на неделю: Дочитать книгу про менеджмент (30 стр/день)</p>
-                        </div>
-                        <div style="background: rgba(100, 255, 150, 0.2); padding: 15px; border-radius: 10px; font-size: 1.3em;">
-                            Квадрат II
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 9: How to Plan -->
-        <div class="slide">
-            <h2>Как планировать неделю?</h2>
-            <div class="content">
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;">
-                    <div class="card">
-                        <div class="big-number">1️⃣</div>
-                        <h3 style="font-size: 1.6em; margin-bottom: 15px;">Воскресенье вечером</h3>
-                        <p style="font-size: 1.2em;">Выделите 30 минут для планирования следующей недели</p>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="big-number">2️⃣</div>
-                        <h3 style="font-size: 1.6em; margin-bottom: 15px;">Пройдитесь по ролям</h3>
-                        <p style="font-size: 1.2em;">Для каждой роли — 1-2 цели из Квадрата II</p>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="big-number">3️⃣</div>
-                        <h3 style="font-size: 1.6em; margin-bottom: 15px;">Запланируйте в календаре</h3>
-                        <p style="font-size: 1.2em;">Блокируйте время для важных дел ЗАРАНЕЕ</p>
-                    </div>
-                </div>
-                
-                <div class="highlight-box" style="margin-top: 40px;">
-                    <h3 style="font-size: 1.8em; text-align: center; margin-bottom: 20px;">⚡ Важные моменты:</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; font-size: 1.3em;">
-                        <div>
-                            <p>✅ Планируйте важное ПЕРВЫМ</p>
-                            <p>✅ Оставьте 20% времени на неожиданности</p>
-                        </div>
-                        <div>
-                            <p>✅ Приоритет Квадрату II</p>
-                            <p>✅ Гибкость — ключ к успеху</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 10: Summary -->
-        <div class="slide">
-            <h2>Резюме: Навык 3</h2>
-            <div class="content">
-                <div class="highlight-box" style="margin-bottom: 40px;">
-                    <div style="text-align: center;">
-                        <div style="font-size: 5em; margin-bottom: 20px;">3️⃣</div>
-                        <h3 style="font-size: 2.2em; margin-bottom: 20px;">Главное в главное</h3>
-                    </div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                    <div class="card" style="background: linear-gradient(135deg, rgba(100, 200, 255, 0.2), rgba(150, 100, 255, 0.15)); min-height: 280px;">
-                        <div style="font-size: 4em; margin-bottom: 20px;">💡</div>
-                        <h3 style="font-size: 1.8em; margin-bottom: 25px;">Ключевые концепции</h3>
-                        <div style="text-align: left; padding: 0 20px; font-size: 1.2em;">
-                            <p style="margin: 15px 0;">📊 Матрица управления временем</p>
-                            <p style="margin: 15px 0;">🌱 Квадрат II — главный фокус</p>
-                            <p style="margin: 15px 0;">👤 Планирование по ролям (из Навыка 2)</p>
-                        </div>
-                    </div>
-                    
-                    <div class="card" style="background: linear-gradient(135deg, rgba(100, 255, 150, 0.2), rgba(100, 200, 255, 0.15)); min-height: 280px;">
-                        <div style="font-size: 4em; margin-bottom: 20px;">🎯</div>
-                        <h3 style="font-size: 1.8em; margin-bottom: 25px;">Результаты</h3>
-                        <div style="text-align: left; padding: 0 20px; font-size: 1.2em;">
-                            <p style="margin: 15px 0;">⚖️ Баланс всех ролей</p>
-                            <p style="margin: 15px 0;">🔥 Меньше кризисов</p>
-                            <p style="margin: 15px 0;">✅ Реализация миссии</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="highlight-box" style="margin-top: 40px; background: linear-gradient(135deg, rgba(255, 200, 100, 0.15), rgba(255, 150, 100, 0.1)); border-color: rgba(255, 200, 100, 0.4);">
-                    <div style="text-align: center;">
-                        <div style="font-size: 4em; margin-bottom: 20px;">⏰</div>
-                        <p style="font-size: 1.6em; line-height: 1.6;">
-                            Управляйте собой, а не временем.<br>
-                            <strong>Живите проактивно в Квадрате II!</strong>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 11: Action Steps -->
-        <div class="slide">
-            <h2>Ваши действия на эту неделю</h2>
-            <div class="content">
-                <div class="highlight-box" style="margin-bottom: 40px;">
-                    <p style="font-size: 1.8em; text-align: center;">
-                        🎯 Практика: Запланируйте следующую неделю ПРЯМО СЕЙЧАС
-                    </p>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                    <div class="card" style="min-height: 220px;">
-                        <div class="big-number">1️⃣</div>
-                        <h3 style="font-size: 1.6em; margin-bottom: 15px;">Выделите 30 минут</h3>
-                        <p style="font-size: 1.2em;">В воскресенье вечером или понедельник утром</p>
-                    </div>
-                    
-                    <div class="card" style="min-height: 220px;">
-                        <div class="big-number">2️⃣</div>
-                        <h3 style="font-size: 1.6em; margin-bottom: 15px;">Возьмите ваши роли</h3>
-                        <p style="font-size: 1.2em;">Из личной миссии (Навык 2)</p>
-                    </div>
-                    
-                    <div class="card" style="min-height: 220px;">
-                        <div class="big-number">3️⃣</div>
-                        <h3 style="font-size: 1.6em; margin-bottom: 15px;">Определите цели Квадрата II</h3>
-                        <p style="font-size: 1.2em;">1-2 цели для каждой роли</p>
-                    </div>
-                    
-                    <div class="card" style="min-height: 220px;">
-                        <div class="big-number">4️⃣</div>
-                        <h3 style="font-size: 1.6em; margin-bottom: 15px;">Внесите в календарь</h3>
-                        <p style="font-size: 1.2em;">Блокируйте конкретное время</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 12: Final -->
-        <div class="slide">
-            <div class="content" style="text-align: center;">
-                <h1 style="margin-bottom: 50px;">Спасибо за внимание! 🙏</h1>
                 <div class="highlight-box">
-                    <p style="font-size: 1.8em; margin-bottom: 30px;">
-                        "Главное — делать главное главным"
-                    </p>
-                    <p style="font-size: 1.3em; opacity: 0.9;">
-                        Начните планировать по ролям уже эту неделю!
-                    </p>
-                </div>
-                <div style="margin-top: 60px;">
-                    <p style="font-size: 1.4em;">📚 Книга: "7 навыков высокоэффективных людей"</p>
-                    <p style="font-size: 1.4em;">✍️ Автор: Стивен Кови</p>
+                    <p style="text-align: center; font-size: 1.6em;">Не планируйте день — планируйте НЕДЕЛЮ. Это даст перспективу.</p>
                 </div>
             </div>
+        </div>
+
+        <!-- Slide 9 -->
+        <div class="slide">
+            <h2>Как начать?</h2>
+            <div class="content">
+                <div class="grid-3" style="gap: 40px;">
+                    <div class="card"><h3>1️⃣ Выходной</h3><p>30 минут тишины для обзора</p></div>
+                    <div class="card"><h3>2️⃣ По ролям</h3><p>1 важное дело для каждой роли</p></div>
+                    <div class="card"><h3>3️⃣ Бронь</h3><p>Внесите это в календарь как встречу</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10 -->
+        <div class="slide">
+            <h2>Резюме Навыка 3</h2>
+            <div class="content">
+                <div class="grid-3">
+                    <div class="card" style="grid-column: span 2; align-items: flex-start; text-align: left;">
+                        <h3>💡 Суть</h3>
+                        <p>• Квадрат II — основа жизни<br>• Планирование через роли<br>• Умение говорить "Нет" неважному</p>
+                    </div>
+                    <div class="card">
+                        <h3>🎯 Итог</h3>
+                        <p>Спокойствие, контроль и реальные результаты</p>
+                    </div>
+                </div>
+                <div class="highlight-box">
+                    <p style="font-size: 2.2em; text-align: center; color: #ffca28; font-weight: bold;">Управляйте собой, а не часами!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11 -->
+        <div class="slide">
+            <h2>Ваш следующий шаг</h2>
+            <div class="content">
+                <div class="grid-3">
+                    <div class="card" style="border-color: #ffca28;"><h3>1. Роли</h3><p>Выпишите их</p></div>
+                    <div class="card" style="border-color: #ffca28;"><h3>2. Цель II</h3><p>Одну для роли</p></div>
+                    <div class="card" style="border-color: #ffca28;"><h3>3. Время</h3><p>Запишите в план</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12 -->
+        <div class="slide">
+            <h1>Спасибо! 🙏</h1>
+            <div class="highlight-box" style="margin-top: 50px;">
+                <p style="font-size: 2.5em; text-align: center; font-weight: bold;">"Главное — делать главное главным"</p>
+            </div>
+            <p style="margin-top: 60px; font-size: 1.4em; opacity: 0.8;">Курс по Стивену Кови</p>
         </div>
     </div>
 
@@ -744,8 +529,8 @@
     </div>
 
     <div class="navigation">
-        <button id="prevBtn" onclick="changeSlide(-1)">← Назад</button>
-        <button id="nextBtn" onclick="changeSlide(1)">Вперёд →</button>
+        <button id="prevBtn" onclick="changeSlide(-1)">←</button>
+        <button id="nextBtn" onclick="changeSlide(1)">→</button>
     </div>
 
     <script>
@@ -757,9 +542,7 @@
 
         function showSlide(n) {
             slides[currentSlide].classList.remove('active');
-            
             currentSlide = (n + totalSlides) % totalSlides;
-            
             slides[currentSlide].classList.add('active');
             document.getElementById('currentSlide').textContent = currentSlide + 1;
             
