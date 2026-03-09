@@ -9,6 +9,8 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-x:hidden}
+
+
 :root{--t1:#0e9e8e;--t2:#1ab8a6;--t3:#2ed0bc;--t4:#4de0ce;--td:#0a7060;--tl:#a0ede4;--gold:#c9a040;}
 #prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--t1),var(--t3),var(--gold));z-index:200;transition:width .1s}
 .dots{position:fixed;right:18px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:200}
@@ -67,7 +69,7 @@ body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-
 .fq-canvas-wrap{max-width:520px;margin:0 auto 0;position:relative}
 #fqCanvas{width:100%;height:280px;display:block}
 .fq-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(18px,2.6vw,24px);color:#2a4a48;line-height:1.9;font-weight:300;max-width:480px;margin:0 auto;padding:0 20px}
-.fq-sub{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--gold);margin-top:18px}
+.fq-sub{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--t1);margin-top:18px}
 
 /* ══ DETAILS ══ */
 .det{position:relative;z-index:1;padding:110px 20px;background:#f8fffe;text-align:center;overflow:hidden}
@@ -87,13 +89,22 @@ body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-
 
 /* ══ TIMELINE ══ */
 .timeline{position:relative;z-index:1;padding:110px 20px;background:#fff;text-align:center}
-.tl-line{position:absolute;left:50%;top:200px;bottom:80px;width:1px;background:linear-gradient(180deg,transparent,var(--t1) 10%,var(--t1) 90%,transparent);transform:translateX(-50%);opacity:.28}
+.tl-line{position:absolute;left:50%;top:200px;bottom:80px;width:1px;background:linear-gradient(180deg,transparent,#0e9e8e 10%,#0e9e8e 90%,transparent);transform:translateX(-50%);opacity:.6}
 .tl-items{max-width:700px;margin:0 auto;display:flex;flex-direction:column}
 .tl-item{display:flex;align-items:center;gap:30px;padding:28px 0}
 .tl-item.r{flex-direction:row-reverse}
 .tl-side{flex:1;text-align:right}
 .tl-item.r .tl-side{text-align:left}
 .tl-dot{width:14px;height:14px;border-radius:50%;background:var(--t1);flex-shrink:0;z-index:2;box-shadow:0 0 0 4px rgba(14,158,142,.16)}
+@keyframes hueCancel{
+  0%  {filter:hue-rotate(0deg)}
+  100%{filter:hue-rotate(-360deg)}
+}
+@keyframes hueShift{
+  0%  {filter:hue-rotate(0deg)}
+  100%{filter:hue-rotate(360deg)}
+}
+.hero,.story,.quote-sec,.det,.floral-quote,.timeline,.pal,.closing,.map-section,.cd-sec,.dots{animation:hueShift 24s linear infinite}
 .tl-label{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--t1);margin-bottom:5px}
 .tl-main{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2.5vw,24px);color:#1a2a2a;line-height:1.4}
 .tl-sub{font-size:11px;color:#3a5a58;margin-top:4px;letter-spacing:1px}
@@ -330,10 +341,11 @@ body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-
     <div class="palette">
       <div class="sw"><div class="sw-c" style="background:#0e9e8e"></div><div class="sw-n">Бирюза</div></div>
       <div class="sw"><div class="sw-c" style="background:#c9a040"></div><div class="sw-n">Золото</div></div>
-      <div class="sw"><div class="sw-c" style="background:#a0ede4"></div><div class="sw-n">Мята</div></div>
+      <div class="sw"><div class="sw-c" style="background:#a0ede4;animation:hueCancel 24s linear infinite"></div><div class="sw-n">Мята</div></div>
       <div class="sw"><div class="sw-c" style="background:#e8c4b8"></div><div class="sw-n">Пудра</div></div>
       <div class="sw"><div class="sw-c" style="background:#f0e6d0"></div><div class="sw-n">Беж</div></div>
       <div class="sw"><div class="sw-c" style="background:#d4818a"></div><div class="sw-n">Роза</div></div>
+      <div class="sw"><div class="sw-c" style="background:#1a1a1a;border-color:#333"></div><div class="sw-n">Чёрный</div></div>
       <div class="sw"><div class="sw-c" style="background:#fff;border:1.5px solid #b0e4de"></div><div class="sw-n">Белый</div></div>
     </div>
   </div>
@@ -409,7 +421,7 @@ dots.forEach(d=>d.addEventListener('click',()=>secs[+d.dataset.s].scrollIntoView
 const dObs=new IntersectionObserver(ee=>ee.forEach(e=>{if(e.isIntersecting){const i=secs.indexOf(e.target);dots.forEach((d,j)=>d.classList.toggle('active',i===j));}}),{threshold:.4});
 secs.forEach(s=>dObs.observe(s));
 
-/* ══ FALLING LEAVES — only after hero ══ */
+/* ══ FALLING LEAVES — colour-cycling ══ */
 (function(){
   const cv=document.getElementById('cv');
   const ctx=cv.getContext('2d');
@@ -417,29 +429,124 @@ secs.forEach(s=>dObs.observe(s));
   function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;heroH=document.getElementById('s0').offsetHeight||innerHeight;}
   resize();window.addEventListener('resize',resize);
 
-  // hide on hero, show after
   function updateLeafVisibility(){cv.style.opacity=scrollY>heroH*.3?'1':'0';}
   window.addEventListener('scroll',updateLeafVisibility);
   updateLeafVisibility();
 
-  const TEAL=[{f:'#0e9e8e',d:'#0a7060'},{f:'#1ab8a6',d:'#0e9e8e'},{f:'#2ed0bc',d:'#1ab8a6'},{f:'#4de0ce',d:'#2ed0bc'},{f:'#3ab870',d:'#228850'},{f:'#52c84a',d:'#349830'},{f:'#70d860',d:'#48a838'},{f:'#90e070',d:'#60b848'}];
-  function bakeLeaf(col,sz){const oc=document.createElement('canvas');oc.width=sz*2.4;oc.height=sz*2.8;const c=oc.getContext('2d');c.translate(sz*1.2,sz*1.4);c.beginPath();c.moveTo(0,-sz);c.bezierCurveTo(sz*.55,-sz*.55,sz*.78,sz*.05,sz*.38,sz*.52);c.bezierCurveTo(sz*.18,sz*.78,sz*.06,sz*.92,0,sz);c.bezierCurveTo(-sz*.06,sz*.92,-sz*.18,sz*.78,-sz*.38,sz*.52);c.bezierCurveTo(-sz*.78,sz*.05,-sz*.55,-sz*.55,0,-sz);c.closePath();const g=c.createRadialGradient(sz*.08,-sz*.1,sz*.05,sz*.08,-sz*.1,sz*1.05);g.addColorStop(0,lighten(col.f,42));g.addColorStop(.4,col.f);g.addColorStop(1,col.d);c.fillStyle=g;c.fill();c.strokeStyle='rgba(0,80,80,.12)';c.lineWidth=.7;c.stroke();c.beginPath();c.moveTo(0,-sz*.88);c.quadraticCurveTo(sz*.06,0,0,sz*.88);c.strokeStyle='rgba(255,255,255,.38)';c.lineWidth=1.1;c.stroke();[-.62,-.3,.08,.44].forEach(yf=>{const y=yf*sz,xr=sz*.48;c.beginPath();c.moveTo(0,y);c.quadraticCurveTo(xr*.5,y+sz*.12,xr,y+sz*.06);c.moveTo(0,y);c.quadraticCurveTo(-xr*.5,y+sz*.12,-xr,y+sz*.06);c.strokeStyle='rgba(255,255,255,.2)';c.lineWidth=.5;c.stroke();});c.beginPath();c.moveTo(0,sz*.9);c.quadraticCurveTo(sz*.04,sz*1.1,0,sz*1.22);c.strokeStyle=col.d;c.lineWidth=1.2;c.stroke();return oc;}
-  function lighten(hex,n){return '#'+[1,3,5].map(i=>Math.min(255,parseInt(hex.slice(i,i+2),16)+n).toString(16).padStart(2,'0')).join('');}
-  const SIZES=[14,19,24];
-  const leafImgs=[];
-  TEAL.forEach(col=>SIZES.forEach(sz=>leafImgs.push({img:bakeLeaf(col,sz),w:sz*2.4,h:sz*2.8})));
-  let windX=0,windTarget=0;
-  setInterval(()=>{windTarget=(Math.random()-.5)*1.2;},3800);
-  class Leaf{
-    reset(init){const li=leafImgs[Math.floor(Math.random()*leafImgs.length)];this.img=li.img;this.lw=li.w;this.lh=li.h;this.x=init?Math.random()*W:-60+Math.random()*(W+120);this.y=init?Math.random()*H:-this.lh-10;this.sc=.5+Math.random()*.6;this.vy=.28+Math.random()*.55;this.vx=(Math.random()-.5)*.22;this.phase=Math.random()*Math.PI*2;this.swayAmp=1+Math.random()*2.2;this.swaySpd=.008+Math.random()*.012;this.rot=Math.random()*Math.PI*2;this.rotV=(Math.random()-.5)*.018;this.flip=Math.random()*Math.PI*2;this.flipV=.01+Math.random()*.022;this.op=.65+Math.random()*.28;}
-    constructor(){this.reset(true);}
-    update(){windX+=(windTarget-windX)*.004;this.phase+=this.swaySpd;this.x+=this.vx+Math.sin(this.phase)*this.swayAmp+windX*.5;const lift=Math.abs(Math.sin(this.flip))*.16;this.y+=this.vy*(1-lift*.3)+Math.cos(this.phase*.7)*.1;this.rot+=this.rotV+Math.sin(this.phase*.5)*.003;this.flip+=this.flipV+Math.abs(windX)*.003;if(this.y>H+80)this.reset(false);}
-    draw(){const sx=Math.cos(this.flip);ctx.save();ctx.translate(this.x,this.y);ctx.rotate(this.rot);ctx.scale(this.sc*sx,this.sc);ctx.globalAlpha=this.op*(sx<0?.65:1);if(sx<0)ctx.filter='brightness(0.7) saturate(0.8)';ctx.drawImage(this.img,-this.lw/2,-this.lh/2);ctx.restore();}
+  // colour palette: hue stops to cycle through
+  // teal≈174, green≈140, lime≈90, purple≈270, violet≈290, back to teal
+  const HUE_STOPS=[174,140,90,270,290,174];
+  const CYCLE_MS=24000; // full cycle duration
+
+  function currentHue(){
+    const t=(Date.now()%CYCLE_MS)/CYCLE_MS; // 0..1
+    const n=HUE_STOPS.length-1;
+    const seg=t*n;
+    const i=Math.floor(seg);
+    const f=seg-i;
+    const h0=HUE_STOPS[i], h1=HUE_STOPS[i+1];
+    // short-path interpolation
+    let dh=h1-h0;
+    if(dh>180)dh-=360;if(dh<-180)dh+=360;
+    return(h0+dh*f+360)%360;
   }
-  // reduced count: 14 mobile, 26 desktop
+
+  // bake a leaf with a given hue
+  function bakeLeaf(hue,sz){
+    const oc=document.createElement('canvas');
+    oc.width=sz*2.4;oc.height=sz*2.8;
+    const c=oc.getContext('2d');
+    c.translate(sz*1.2,sz*1.4);
+    const fill=`hsl(${hue},70%,48%)`;
+    const light=`hsl(${hue},60%,72%)`;
+    const dark=`hsl(${hue},75%,32%)`;
+    c.beginPath();
+    c.moveTo(0,-sz);
+    c.bezierCurveTo(sz*.55,-sz*.55,sz*.78,sz*.05,sz*.38,sz*.52);
+    c.bezierCurveTo(sz*.18,sz*.78,sz*.06,sz*.92,0,sz);
+    c.bezierCurveTo(-sz*.06,sz*.92,-sz*.18,sz*.78,-sz*.38,sz*.52);
+    c.bezierCurveTo(-sz*.78,sz*.05,-sz*.55,-sz*.55,0,-sz);
+    c.closePath();
+    const g=c.createRadialGradient(sz*.08,-sz*.1,sz*.04,sz*.08,-sz*.1,sz*1.05);
+    g.addColorStop(0,light);g.addColorStop(.45,fill);g.addColorStop(1,dark);
+    c.fillStyle=g;c.fill();
+    c.strokeStyle='rgba(0,0,0,.07)';c.lineWidth=.7;c.stroke();
+    c.beginPath();c.moveTo(0,-sz*.88);c.quadraticCurveTo(sz*.06,0,0,sz*.88);
+    c.strokeStyle='rgba(255,255,255,.38)';c.lineWidth=1.1;c.stroke();
+    [-.62,-.3,.08,.44].forEach(yf=>{
+      const y=yf*sz,xr=sz*.48;
+      c.beginPath();c.moveTo(0,y);c.quadraticCurveTo(xr*.5,y+sz*.12,xr,y+sz*.06);
+      c.moveTo(0,y);c.quadraticCurveTo(-xr*.5,y+sz*.12,-xr,y+sz*.06);
+      c.strokeStyle='rgba(255,255,255,.18)';c.lineWidth=.5;c.stroke();
+    });
+    c.beginPath();c.moveTo(0,sz*.9);c.quadraticCurveTo(sz*.04,sz*1.1,0,sz*1.22);
+    c.strokeStyle=dark;c.lineWidth=1.2;c.stroke();
+    return oc;
+  }
+
+  const SIZES=[7,10,13];
+  // cache: hue bucket (every 6°) → leaf images
+  const CACHE={};
+  function getLeafImg(hue,sz){
+    const bucket=Math.round(hue/6)*6;
+    const key=bucket+'_'+sz;
+    if(!CACHE[key])CACHE[key]=bakeLeaf(bucket,sz);
+    return{img:CACHE[key],w:sz*2.4,h:sz*2.8};
+  }
+
+  let windX=0,windTarget=0;
+  setInterval(()=>{windTarget=(Math.random()-.5)*1.1;},3600);
+
+  class Leaf{
+    reset(init){
+      this.sz=SIZES[Math.floor(Math.random()*SIZES.length)];
+      this.hueOffset=(Math.random()-.5)*30; // slight variety per leaf
+      this.x=init?Math.random()*W:-60+Math.random()*(W+120);
+      this.y=init?Math.random()*H:-this.sz*2.8-10;
+      this.sc=.5+Math.random()*.6;
+      this.vy=.28+Math.random()*.52;
+      this.vx=(Math.random()-.5)*.2;
+      this.phase=Math.random()*Math.PI*2;
+      this.swayAmp=1+Math.random()*2;
+      this.swaySpd=.008+Math.random()*.012;
+      this.rot=Math.random()*Math.PI*2;
+      this.rotV=(Math.random()-.5)*.018;
+      this.flip=Math.random()*Math.PI*2;
+      this.flipV=.01+Math.random()*.022;
+      this.op=.68+Math.random()*.28;
+    }
+    constructor(){this.reset(true);}
+    update(){
+      windX+=(windTarget-windX)*.004;
+      this.phase+=this.swaySpd;
+      this.x+=this.vx+Math.sin(this.phase)*this.swayAmp+windX*.5;
+      this.y+=this.vy*(1-Math.abs(Math.sin(this.flip))*.16)+Math.cos(this.phase*.7)*.1;
+      this.rot+=this.rotV+Math.sin(this.phase*.5)*.003;
+      this.flip+=this.flipV+Math.abs(windX)*.003;
+      if(this.y>H+80)this.reset(false);
+    }
+    draw(){
+      const hue=(currentHue()+this.hueOffset+360)%360;
+      const li=getLeafImg(hue,this.sz);
+      const sx=Math.cos(this.flip);
+      ctx.save();
+      ctx.translate(this.x,this.y);
+      ctx.rotate(this.rot);
+      ctx.scale(this.sc*sx,this.sc);
+      ctx.globalAlpha=this.op*(sx<0?.65:1);
+      if(sx<0)ctx.filter='brightness(0.75)';
+      ctx.drawImage(li.img,-li.w/2,-li.h/2);
+      ctx.restore();
+    }
+  }
+
   const isMobile=innerWidth<600;
   const leaves=Array.from({length:isMobile?14:26},()=>new Leaf());
-  (function loop(){ctx.clearRect(0,0,W,H);leaves.forEach(l=>{l.update();l.draw();});requestAnimationFrame(loop);})();
+  (function loop(){
+    ctx.clearRect(0,0,W,H);
+    leaves.forEach(l=>{l.update();l.draw();});
+    requestAnimationFrame(loop);
+  })();
 })();
 
 /* ══ FLORAL CANVAS (middle quote section) ══ */
