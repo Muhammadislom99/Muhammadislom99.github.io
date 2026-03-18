@@ -99,15 +99,27 @@ body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-
 .sw-c{width:68px;height:68px;border-radius:50%;border:2px solid rgba(14,158,142,.2);transition:all .3s;box-shadow:0 4px 14px rgba(0,0,0,.06)}
 .sw:hover .sw-c{border-color:var(--t1);box-shadow:0 10px 26px rgba(14,158,142,.22)}
 .sw-n{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#3a5a58}
+
+/* ══ RSVP ══ */
+.rsvp-sec{position:relative;z-index:1;padding:120px 20px 110px;background:#f8fffe;text-align:center;overflow:hidden}
+.rsvp-inner{position:relative;z-index:2}
+.rsvp-deadline-badge{display:inline-flex;align-items:center;gap:8px;margin:0 auto 28px;padding:10px 24px;border:1px solid rgba(14,158,142,.35);border-radius:40px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--t1);background:rgba(14,158,142,.06)}
+.rsvp-desc{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(19px,2.5vw,24px);color:#3a5a58;line-height:1.9;font-weight:300;margin:0 auto 48px;max-width:480px}
+.rsvp-cta{cursor:pointer;display:inline-flex;align-items:center;gap:12px;padding:16px 44px;background:transparent;border:1.5px solid var(--t1);color:var(--t1);font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;border-radius:2px;transition:all .35s;position:relative;overflow:hidden}
+.rsvp-cta::before{content:'';position:absolute;inset:0;background:var(--t1);transform:translateX(-100%);transition:transform .35s cubic-bezier(.22,1,.36,1)}
+.rsvp-cta:hover{color:#fff;box-shadow:0 12px 40px rgba(14,158,142,.22)}
+.rsvp-cta:hover::before{transform:translateX(0)}
+.rsvp-cta svg,.rsvp-cta span{position:relative;z-index:1}
+
 /* CLOSING */
-.closing{position:relative;z-index:1;min-height:75vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 20px 60px;overflow:hidden;background:#fff}
+.closing{position:relative;z-index:1;min-height:75vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 20px 60px;overflow:hidden;background:#f8fffe}
 .cl-inner{position:relative;z-index:2;margin-top:80px}
 .cq{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(17px,2.5vw,24px);color:#2a4a48;max-width:500px;line-height:1.9;margin-bottom:36px}
 .gline{width:50px;height:1px;background:var(--t1);margin:22px auto;opacity:.5}
 .cn-big{font-family:'Great Vibes',cursive;font-size:clamp(50px,8.5vw,90px);color:#1a2a2a}
 .btag{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--t1);margin-top:10px}
 /* MAP */
-.map-section{position:relative;z-index:1;padding:80px 20px 100px;background:#f8fffe;text-align:center}
+.map-section{position:relative;z-index:1;padding:80px 20px 100px;background:#fff;text-align:center}
 .map-label{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--t1);margin-bottom:18px}
 .map-wrap{max-width:860px;margin:0 auto;border-radius:4px;overflow:hidden;box-shadow:0 8px 40px rgba(14,158,142,.13);border:1px solid rgba(14,158,142,.18)}
 .map-wrap iframe{display:block;width:100%;height:420px;border:0}
@@ -116,7 +128,7 @@ body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-
 .map-open-btn svg{width:14px;height:14px}
 @keyframes hueCancel{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(-360deg)}}
 @keyframes hueShift{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
-.hero,.story,.quote-sec,.det,.floral-quote,.timeline,.pal,.closing,.map-section,.dots{animation:hueShift 24s linear infinite}
+.hero,.story,.quote-sec,.det,.floral-quote,.timeline,.pal,.rsvp-sec,.closing,.map-section,.dots{animation:hueShift 24s linear infinite}
 </style>
 </head>
 <body>
@@ -132,6 +144,7 @@ body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-
   <div class="dot" data-s="6"></div>
   <div class="dot" data-s="7"></div>
   <div class="dot" data-s="8"></div>
+  <div class="dot" data-s="9"></div>
 </nav>
 
 <!-- HERO -->
@@ -161,25 +174,24 @@ body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-
     setTimeout(paint,80);window.addEventListener('resize',paint);
   })();
   </script>
-
   <svg class="fl-t" viewBox="0 0 820 300" xmlns="http://www.w3.org/2000/svg">
     <path d="M0,290 Q200,185 400,120 Q590,55 820,8" stroke="#0a7060" stroke-width="2" fill="none" opacity=".5"/>
-    <g transform="translate(140,172)"><ellipse cx="0" cy="0" rx="30" ry="24" fill="#1ab8a6" opacity=".82"/><ellipse cx="-7" cy="-9" rx="23" ry="18" fill="#2ed0bc" opacity=".77"/><ellipse cx="5" cy="-16" rx="16" ry="12" fill="#4de0ce" opacity=".72"/><ellipse cx="-3" cy="-21" rx="10" ry="8" fill="#a0ede4" opacity=".67"/></g>
+    <g transform="translate(140,172)"><ellipse cx="0" cy="0" rx="30" ry="24" fill="#1ab8a6" opacity=".82"/><ellipse cx="-7" cy="-9" rx="23" ry="18" fill="#2ed0bc" opacity=".77"/><ellipse cx="5" cy="-16" rx="16" ry="12" fill="#4de0ce" opacity=".72"/></g>
     <g transform="translate(295,100)"><ellipse cx="0" cy="0" rx="34" ry="27" fill="#1ab8a6" opacity=".85"/><ellipse cx="-8" cy="-10" rx="26" ry="20" fill="#2ed0bc" opacity=".8"/><ellipse cx="6" cy="-18" rx="19" ry="14" fill="#4de0ce" opacity=".75"/></g>
-    <g transform="translate(472,62)"><ellipse cx="0" cy="0" rx="32" ry="25" fill="#0e9e8e" opacity=".83"/><ellipse cx="-7" cy="-9" rx="25" ry="19" fill="#1ab8a6" opacity=".78"/><ellipse cx="5" cy="-16" rx="18" ry="13" fill="#2ed0bc" opacity=".73"/></g>
+    <g transform="translate(472,62)"><ellipse cx="0" cy="0" rx="32" ry="25" fill="#0e9e8e" opacity=".83"/><ellipse cx="-7" cy="-9" rx="25" ry="19" fill="#1ab8a6" opacity=".78"/></g>
     <g opacity=".72"><ellipse cx="104" cy="208" rx="18" ry="10" fill="#0a7060" transform="rotate(-46 104 208)"/><ellipse cx="392" cy="88" rx="16" ry="9" fill="#0e9e8e" transform="rotate(-44 392 88)"/></g>
     <circle cx="150" cy="164" r="3" fill="#c9a040" opacity=".55"/>
   </svg>
   <svg class="fl-l" viewBox="0 0 170 700" xmlns="http://www.w3.org/2000/svg">
     <path d="M85,700 Q66,540 80,420 Q96,300 74,120 Q68,68 60,10" stroke="#0a7060" stroke-width="1.8" fill="none" opacity=".5"/>
     <g transform="translate(82,390) rotate(8)"><ellipse cx="0" cy="0" rx="28" ry="22" fill="#1ab8a6" opacity=".82"/><ellipse cx="-6" cy="-8" rx="22" ry="17" fill="#2ed0bc" opacity=".77"/></g>
-    <g transform="translate(78,255) rotate(-8)"><ellipse cx="0" cy="0" rx="22" ry="18" fill="#0e9e8e" opacity=".78"/><ellipse cx="-5" cy="-6" rx="17" ry="13" fill="#1ab8a6" opacity=".73"/></g>
+    <g transform="translate(78,255) rotate(-8)"><ellipse cx="0" cy="0" rx="22" ry="18" fill="#0e9e8e" opacity=".78"/></g>
     <ellipse cx="54" cy="420" rx="22" ry="12" fill="#0a7060" transform="rotate(-36 54 420)" opacity=".72"/>
   </svg>
   <svg class="fl-r" viewBox="0 0 170 700" xmlns="http://www.w3.org/2000/svg">
     <path d="M85,700 Q66,540 80,420 Q96,300 74,120 Q68,68 60,10" stroke="#0a7060" stroke-width="1.8" fill="none" opacity=".5"/>
     <g transform="translate(82,390) rotate(8)"><ellipse cx="0" cy="0" rx="28" ry="22" fill="#0e9e8e" opacity=".8"/><ellipse cx="-6" cy="-8" rx="22" ry="17" fill="#1ab8a6" opacity=".75"/></g>
-    <g transform="translate(78,255) rotate(-8)"><ellipse cx="0" cy="0" rx="22" ry="18" fill="#1ab8a6" opacity=".76"/><ellipse cx="-5" cy="-6" rx="17" ry="13" fill="#2ed0bc" opacity=".71"/></g>
+    <g transform="translate(78,255) rotate(-8)"><ellipse cx="0" cy="0" rx="22" ry="18" fill="#1ab8a6" opacity=".76"/></g>
     <ellipse cx="54" cy="420" rx="22" ry="12" fill="#1ab8a6" transform="rotate(-36 54 420)" opacity=".68"/>
   </svg>
   <svg class="fl-b" viewBox="0 0 820 300" xmlns="http://www.w3.org/2000/svg">
@@ -187,7 +199,6 @@ body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-
     <g transform="translate(140,172)"><ellipse cx="0" cy="0" rx="28" ry="22" fill="#0e9e8e" opacity=".78"/><ellipse cx="-6" cy="-8" rx="21" ry="16" fill="#1ab8a6" opacity=".73"/></g>
     <g transform="translate(295,100)"><ellipse cx="0" cy="0" rx="30" ry="24" fill="#1ab8a6" opacity=".8"/><ellipse cx="-7" cy="-9" rx="23" ry="18" fill="#2ed0bc" opacity=".75"/></g>
   </svg>
-
   <div class="hero-inner">
     <p class="tag">Вас приглашают на торжество</p>
     <h1 class="names">Muhammadislom<span class="amp">&amp;</span>Mudarrisa</h1>
@@ -217,13 +228,13 @@ body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-
   </div>
 </section>
 
-<!-- QUOTE 1 -->
+<!-- QUOTE -->
 <section class="quote-sec" id="s2">
   <svg class="quote-flowers" viewBox="0 0 700 180" xmlns="http://www.w3.org/2000/svg">
     <path d="M0,170 Q175,100 350,65 Q520,32 700,8" stroke="#0a7060" stroke-width="1.6" fill="none" opacity=".4"/>
-    <g transform="translate(110,128)"><ellipse cx="0" cy="0" rx="28" ry="22" fill="#1ab8a6" opacity=".8"/><ellipse cx="-6" cy="-8" rx="21" ry="16" fill="#2ed0bc" opacity=".75"/><ellipse cx="4" cy="-14" rx="15" ry="11" fill="#4de0ce" opacity=".7"/></g>
+    <g transform="translate(110,128)"><ellipse cx="0" cy="0" rx="28" ry="22" fill="#1ab8a6" opacity=".8"/><ellipse cx="-6" cy="-8" rx="21" ry="16" fill="#2ed0bc" opacity=".75"/></g>
     <g transform="translate(280,72)"><ellipse cx="0" cy="0" rx="32" ry="25" fill="#0e9e8e" opacity=".8"/><ellipse cx="-7" cy="-9" rx="25" ry="19" fill="#1ab8a6" opacity=".75"/><ellipse cx="5" cy="-15" rx="18" ry="13" fill="#2ed0bc" opacity=".7"/></g>
-    <g transform="translate(460,38)"><ellipse cx="0" cy="0" rx="24" ry="19" fill="#1ab8a6" opacity=".76"/><ellipse cx="-5" cy="-7" rx="18" ry="14" fill="#2ed0bc" opacity=".71"/></g>
+    <g transform="translate(460,38)"><ellipse cx="0" cy="0" rx="24" ry="19" fill="#1ab8a6" opacity=".76"/></g>
     <circle cx="120" cy="120" r="2.8" fill="#c9a040" opacity=".5"/>
   </svg>
   <div class="quote-inner reveal" style="padding-top:60px;padding-bottom:60px">
@@ -233,8 +244,8 @@ body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-
   </div>
   <svg class="quote-flowers-b" viewBox="0 0 700 180" xmlns="http://www.w3.org/2000/svg">
     <path d="M0,170 Q175,100 350,65 Q520,32 700,8" stroke="#0a7060" stroke-width="1.6" fill="none" opacity=".35"/>
-    <g transform="translate(110,128)"><ellipse cx="0" cy="0" rx="26" ry="20" fill="#0e9e8e" opacity=".74"/><ellipse cx="-5" cy="-7" rx="20" ry="15" fill="#1ab8a6" opacity=".69"/></g>
-    <g transform="translate(280,72)"><ellipse cx="0" cy="0" rx="28" ry="22" fill="#1ab8a6" opacity=".72"/><ellipse cx="-6" cy="-8" rx="21" ry="16" fill="#2ed0bc" opacity=".67"/></g>
+    <g transform="translate(110,128)"><ellipse cx="0" cy="0" rx="26" ry="20" fill="#0e9e8e" opacity=".74"/></g>
+    <g transform="translate(280,72)"><ellipse cx="0" cy="0" rx="28" ry="22" fill="#1ab8a6" opacity=".72"/></g>
   </svg>
 </section>
 
@@ -270,7 +281,7 @@ body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-
   </div>
 </section>
 
-<!-- FLORAL QUOTE 2 -->
+<!-- FLORAL QUOTE -->
 <section class="floral-quote" id="s4">
   <div class="reveal">
     <p class="slabel" style="margin-bottom:0">Слова сердца</p>
@@ -288,48 +299,26 @@ body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-
   </div>
   <div class="tl-line"></div>
   <div class="tl-items">
-
     <div class="tl-item reveal2">
-      <div class="tl-side">
-        <div class="tl-label">17:30</div>
-        <div class="tl-main">Сбор гостей</div>
-        <div class="tl-sub">Торжественный зал</div>
-      </div>
+      <div class="tl-side"><div class="tl-label">17:30</div><div class="tl-main">Сбор гостей</div><div class="tl-sub">Торжественный зал</div></div>
       <div class="tl-dot"></div><div style="flex:1"></div>
     </div>
-
     <div class="tl-item r reveal2" style="transition-delay:.15s">
-      <div class="tl-side">
-        <div class="tl-label">18:00</div>
-        <div class="tl-main">Открытие церемонии</div>
-      </div>
+      <div class="tl-side"><div class="tl-label">18:00</div><div class="tl-main">Открытие церемонии</div><div class="tl-sub">Клятвы молодожёнов</div></div>
       <div class="tl-dot"></div><div style="flex:1"></div>
     </div>
-
     <div class="tl-item reveal2" style="transition-delay:.3s">
-      <div class="tl-side">
-        <div class="tl-label">18:45</div>
-        <div class="tl-main">Праздничный ужин</div>
-      </div>
+      <div class="tl-side"><div class="tl-label">18:45</div><div class="tl-main">Праздничный ужин</div><div class="tl-sub">Банкетный зал</div></div>
       <div class="tl-dot"></div><div style="flex:1"></div>
     </div>
-
     <div class="tl-item r reveal2" style="transition-delay:.45s">
-      <div class="tl-side">
-        <div class="tl-label">19:30</div>
-        <div class="tl-main">Танцпол открыт</div>
-      </div>
+      <div class="tl-side"><div class="tl-label">19:30</div><div class="tl-main">Первый танец</div><div class="tl-sub">Танцпол открыт</div></div>
       <div class="tl-dot"></div><div style="flex:1"></div>
     </div>
-
     <div class="tl-item reveal2" style="transition-delay:.6s">
-      <div class="tl-side">
-        <div class="tl-label">21:00</div>
-        <div class="tl-main">Финальный танец вечера</div>
-      </div>
+      <div class="tl-side"><div class="tl-label">21:00</div><div class="tl-main">Прощальный вальс</div><div class="tl-sub">Финальный танец вечера</div></div>
       <div class="tl-dot"></div><div style="flex:1"></div>
     </div>
-
   </div>
 </section>
 
@@ -354,13 +343,45 @@ body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-
   </div>
 </section>
 
+<!-- ══ RSVP ══ -->
+<section class="rsvp-sec" id="s7">
+  <!-- top flower border -->
+  <svg style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(700px,100vw);pointer-events:none;opacity:.45" viewBox="0 0 700 180" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,170 Q175,100 350,65 Q520,32 700,8" stroke="#0a7060" stroke-width="1.6" fill="none" opacity=".4"/>
+    <g transform="translate(110,128)"><ellipse cx="0" cy="0" rx="28" ry="22" fill="#1ab8a6" opacity=".8"/><ellipse cx="-6" cy="-8" rx="21" ry="16" fill="#2ed0bc" opacity=".75"/><ellipse cx="4" cy="-14" rx="15" ry="11" fill="#4de0ce" opacity=".7"/></g>
+    <g transform="translate(280,72)"><ellipse cx="0" cy="0" rx="32" ry="25" fill="#0e9e8e" opacity=".8"/><ellipse cx="-7" cy="-9" rx="25" ry="19" fill="#1ab8a6" opacity=".75"/><ellipse cx="5" cy="-15" rx="18" ry="13" fill="#2ed0bc" opacity=".7"/></g>
+    <g transform="translate(460,38)"><ellipse cx="0" cy="0" rx="24" ry="19" fill="#1ab8a6" opacity=".76"/><ellipse cx="-5" cy="-7" rx="18" ry="14" fill="#2ed0bc" opacity=".71"/></g>
+    <circle cx="120" cy="120" r="2.8" fill="#c9a040" opacity=".5"/>
+  </svg>
+
+  <div class="reveal rsvp-inner">
+    <p class="slabel">Подтверждение</p>
+    <h2 class="stitle">Вы придёте?</h2>
+
+    <div class="rsvp-deadline-badge">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Подтвердите до 27 марта 2026
+    </div>
+
+    <p class="rsvp-desc">
+      Ваше присутствие — лучший подарок для нас.<br>
+      Нажмите кнопку ниже и заполните короткую форму — это займёт меньше минуты.
+    </p>
+
+    <button class="rsvp-cta" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSchbCtOYAVAbqZWlpwShkP-P3iUTafNFBoAkXR6JZaj5uFLVg/viewform','_blank')">
+      <span>Подтвердить присутствие</span>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+</section>
+
 <!-- CLOSING -->
-<section class="closing" id="s7">
+<section class="closing" id="s8">
   <svg style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(780px,110vw);pointer-events:none;opacity:.5" viewBox="0 0 800 260" xmlns="http://www.w3.org/2000/svg">
     <path d="M0,252 Q200,160 400,100 Q600,42 800,10" stroke="#0a7060" stroke-width="2" fill="none" opacity=".5"/>
     <g transform="translate(142,162)"><ellipse cx="0" cy="0" rx="30" ry="24" fill="#1ab8a6" opacity=".84"/><ellipse cx="-6" cy="-8" rx="23" ry="18" fill="#2ed0bc" opacity=".79"/></g>
     <g transform="translate(308,98)"><ellipse cx="0" cy="0" rx="32" ry="25" fill="#0e9e8e" opacity=".82"/><ellipse cx="-7" cy="-9" rx="25" ry="19" fill="#1ab8a6" opacity=".77"/></g>
-    <g transform="translate(480,54)"><ellipse cx="0" cy="0" rx="26" ry="21" fill="#1ab8a6" opacity=".8"/><ellipse cx="-5" cy="-7" rx="20" ry="15" fill="#2ed0bc" opacity=".75"/></g>
+    <g transform="translate(480,54)"><ellipse cx="0" cy="0" rx="26" ry="21" fill="#1ab8a6" opacity=".8"/></g>
   </svg>
   <div class="cl-inner reveal">
     <p class="cq">«Любовь — это не смотреть друг на друга,<br>а смотреть вместе в одном направлении»</p>
@@ -372,7 +393,7 @@ body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-
 </section>
 
 <!-- MAP -->
-<section class="map-section" id="s8">
+<section class="map-section" id="s9">
   <div class="reveal">
     <p class="map-label">Как нас найти</p>
     <div class="map-wrap">
@@ -386,9 +407,10 @@ body{background:#fff;font-family:'Montserrat',sans-serif;color:#1a2a2a;overflow-
 </section>
 
 <script>
+// ══ HERO LOAD ══
 window.addEventListener('load',()=>setTimeout(()=>document.querySelector('.hero').classList.add('loaded'),120));
 
-/* COUNTDOWN to 18:00 */
+// ══ COUNTDOWN ══
 function upd(){
   const t=new Date('2026-03-29T18:00:00'),now=new Date();let diff=t-now;
   const set=(id,v)=>{const el=document.getElementById(id);if(!el)return;const s=String(v).padStart(2,'0');if(el.textContent!==s){el.style.transform='scale(1.14)';el.style.color='var(--t1)';setTimeout(()=>{el.style.transform='';el.style.color='';},210);el.textContent=s;}};
@@ -401,19 +423,19 @@ function upd(){
 }
 upd();setInterval(upd,1000);
 
-/* REVEAL */
+// ══ REVEAL ══
 const obs=new IntersectionObserver(ee=>ee.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')}),{threshold:.12});
 document.querySelectorAll('.reveal,.reveal2').forEach(r=>obs.observe(r));
 window.addEventListener('scroll',()=>{const mx=document.body.scrollHeight-innerHeight;document.getElementById('prog').style.width=(scrollY/mx*100)+'%';});
 
-/* DOTS */
-const secs=['s0','s1','s2','s3','s4','s5','s6','s7','s8'].map(id=>document.getElementById(id));
+// ══ DOTS ══
+const secs=['s0','s1','s2','s3','s4','s5','s6','s7','s8','s9'].map(id=>document.getElementById(id));
 const dots=document.querySelectorAll('.dot');
 dots.forEach(d=>d.addEventListener('click',()=>secs[+d.dataset.s].scrollIntoView({behavior:'smooth'})));
 const dObs=new IntersectionObserver(ee=>ee.forEach(e=>{if(e.isIntersecting){const i=secs.indexOf(e.target);dots.forEach((d,j)=>d.classList.toggle('active',i===j));}}),{threshold:.4});
 secs.forEach(s=>dObs.observe(s));
 
-/* FALLING LEAVES */
+// ══ FALLING LEAVES ══
 (function(){
   const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
   let W,H,heroH=0;
@@ -422,21 +444,8 @@ secs.forEach(s=>dObs.observe(s));
   function updateVis(){cv.style.opacity=scrollY>heroH*.3?'1':'0';}
   window.addEventListener('scroll',updateVis);updateVis();
   const HUE_STOPS=[174,140,90,270,290,220,200,174],CYCLE_MS=24000;
-  function currentHue(){
-    const t=(Date.now()%CYCLE_MS)/CYCLE_MS,n=HUE_STOPS.length-1,seg=t*n,i=Math.floor(seg),f=seg-i;
-    let dh=HUE_STOPS[i+1]-HUE_STOPS[i];if(dh>180)dh-=360;if(dh<-180)dh+=360;
-    return(HUE_STOPS[i]+dh*f+360)%360;
-  }
-  function bakeLeaf(hue,sz){
-    const oc=document.createElement('canvas');oc.width=sz*2.4;oc.height=sz*2.8;
-    const c=oc.getContext('2d');c.translate(sz*1.2,sz*1.4);
-    const fill=`hsl(${hue},70%,48%)`,light=`hsl(${hue},60%,72%)`,dark=`hsl(${hue},75%,32%)`;
-    c.beginPath();c.moveTo(0,-sz);c.bezierCurveTo(sz*.55,-sz*.55,sz*.78,sz*.05,sz*.38,sz*.52);c.bezierCurveTo(sz*.18,sz*.78,sz*.06,sz*.92,0,sz);c.bezierCurveTo(-sz*.06,sz*.92,-sz*.18,sz*.78,-sz*.38,sz*.52);c.bezierCurveTo(-sz*.78,sz*.05,-sz*.55,-sz*.55,0,-sz);c.closePath();
-    const g=c.createRadialGradient(sz*.08,-sz*.1,sz*.04,sz*.08,-sz*.1,sz*1.05);g.addColorStop(0,light);g.addColorStop(.45,fill);g.addColorStop(1,dark);c.fillStyle=g;c.fill();
-    c.strokeStyle='rgba(0,0,0,.07)';c.lineWidth=.7;c.stroke();
-    c.beginPath();c.moveTo(0,-sz*.88);c.quadraticCurveTo(sz*.06,0,0,sz*.88);c.strokeStyle='rgba(255,255,255,.38)';c.lineWidth=1.1;c.stroke();
-    return oc;
-  }
+  function currentHue(){const t=(Date.now()%CYCLE_MS)/CYCLE_MS,n=HUE_STOPS.length-1,seg=t*n,i=Math.floor(seg),f=seg-i;let dh=HUE_STOPS[i+1]-HUE_STOPS[i];if(dh>180)dh-=360;if(dh<-180)dh+=360;return(HUE_STOPS[i]+dh*f+360)%360;}
+  function bakeLeaf(hue,sz){const oc=document.createElement('canvas');oc.width=sz*2.4;oc.height=sz*2.8;const c=oc.getContext('2d');c.translate(sz*1.2,sz*1.4);const fill=`hsl(${hue},70%,48%)`,light=`hsl(${hue},60%,72%)`,dark=`hsl(${hue},75%,32%)`;c.beginPath();c.moveTo(0,-sz);c.bezierCurveTo(sz*.55,-sz*.55,sz*.78,sz*.05,sz*.38,sz*.52);c.bezierCurveTo(sz*.18,sz*.78,sz*.06,sz*.92,0,sz);c.bezierCurveTo(-sz*.06,sz*.92,-sz*.18,sz*.78,-sz*.38,sz*.52);c.bezierCurveTo(-sz*.78,sz*.05,-sz*.55,-sz*.55,0,-sz);c.closePath();const g=c.createRadialGradient(sz*.08,-sz*.1,sz*.04,sz*.08,-sz*.1,sz*1.05);g.addColorStop(0,light);g.addColorStop(.45,fill);g.addColorStop(1,dark);c.fillStyle=g;c.fill();c.strokeStyle='rgba(0,0,0,.07)';c.lineWidth=.7;c.stroke();c.beginPath();c.moveTo(0,-sz*.88);c.quadraticCurveTo(sz*.06,0,0,sz*.88);c.strokeStyle='rgba(255,255,255,.38)';c.lineWidth=1.1;c.stroke();return oc;}
   const SIZES=[7,10,13],CACHE={};
   function getLeaf(hue,sz){const k=Math.round(hue/6)*6+'_'+sz;if(!CACHE[k])CACHE[k]=bakeLeaf(Math.round(hue/6)*6,sz);return{img:CACHE[k],w:sz*2.4,h:sz*2.8};}
   let windX=0,windTarget=0;setInterval(()=>{windTarget=(Math.random()-.5)*1.1;},3600);
@@ -450,7 +459,7 @@ secs.forEach(s=>dObs.observe(s));
   (function loop(){ctx.clearRect(0,0,W,H);leaves.forEach(l=>{l.update();l.draw();});requestAnimationFrame(loop);})();
 })();
 
-/* FLORAL CANVAS */
+// ══ FLORAL CANVAS ══
 (function(){
   const cv=document.getElementById('fqCanvas');if(!cv)return;
   function paint(){
