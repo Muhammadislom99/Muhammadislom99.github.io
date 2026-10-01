@@ -54,6 +54,9 @@ h2{margin:0;font-size:28px;letter-spacing:-.02em}
 .wlist ul.stack li span{display:block;font-size:12px;font-weight:700;margin-bottom:2px}
 .tip b{font-weight:800}
 .tip .lead{display:block;margin-bottom:10px}
+.srcs{margin-top:22px}
+.srcs a{display:block;color:var(--ac);font-size:14px;font-weight:600;text-decoration:none;margin-top:4px}
+.srcs a:hover{text-decoration:underline}
 .hero img{width:100%;height:100%;object-fit:cover;display:block}
 .vs{display:flex;gap:6px;margin-top:10px}
 .vs button{border:1px solid var(--ln);background:var(--card);border-radius:14px;padding:6px 12px;font-size:13px;color:var(--mu)}
@@ -102,6 +105,7 @@ const S=['Зима','Весна','Лето','Осень'];
 const CARE={
  pothos:{
   about:'Лиана из тропиков с сердцевидными листьями в жёлто-зелёных пятнах. В офисе её пускают по опоре или свешивают с полки: плетётся быстро и легко переносит пропуск полива.',
+  src:[["RHS — как выращивать эпипремнум","https://www.rhs.org.uk/plants/epipremnum/growing-guide"],["Университет Висконсина — Pothos","https://hort.extension.wisc.edu/articles/pothos-epipremmum-aureum/"],["Clemson University — уход за потосом","https://hgic.clemson.edu/factsheet/how-to-grow-pothos-indoors-epipremnum-spp-care-cultivars-and-common-problems/"],["Penn State Extension — потос как комнатное растение","https://extension.psu.edu/pothos-as-a-houseplant/"]],
   w:['Раз в 10–14 дней, верхние 2–3 см сухие','Раз в 7–10 дней, верхние 2 см сухие','Раз в 5–7 дней, верхние 2 см сухие','Раз в 8–12 дней, верхние 2–3 см сухие'],
   l:['Яркий рассеянный; в тени желтеет рисунок','Яркий рассеянный, без прямого солнца','Рассеянный, прямое солнце обжигает','Рассеянный, можно ближе к окну'],
   t:['18–24 °C, без сквозняка и батареи','18–27 °C','20–29 °C','18–24 °C'],
@@ -114,6 +118,7 @@ const CARE={
  },
  ficus:{
   about:'Комнатное дерево с крупными блестящими тёмно-зелёными листьями. Растёт неспешно и годами стоит на одном месте, если его не переставлять.',
+  src:[["Missouri Botanical Garden — Ficus elastica","https://www.missouribotanicalgarden.org/PlantFinder/PlantFinderDetails.aspx?taxonid=291685"],["Clemson University — каучуконосный фикус","https://hgic.clemson.edu/factsheet/rubber-plant/"],["NC State Extension — Ficus elastica","https://plants.ces.ncsu.edu/plants/ficus-elastica/"],["RHS — Ficus elastica","https://www.rhs.org.uk/plants/95720/ficus-elastica/details"]],
   w:['Раз в 10–14 дней, верхние 3 см сухие','Раз в 7–10 дней, верх слегка сухой','Раз в 5–7 дней, верхние 2–3 см сухие','Раз в 10–14 дней, полив реже'],
   l:['Яркий рассеянный или утреннее солнце','Яркий рассеянный, от полудня притенить','Рассеянный, послеобеденное солнце обжигает','Яркий рассеянный'],
   t:['Ночь 15–18 °C, день 18–22 °C, не ниже 13 °C','18–26 °C','День 24–27 °C, ночь не ниже 15 °C','18–24 °C, без сквозняка'],
@@ -126,6 +131,7 @@ const CARE={
  },
  anth:{
   about:'Тропический цветок с глянцевыми сердцевидными листьями и красным покрывалом вокруг жёлтого початка. Один цветок держится неделями, если хватает света и влажного воздуха.',
+  src:[["University of Florida — Anthurium","https://ask.ifas.ufl.edu/publication/FP042"],["NC State Extension — фламинго","https://plants.ces.ncsu.edu/plants/anthurium-andraeanum/common-name/flamingo-flower/"],["University of Florida — болезни антуриума","https://ask.ifas.ufl.edu/publication/PP292"]],
   w:['Раз в 7–10 дней, верхний 1 см подсох','Раз в 5–7 дней, почва слегка влажная','Раз в 3–5 дней, ком не пересушивать','Раз в 6–8 дней, верхний 1 см подсох'],
   l:['Яркий рассеянный, без прямого солнца','Яркий рассеянный, так закладываются цветки','Рассеянный, солнце через стекло обжигает','Яркий рассеянный, вдали от батареи'],
   t:['18–22 °C, не ниже 15 °C','18–26 °C','20–27 °C','18–24 °C, без резких скачков'],
@@ -138,6 +144,7 @@ const CARE={
  },
  agla:{
   about:'Куст с широкими листьями: у розовых сортов середина розовая, а край зелёный. Хорошо живёт в полутени офиса и не требует частого ухода.',
+  src:[["Clemson University — аглаонема","https://hgic.clemson.edu/factsheet/chinese-evergreen-aglaonema-care-cultivation-growing-guide/"],["University of Florida — Aglaonema","https://gardeningsolutions.ifas.ufl.edu/plants/houseplants/aglaonema/"],["NC State Extension — китайское вечнозелёное","https://plants.ces.ncsu.edu/plants/aglaonema/common-name/chinese-evergreen/"]],
   w:['Раз в 10–14 дней, верхние 3 см сухие','Раз в 7–10 дней, верхние 2 см сухие','Раз в 5–7 дней, верхние 2–3 см сухие','Раз в 8–12 дней, верхние 2–3 см сухие'],
   l:['Умеренный рассеянный; розовый рисунок в тени бледнеет','Рассеянный, без прямого солнца','Рассеянный, прямое солнце обжигает','Рассеянный, можно чуть светлее'],
   t:['20–24 °C, не ниже 15 °C','20–26 °C','22–27 °C','20–24 °C, без холодного сквозняка'],
@@ -150,6 +157,7 @@ const CARE={
  },
  crot:{
   about:'Куст с плотными листьями, раскрашенными в зелёный, жёлтый, оранжевый и красный. Окраска ярче на свету, а от переезда или холода растение легко сбрасывает листву.',
+  src:[["RHS — как выращивать кодиеум","https://www.rhs.org.uk/plants/codiaeum/growing-guide"],["Университет Висконсина — кротон","https://hort.extension.wisc.edu/articles/croton-codiaeum-variegatum/"],["RHS — род Codiaeum","https://www.rhs.org.uk/plants/codiaeum"]],
   w:['Раз в 7–10 дней, верхние 1–2 см сухие','Раз в 5–7 дней, верхний 1 см сухой','Раз в 3–5 дней, до полной сухости не доводить','Раз в 6–8 дней, верхние 1–2 см сухие'],
   l:['Яркий рассеянный, иначе листья зеленеют','Яркий рассеянный, без жаркого солнца','Рассеянный, солнце через стекло выгорает','Яркий рассеянный'],
   t:['18–24 °C, не ниже 15 °C','18–27 °C','20–29 °C','18–24 °C, без сквозняка'],
@@ -162,6 +170,7 @@ const CARE={
  },
  azal:{
   about:'Компактный куст, который приносят уже покрытым розовыми цветками. Это комнатная азалия, не садовая: ей нужны прохлада и кислая почва.',
+  src:[["RHS — комнатные азалии","https://www.rhs.org.uk/plants/rhododendron/indoor-azaleas"],["RHS — Rhododendron simsii","https://www.rhs.org.uk/plants/15682/rhododendron-simsii-ea/details"]],
   w:['Раз в 4–6 дней, верхние 0,5–1 см подсохли, только мягкая вода','Раз в 3–5 дней, ком влажный','Раз в 2–4 дня, ком не пересушивать','Раз в 4–6 дней, мягкая вода'],
   l:['Яркий рассеянный, без полуденного солнца','Яркий рассеянный','Рассеянный, жара и солнце сокращают цветение','Яркий рассеянный, прохлада'],
   t:['10–16 °C, прохлада держит бутоны','13–18 °C','16–20 °C','10–16 °C'],
@@ -174,6 +183,7 @@ const CARE={
  },
  kalan:{
   about:'Невысокий суккулент с мясистыми листьями и шапкой мелких розовых цветков. Цветёт долго, а новые бутоны закладывает, только если осенью ночи длинные и тёмные.',
+  src:[["Clemson University — каланхоэ","https://hgic.clemson.edu/factsheet/kalanchoe/"],["NC State Extension — Kalanchoe blossfeldiana","https://plants.ces.ncsu.edu/plants/kalanchoe-blossfeldiana/"],["New York Botanical Garden — каланхоэ","https://libguides.nybg.org/kalanchoe"],["Illinois Extension — каланхоэ","https://extension.illinois.edu/blogs/good-growing/2025-12-19-nontraditional-holiday-plant-kalanchoe"]],
   w:['Раз в 3–4 недели, грунт сухой; после цветения месяц почти без воды','Раз в 10–14 дней, грунт просох','Раз в 7–10 дней, грунт просох, воду из поддона слить','Раз в 2–3 недели'],
   l:['Яркий свет, можно утреннее солнце','Яркий свет, около 4 часов прямого или очень яркого','Яркий свет, от жаркого полудня притенить','Яркий день и 14 часов полной темноты ночью, около 6 недель'],
   t:['Ночь 7–15 °C, день 16–21 °C','Ночь 10–15 °C, день 18–21 °C','День до 27 °C, ночь прохладнее','Ночь 10–16 °C; выше 27 °C ночью бутоны не закладываются'],
@@ -186,6 +196,7 @@ const CARE={
  },
  cala:{
   about:'Павлинья калатея: на светлом овальном листе тёмный рисунок, как перья. Днём листья раскрыты, к ночи поднимаются, и это её обычное движение.',
+  src:[["RHS — как выращивать калатеи","https://www.rhs.org.uk/plants/calathea/growing-guide"],["NC State Extension — павлинья калатея","https://plants.ces.ncsu.edu/plants/goeppertia-makoyana/common-name/peacock-plant/"],["RHS — Goeppertia makoyana","https://www.rhs.org.uk/plants/357223/goeppertia-makoyana/details"]],
   w:['Раз в 7–10 дней, верхний 1 см подсох, вода отстоянная','Раз в 4–6 дней, ком слегка влажный','Раз в 3–4 дня, не пересушивать и не заливать','Раз в 5–7 дней, верхний 1 см подсох'],
   l:['Яркий рассеянный, без прямого солнца','Яркий рассеянный, рисунок на свету ярче','Рассеянный, солнце обжигает','Рассеянный, вдали от батареи'],
   t:['18–22 °C, не ниже 15 °C','18–24 °C','20–24 °C','18–22 °C, без сквозняка'],
@@ -198,6 +209,7 @@ const CARE={
  },
  dief:{
   about:'Крупное растение с широкими листьями в кремовых крапинах. На светлом месте растёт быстро, в тени медленно, а сок ядовитый, поэтому листья не режут голыми руками.',
+  src:[["Clemson University — диффенбахия","https://hgic.clemson.edu/factsheet/dieffenbachia/"],["University of Florida — Dieffenbachia","https://gardeningsolutions.ifas.ufl.edu/plants/houseplants/dieffenbachia/"],["Penn State Extension — болезни диффенбахии","https://extension.psu.edu/dieffenbachia-diseases"]],
   w:['Раз в 10–14 дней, верхние 2–3 см сухие','Раз в 7–10 дней, верхние 2 см сухие','Раз в 5–7 дней, верхние 2 см сухие','Раз в 8–12 дней, верхние 2–3 см сухие'],
   l:['Яркий рассеянный; зимой можно светлее','Яркий рассеянный','Рассеянный, без жёсткого солнца','Яркий рассеянный, поворачивать к свету'],
   t:['16–22 °C, не ниже 13 °C','18–25 °C','18–24 °C','16–22 °C, без резкого холода'],
@@ -210,6 +222,7 @@ const CARE={
  },
  drac:{
   about:'Её называют бамбуком счастья, хотя это драцена: зелёные членистые стебли с пучком листьев наверху. Держат и в грунте, и в вазе с водой.',
+  src:[["Clemson University — бамбук счастья","https://hgic.clemson.edu/how-to-grow-and-care-for-lucky-bamboo-dracaena-sanderiana/"],["NC State Extension — Dracaena sanderiana","https://plants.ces.ncsu.edu/plants/dracaena-sanderiana/"]],
   w:['Раз в 10–14 дней, верхние 2 см сухие','Раз в 7–10 дней, верхний 1–2 см сухой','Раз в 5–7 дней, верхний 1–2 см сухой','Раз в 8–12 дней'],
   l:['Яркий рассеянный, восток или север','Яркий рассеянный, прямое солнце жжёт','Рассеянный, без прямого солнца','Яркий рассеянный'],
   t:['18–24 °C','18–26 °C','20–27 °C','18–24 °C, без холодного сквозняка'],
@@ -222,6 +235,7 @@ const CARE={
  },
  gast:{
   about:'Низкий суккулент с толстыми языковидными листьями, часто в белых бугорках. Растёт медленно и лучше стоит на ярком окне без полуденного солнца.',
+  src:[["Henry Shaw Cactus Society — гастерия","https://hscactus.org/resources/plants-of-the-month/gasteria-2020/"],["RHS — кактусы и суккуленты дома","https://www.rhs.org.uk/plants/types/cacti-succulents/houseplants/growing-guide"]],
   w:['Раз в 3–4 недели, только чтобы не сморщилась','Раз в 10–14 дней, грунт полностью сухой','Раз в 7–14 дней, в жару ждать полного просыхания','Раз в 2–3 недели, грунт сухой'],
   l:['Яркий рассеянный, полуденное солнце обжигает','Яркий свет, утро можно, полдень притенить','Яркий рассеянный','Яркий свет, без жаркого стекла'],
   t:['10–16 °C, прохлада помогает цветению, не ниже 10 °C','16–24 °C','22–30 °C, нужен воздух','14–22 °C'],
@@ -234,6 +248,7 @@ const CARE={
  },
  aloe:{
   about:'Розетка мясистых сизо-зелёных листьев с мягкими зубцами по краю. В листьях запас воды, поэтому растение долго обходится без полива.',
+  src:[["Penn State Extension — алоэ","https://extension.psu.edu/aloe-a-hardy-houseplant"],["Missouri Botanical Garden — Aloe vera","https://www.missouribotanicalgarden.org/PlantFinder/PlantFinderDetails.aspx?taxonid=282195"],["South Dakota State University — алоэ вера","https://extension.sdstate.edu/aloe-vera-houseplant-how"],["University of Arizona — Aloe vera","https://extension.arizona.edu/sites/extension.arizona.edu/files/attachment/AloeVera.pdf"]],
   w:['Раз в 3–4 недели, грунт сухой, листья не сморщены','Раз в 2–3 недели, верх полностью сухой','Раз в 10–14 дней, верх сухой, из поддона сразу слить','Раз в 3 недели, грунт сухой'],
   l:['Много света, южное или западное окно','Яркий свет, немного прямого солнца','Яркий свет, от раскалённого стекла отодвинуть','Яркий свет'],
   t:['10–18 °C, не ниже 10 °C','18–26 °C','22–30 °C','14–22 °C'],
@@ -246,6 +261,7 @@ const CARE={
  },
  fish:{
   about:'Ампельный цветок: мелкие блестящие листья и оранжевые бутоны, похожие на рыбок. Плети свешиваются с горшка и цветут при ярком рассеянном свете.',
+  src:[["NC State Extension — золотая рыбка","https://plants.ces.ncsu.edu/plants/nematanthus-gregarius/common-name/goldfish-plant/"],["Gardener's Path — goldfish plant","https://gardenerspath.com/plants/houseplants/grow-goldfish-plant/"]],
   w:['Раз в 10–14 дней, верхние 3 см сухие','Раз в 7 дней, верхний 1 см сухой','Раз в 4–6 дней, верхний 1 см сухой','Раз в 7–10 дней, верхние 2 см сухие'],
   l:['Яркий рассеянный, утреннее солнце можно','Яркий рассеянный, не долго на полном солнце','Рассеянный, полуденное солнце обжигает','Яркий рассеянный'],
   t:['16–22 °C, не ниже 10 °C','18–24 °C','20–26 °C','18–22 °C'],
@@ -258,6 +274,7 @@ const CARE={
  },
  cact:{
   about:'Пустынный кактус с ребристым зелёным стеблем и колючками. Зимой ему нужен прохладный сухой покой, иначе весной он часто не цветёт.',
+  src:[["RHS — кактусы и суккуленты дома","https://www.rhs.org.uk/plants/types/cacti-succulents/houseplants/growing-guide"]],
   w:['Раз в 4–6 недель и только если морщится','Раз в 10–14 дней, грунт сухой','Раз в 7–10 дней, грунт полностью сухой','Раз в 3–4 недели, полив сворачивать'],
   l:['Максимум света, южное окно','Яркий свет, прямое солнце','Яркий свет, утреннее и дневное солнце','Яркий свет'],
   t:['Ночь 8–12 °C, так закладываются бутоны','16–24 °C','22–30 °C','14–20 °C, готовить к покою'],
@@ -321,7 +338,7 @@ function detail(p){
     app.querySelectorAll('.wbtn').forEach(b=>b.onclick=()=>{if(b.dataset.fold==='w')waterOpen=!waterOpen;else feedOpen=!feedOpen;draw()});
   };
   const ph=PH[p.id]||[],vw=ph.map(u=>`<img src="${u}" alt="${p.n}">`).concat([art(p)]);
-  app.innerHTML=`<button class="back">← Все цветы</button><div class="det"><div><div class="hero">${vw[0]}</div>${ph.length?'<div class="vs">'+vw.map((_,i)=>`<button data-v="${i}" aria-pressed="${i==0}">${i<ph.length?(ph.length>1?'Фото '+(i+1):'Фото'):'Рисунок'}</button>`).join('')+'</div>':''}</div><div><h2>${p.n}</h2><p class="lat">${p.lat}</p><p class="tip"><span class="lead">${care.about}</span><b>Любит.</b> ${care.like}<br><b>Не любит.</b> ${care.hate}<br><b>Проблемы.</b> ${care.ill}</p><div class="tabs" role="tablist"></div><div class="rows"></div></div></div>`;
+  app.innerHTML=`<button class="back">← Все цветы</button><div class="det"><div><div class="hero">${vw[0]}</div>${ph.length?'<div class="vs">'+vw.map((_,i)=>`<button data-v="${i}" aria-pressed="${i==0}">${i<ph.length?(ph.length>1?'Фото '+(i+1):'Фото'):'Рисунок'}</button>`).join('')+'</div>':''}</div><div><h2>${p.n}</h2><p class="lat">${p.lat}</p><p class="tip"><span class="lead">${care.about}</span><b>Любит.</b> ${care.like}<br><b>Не любит.</b> ${care.hate}<br><b>Проблемы.</b> ${care.ill}</p><div class="tabs" role="tablist"></div><div class="rows"></div></div></div><p class="tip srcs"><b>Источники</b>${care.src.map(([n,u])=>'<a href="'+u+'" target="_blank" rel="noopener noreferrer">'+n+'</a>').join('')}</p>`;
   app.querySelector('.back').onclick=()=>{location.hash=''};
   app.querySelectorAll('.vs button').forEach(b=>b.onclick=()=>{app.querySelector('.hero').innerHTML=vw[+b.dataset.v];app.querySelectorAll('.vs button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
   draw();
