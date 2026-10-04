@@ -24,18 +24,37 @@ function dose(ml){const step=ml<40?5:10;return Math.max(step,Math.round(ml/step)
 function doses(k){const f=WF[k][season];return POTS.map(([d,v])=>[d,dose(v*f)])}
 let waterOpen=false,feedOpen=false;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function status(id){
-  const w=Store.get(id,'w'),f=Store.get(id,'f');
-  return [w&&'Полив: '+Store.ago(w),f&&'Корм: '+Store.ago(f)].filter(Boolean).join(' · ');
+// Срок из текста ухода («Раз в 10–14 дней», «Каждые 2 недели», «Раз в месяц») -> [мин, макс] в днях
+const UNIT={'дн':1,'недел':7,'месяц':30};
+function interval(txt){
+  const m=/(?:раз в|каждые)\s+(?:(\d+)(?:–(\d+))?\s+)?(дн|недел|месяц)/i.exec(txt||'');
+  if(!m)return null;
+  const u=UNIT[m[3]];return [(+m[1]||1)*u,(+(m[2]||m[1])||1)*u];
+}
+// ok — рано, soon — пора, late — просрочено; null — нет отметки или в этот сезон не нужно
+function state(p,kind){
+  const v=Store.get(p.id,kind);if(!v)return null;
+  const iv=interval(p.care[kind][cur()]);if(!iv)return null;
+  const n=Store.daysAgo(v),hi=iv[1];
+  return n<iv[0]?'ok':n<=hi+Math.max(1,Math.round(hi*.25))?'soon':'late';
+}
+const RANK={ok:0,soon:1,late:2};
+const worst=(...s)=>s.filter(Boolean).sort((x,y)=>RANK[y]-RANK[x])[0]||'';
+function status(p){
+  return [['w','Полив'],['f','Корм']].map(([k,l])=>{
+    const v=Store.get(p.id,k);
+    return v?`<span class="chip ${state(p,k)||''}">${l}: ${Store.ago(v)}</span>`:'';
+  }).join('');
 }
 function home(){
   const mine=P.filter(p=>Store.isMine(p.id));
   const tab=Store.tab(),list=tab==='mine'?mine:P;
   ttl.textContent='Цветы';
   sub.textContent=tab==='mine'?'Моих цветов: '+mine.length:'Всего в помещении: '+P.length;
-  const cards=list.map(p=>{const st=status(p.id);return `<button class="card" data-id="${p.id}"><div class="art"><img src="${(p.photos||[])[0]||''}" alt="${esc(p.n)}">${Store.isMine(p.id)?'<i class="star" aria-label="В моих цветах">★</i>':''}</div><b>${p.n}</b>${st?'<small class="st">'+st+'</small>':''}</button>`}).join('');
+  const cards=list.map(p=>{const st=status(p),s=worst(state(p,'w'),state(p,'f'));return `<button class="card" data-id="${p.id}"${s?' data-s="'+s+'"':''}><div class="art"><img src="${(p.photos||[])[0]||''}" alt="${esc(p.n)}">${Store.isMine(p.id)?'<i class="star" aria-label="В моих цветах">★</i>':''}</div><b>${p.n}</b>${st?'<div class="st">'+st+'</div>':''}</button>`}).join('');
+  const legend='<p class="legend"><span class="chip ok">в норме</span><span class="chip soon">пора</span><span class="chip late">просрочено</span></p>';
   app.innerHTML=`<div class="tabs two" role="tablist"><button role="tab" aria-selected="${tab==='all'}" data-t="all">Все (${P.length})</button><button role="tab" aria-selected="${tab==='mine'}" data-t="mine">Мои цветы (${mine.length})</button></div>`+
-    (list.length?'<div class="grid">'+cards+'</div>':'<p class="empty">Пока пусто. Откройте цветок и нажмите «☆ В мои цветы».</p>');
+    (list.length?legend+'<div class="grid">'+cards+'</div>':'<p class="empty">Пока пусто. Откройте цветок и нажмите «☆ В мои цветы».</p>');
   app.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{Store.setTab(b.dataset.t);home()});
   app.querySelectorAll('.card').forEach(b=>b.onclick=()=>{location.hash='#'+b.dataset.id});
 }
@@ -71,7 +90,8 @@ function detail(p){
     const box=app.querySelector('.log'),today=Store.today();
     box.innerHTML=[['w','Последний полив','i-w'],['f','Последняя подкормка','i-f']].map(([k,label,ic])=>{
       const v=Store.get(p.id,k);
-      return `<div class="lrow" data-k="${k}"><svg><use href="#${ic}"/></svg><div class="ltx"><small>${label}</small><b>${v?Store.ago(v):'не отмечено'}</b>${v?'<span>'+Store.fmt(v)+'</span>':''}</div><div class="lbt"><button type="button" data-a="now">Сегодня</button><input type="date" max="${today}" value="${v||''}" aria-label="${label}: дата">${v?'<button type="button" data-a="clr" aria-label="Сбросить">×</button>':''}</div></div>`}).join('');
+      const st=state(p,k)||'';
+      return `<div class="lrow ${st}" data-k="${k}"><svg><use href="#${ic}"/></svg><div class="ltx"><small>${label}</small><b>${v?Store.ago(v):'не отмечено'}</b>${v?'<span>'+Store.fmt(v)+'</span>':''}</div><div class="lbt"><button type="button" data-a="now">Сегодня</button><input type="date" max="${today}" value="${v||''}" aria-label="${label}: дата">${v?'<button type="button" data-a="clr" aria-label="Сбросить">×</button>':''}</div></div>`}).join('');
     box.querySelectorAll('.lrow').forEach(r=>{
       const k=r.dataset.k;
       r.querySelector('[data-a=now]').onclick=()=>{Store.set(p.id,k,Store.today());drawLog()};
