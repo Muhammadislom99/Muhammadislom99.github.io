@@ -86,3 +86,15 @@ h2{margin:0;font-size:28px;letter-spacing:-.02em}
 .card[data-s=late]{border-color:var(--late)}
 .card[data-s=late] .art img{filter:saturate(.4) sepia(.6) brightness(.85) contrast(.95)}
 .lrow.ok .ltx b{color:var(--ok)}.lrow.soon .ltx b{color:var(--soon)}.lrow.late .ltx b{color:var(--late)}
+.hb{display:flex;gap:8px}
+dialog{border:1px solid var(--ln);border-radius:22px;background:var(--card);color:var(--tx);padding:20px;max-width:440px;width:calc(100% - 32px);box-shadow:var(--sh)}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+dialog h3{margin:0 0 8px}
+dialog .hint{color:var(--mu);font-size:13px;margin:0 0 12px}
+dialog .hint a{color:var(--ac)}
+dialog label{display:block;font-size:13px;color:var(--mu);margin-bottom:10px}
+dialog input{display:block;width:100%;margin-top:4px;border:1px solid var(--ln);background:var(--tint);color:var(--tx);border-radius:12px;padding:10px;font:inherit}
+.syncst{font-size:13px;color:var(--mu);margin:0 0 12px;min-height:1.3em}
+.dbt{display:flex;gap:8px;justify-content:flex-end}
+.dbt button{border:1px solid var(--ln);background:var(--tint);border-radius:12px;padding:8px 14px}
+.dbt .pri{background:var(--ac);border-color:var(--ac);color:var(--bg);font-weight:700}

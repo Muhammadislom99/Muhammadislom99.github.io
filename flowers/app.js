@@ -43,10 +43,18 @@ const worst=(...s)=>s.filter(Boolean).sort((x,y)=>RANK[y]-RANK[x])[0]||'';
 function status(p){
   return [['w','Полив'],['f','Корм']].map(([k,l])=>{
     const v=Store.get(p.id,k);
-    return v?`<span class="chip ${state(p,k)||''}">${l}: ${Store.ago(v)}</span>`:'';
+    const by=Store.by(p.id,k);
+    return v?`<span class="chip ${state(p,k)||''}">${l}: ${Store.ago(v)}${by?' · '+esc(by):''}</span>`:'';
   }).join('');
 }
+let refresh=()=>{};
+function ensureName(){
+  if(Store.name())return;
+  const n=prompt('Как вас зовут? Имя увидят коллеги рядом с отметкой ухода.');
+  if(n&&n.trim())Store.setName(n);
+}
 function home(){
+  refresh=home;
   const mine=P.filter(p=>Store.isMine(p.id));
   const tab=Store.tab(),list=tab==='mine'?mine:P;
   ttl.textContent='Цветы';
@@ -59,6 +67,7 @@ function home(){
   app.querySelectorAll('.card').forEach(b=>b.onclick=()=>{location.hash='#'+b.dataset.id});
 }
 function detail(p){
+  refresh=()=>{};
   ttl.textContent=p.n;sub.textContent=p.lat;
   const care=p.care;
   const draw=()=>{
@@ -91,15 +100,15 @@ function detail(p){
     box.innerHTML=[['w','Последний полив','i-w'],['f','Последняя подкормка','i-f']].map(([k,label,ic])=>{
       const v=Store.get(p.id,k);
       const st=state(p,k)||'';
-      return `<div class="lrow ${st}" data-k="${k}"><svg><use href="#${ic}"/></svg><div class="ltx"><small>${label}</small><b>${v?Store.ago(v):'не отмечено'}</b>${v?'<span>'+Store.fmt(v)+'</span>':''}</div><div class="lbt"><button type="button" data-a="now">Сегодня</button><input type="date" max="${today}" value="${v||''}" aria-label="${label}: дата">${v?'<button type="button" data-a="clr" aria-label="Сбросить">×</button>':''}</div></div>`}).join('');
+      return `<div class="lrow ${st}" data-k="${k}"><svg><use href="#${ic}"/></svg><div class="ltx"><small>${label}</small><b>${v?Store.ago(v):'не отмечено'}</b>${v?'<span>'+Store.fmt(v)+(Store.by(p.id,k)?' · '+esc(Store.by(p.id,k)):'')+'</span>':''}</div><div class="lbt"><button type="button" data-a="now">Сегодня</button><input type="date" max="${today}" value="${v||''}" aria-label="${label}: дата">${v?'<button type="button" data-a="clr" aria-label="Сбросить">×</button>':''}</div></div>`}).join('');
     box.querySelectorAll('.lrow').forEach(r=>{
       const k=r.dataset.k;
-      r.querySelector('[data-a=now]').onclick=()=>{Store.set(p.id,k,Store.today());drawLog()};
-      r.querySelector('input').onchange=e=>{Store.set(p.id,k,e.target.value);drawLog()};
+      r.querySelector('[data-a=now]').onclick=()=>{ensureName();Store.set(p.id,k,Store.today());drawLog()};
+      r.querySelector('input').onchange=e=>{ensureName();Store.set(p.id,k,e.target.value);drawLog()};
       const c=r.querySelector('[data-a=clr]');if(c)c.onclick=()=>{Store.set(p.id,k,null);drawLog()};
     });
   };
-  drawMine();drawLog();
+  drawMine();drawLog();refresh=drawLog;
   draw();
 }
 function route(){const id=location.hash.slice(1),p=P.find(x=>x.id===id);p?detail(p):home();window.scrollTo(0,0)}
@@ -111,4 +120,30 @@ document.getElementById('th').onclick=()=>{
   root.dataset.theme=dark?'light':'dark';
   try{localStorage.setItem('theme',root.dataset.theme)}catch(e){}
 };
+// ---- настройки общих отметок ----
+const dlg=document.getElementById('dlg'),cf=document.getElementById('cf');
+if(!Store.enabled)cf.hidden=true;
+const syncText=()=>{
+  const s=Store.sync;
+  return s.msg?'⚠ '+s.msg:s.mode==='rw'?'Общие отметки: запись включена'+(s.at?' · обновлено '+new Date(s.at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}):''):'Общие отметки: только чтение. Введите токен, чтобы записывать.';
+};
+function openDlg(){
+  dlg.querySelector('[name=name]').value=Store.name();
+  dlg.querySelector('[name=tok]').value=Store.token();
+  dlg.querySelector('.syncst').textContent=syncText();
+  dlg.showModal();
+}
+cf.onclick=openDlg;
+dlg.querySelector('[data-a=close]').onclick=()=>dlg.close();
+dlg.querySelector('form').onsubmit=e=>{
+  e.preventDefault();
+  Store.setName(dlg.querySelector('[name=name]').value);
+  Store.setToken(dlg.querySelector('[name=tok]').value);
+  dlg.querySelector('.syncst').textContent='Проверяю…';
+  Store.refresh().then(()=>{dlg.querySelector('.syncst').textContent=syncText()});
+};
+Store.onChange=()=>{refresh();if(dlg.open)dlg.querySelector('.syncst').textContent=syncText()};
+Store.refresh();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)Store.refresh()});
+setInterval(()=>{if(!document.hidden)Store.refresh()},120000);
 route();
