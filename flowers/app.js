@@ -23,9 +23,20 @@ const WF={tr:[.12,.16,.2,.14],hu:[.15,.2,.25,.17],md:[.13,.17,.21,.15],su:[.05,.
 function dose(ml){const step=ml<40?5:10;return Math.max(step,Math.round(ml/step)*step)}
 function doses(k){const f=WF[k][season];return POTS.map(([d,v])=>[d,dose(v*f)])}
 let waterOpen=false,feedOpen=false;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function status(id){
+  const w=Store.get(id,'w'),f=Store.get(id,'f');
+  return [w&&'Полив: '+Store.ago(w),f&&'Корм: '+Store.ago(f)].filter(Boolean).join(' · ');
+}
 function home(){
-  ttl.textContent='Цветы';sub.textContent='Всего в помещении: '+P.length;
-  app.innerHTML='<div class="grid">'+P.map(p=>`<button class="card" data-id="${p.id}" style="font:inherit;color:inherit;cursor:pointer"><div class="art"><img src="${(p.photos||[])[0]||''}" alt="${p.n}"></div><b>${p.n}</b></button>`).join('')+'</div>';
+  const mine=P.filter(p=>Store.isMine(p.id));
+  const tab=Store.tab(),list=tab==='mine'?mine:P;
+  ttl.textContent='Цветы';
+  sub.textContent=tab==='mine'?'Моих цветов: '+mine.length:'Всего в помещении: '+P.length;
+  const cards=list.map(p=>{const st=status(p.id);return `<button class="card" data-id="${p.id}"><div class="art"><img src="${(p.photos||[])[0]||''}" alt="${esc(p.n)}">${Store.isMine(p.id)?'<i class="star" aria-label="В моих цветах">★</i>':''}</div><b>${p.n}</b>${st?'<small class="st">'+st+'</small>':''}</button>`}).join('');
+  app.innerHTML=`<div class="tabs two" role="tablist"><button role="tab" aria-selected="${tab==='all'}" data-t="all">Все (${P.length})</button><button role="tab" aria-selected="${tab==='mine'}" data-t="mine">Мои цветы (${mine.length})</button></div>`+
+    (list.length?'<div class="grid">'+cards+'</div>':'<p class="empty">Пока пусто. Откройте цветок и нажмите «☆ В мои цветы».</p>');
+  app.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{Store.setTab(b.dataset.t);home()});
   app.querySelectorAll('.card').forEach(b=>b.onclick=()=>{location.hash='#'+b.dataset.id});
 }
 function detail(p){
@@ -50,9 +61,25 @@ function detail(p){
     app.querySelectorAll('.wbtn').forEach(b=>b.onclick=()=>{if(b.dataset.fold==='w')waterOpen=!waterOpen;else feedOpen=!feedOpen;draw()});
   };
   const ph=p.photos||[],vw=ph.map(u=>`<img src="${u}" alt="${p.n}">`).concat([art(p)]);
-  app.innerHTML=`<button class="back">← Все цветы</button><div class="det"><div><div class="hero">${vw[0]}</div>${ph.length?'<div class="vs">'+vw.map((_,i)=>`<button data-v="${i}" aria-pressed="${i==0}">${i<ph.length?(ph.length>1?'Фото '+(i+1):'Фото'):'Рисунок'}</button>`).join('')+'</div>':''}</div><div><h2>${p.n}</h2><p class="lat">${p.lat}</p><p class="tip"><span class="lead">${care.about}</span><b>Любит.</b> ${care.like}<br><b>Не любит.</b> ${care.hate}<br><b>Проблемы.</b> ${care.ill}</p><div class="tabs" role="tablist"></div><div class="rows"></div></div></div><p class="tip srcs"><b>Источники</b>${care.src.map(([n,u])=>'<a href="'+u+'" target="_blank" rel="noopener noreferrer">'+n+'</a>').join('')}</p>`;
+  app.innerHTML=`<button class="back">← Все цветы</button><div class="det"><div><div class="hero">${vw[0]}</div>${ph.length?'<div class="vs">'+vw.map((_,i)=>`<button data-v="${i}" aria-pressed="${i==0}">${i<ph.length?(ph.length>1?'Фото '+(i+1):'Фото'):'Рисунок'}</button>`).join('')+'</div>':''}</div><div><h2>${p.n}</h2><p class="lat">${p.lat}</p><button type="button" class="mine" aria-pressed="false"></button><div class="log"></div><p class="tip"><span class="lead">${care.about}</span><b>Любит.</b> ${care.like}<br><b>Не любит.</b> ${care.hate}<br><b>Проблемы.</b> ${care.ill}</p><div class="tabs" role="tablist"></div><div class="rows"></div></div></div><p class="tip srcs"><b>Источники</b>${care.src.map(([n,u])=>'<a href="'+u+'" target="_blank" rel="noopener noreferrer">'+n+'</a>').join('')}</p>`;
   app.querySelector('.back').onclick=()=>{location.hash=''};
   app.querySelectorAll('.vs button').forEach(b=>b.onclick=()=>{app.querySelector('.hero').innerHTML=vw[+b.dataset.v];app.querySelectorAll('.vs button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+  const mineBtn=app.querySelector('.mine');
+  const drawMine=()=>{const on=Store.isMine(p.id);mineBtn.setAttribute('aria-pressed',on);mineBtn.textContent=on?'★ В моих цветах':'☆ В мои цветы'};
+  mineBtn.onclick=()=>{Store.toggleMine(p.id);drawMine()};
+  const drawLog=()=>{
+    const box=app.querySelector('.log'),today=Store.today();
+    box.innerHTML=[['w','Последний полив','i-w'],['f','Последняя подкормка','i-f']].map(([k,label,ic])=>{
+      const v=Store.get(p.id,k);
+      return `<div class="lrow" data-k="${k}"><svg><use href="#${ic}"/></svg><div class="ltx"><small>${label}</small><b>${v?Store.ago(v):'не отмечено'}</b>${v?'<span>'+Store.fmt(v)+'</span>':''}</div><div class="lbt"><button type="button" data-a="now">Сегодня</button><input type="date" max="${today}" value="${v||''}" aria-label="${label}: дата">${v?'<button type="button" data-a="clr" aria-label="Сбросить">×</button>':''}</div></div>`}).join('');
+    box.querySelectorAll('.lrow').forEach(r=>{
+      const k=r.dataset.k;
+      r.querySelector('[data-a=now]').onclick=()=>{Store.set(p.id,k,Store.today());drawLog()};
+      r.querySelector('input').onchange=e=>{Store.set(p.id,k,e.target.value);drawLog()};
+      const c=r.querySelector('[data-a=clr]');if(c)c.onclick=()=>{Store.set(p.id,k,null);drawLog()};
+    });
+  };
+  drawMine();drawLog();
   draw();
 }
 function route(){const id=location.hash.slice(1),p=P.find(x=>x.id===id);p?detail(p):home();window.scrollTo(0,0)}
