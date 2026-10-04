@@ -79,12 +79,12 @@ h2{margin:0;font-size:28px;letter-spacing:-.02em}
 .chip::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ln);flex:none}
 .chip.ok::before{background:var(--ok)}.chip.soon::before{background:var(--soon)}.chip.late::before{background:var(--late)}
 .legend{display:flex;gap:14px;justify-content:center;margin:0 0 14px}
-.card .art img{transition:filter .4s}
+.card .art img,.card .art svg{transition:filter .4s}
 .card[data-s=ok]{border-color:var(--ok)}
 .card[data-s=soon]{border-color:var(--soon)}
-.card[data-s=soon] .art img{filter:saturate(.8) sepia(.3) brightness(.97)}
+.card[data-s=soon] .art img,.card[data-s=soon] .art svg{filter:saturate(.8) sepia(.3) brightness(.97)}
 .card[data-s=late]{border-color:var(--late)}
-.card[data-s=late] .art img{filter:saturate(.4) sepia(.6) brightness(.85) contrast(.95)}
+.card[data-s=late] .art img,.card[data-s=late] .art svg{filter:saturate(.4) sepia(.6) brightness(.85) contrast(.95)}
 .lrow.ok .ltx b{color:var(--ok)}.lrow.soon .ltx b{color:var(--soon)}.lrow.late .ltx b{color:var(--late)}
 .hb{display:flex;gap:8px}
 dialog{border:1px solid var(--ln);border-radius:22px;background:var(--card);color:var(--tx);padding:20px;max-width:440px;width:calc(100% - 32px);box-shadow:var(--sh)}
