@@ -23,9 +23,19 @@
 
 <header>
   <div><h1 id="ttl">Цветы</h1><p class="sub" id="sub"></p></div>
-  <button class="ib" id="th" aria-label="Сменить тему">◐</button>
+  <div class="hb"><button class="ib" id="cf" aria-label="Настройки общих отметок">⚙</button><button class="ib" id="th" aria-label="Сменить тему">◐</button></div>
 </header>
 <main id="app"></main>
+
+<dialog id="dlg">
+  <form>
+    <h3>Общие отметки ухода</h3>
+    <p class="hint">Отметки полива и подкормки видны всем, кто открыл сайт. Имя покажется рядом с вашей отметкой.</p>
+    <label>Ваше имя<input name="name" maxlength="40" autocomplete="off"></label>
+    <p class="syncst" role="status"></p>
+    <div class="dbt"><button type="submit" class="pri">Сохранить</button><button type="button" data-a="close">Закрыть</button></div>
+  </form>
+</dialog>
 
 <script>window.PLANTS=[]</script>
 <!-- Каждый цветок — отдельный файл в plants/. Порядок строк = порядок на главной. -->
@@ -50,6 +60,7 @@
 <script src="plants/fero.js"></script>
 <script src="plants/fair.js"></script>
 <script src="plants/cact.js"></script>
+<script src="config.js"></script>
 <script src="store.js"></script>
 <script src="app.js"></script>
 </body>
