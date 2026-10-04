@@ -1,12 +1,12 @@
-// Отметки ухода: локально (localStorage) + общий JSON в репозитории GitHub (см. config.js).
+// Отметки ухода: локально (localStorage) + общая база Firebase Firestore (см. config.js).
 // flowers.log   = {id:{w:{d:'YYYY-MM-DD'|null,by:'Имя',t:мс},f:{...}}} — последний полив/подкормка; d=null — отметка снята
 // flowers.mine  = [id,...] — «Мои цветы» (только на этом устройстве)
 // flowers.tab   = 'all' | 'mine'
-// flowers.name  = имя, которое увидят коллеги; flowers.token = токен GitHub для записи
+// flowers.name  = имя, которое увидят коллеги
 // При конфликте побеждает запись с большим t.
 const Store=(()=>{
   const cfg=window.FLOWERS_SYNC||null;
-  const K={log:'flowers.log',mine:'flowers.mine',tab:'flowers.tab',name:'flowers.name',tok:'flowers.token'};
+  const K={log:'flowers.log',mine:'flowers.mine',tab:'flowers.tab',name:'flowers.name'};
   const rd=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}};
   const raw=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}};
   const wr=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
@@ -34,55 +34,55 @@ const Store=(()=>{
     return out};
   const stable=o=>JSON.stringify(o,(k,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.keys(v).sort().reduce((r,x)=>(r[x]=v[x],r),{}):v);
 
-  // ---- синхронизация ----
-  const sync={mode:cfg?(raw(K.tok)?'rw':'ro'):'off',msg:'',at:0};
+  // ---- синхронизация (Firestore REST, опрос раз в минуту) ----
+  const on=!!(cfg&&cfg.apiKey&&cfg.projectId);
+  const sync={mode:on?'rw':'off',msg:'',at:0};
   let busy=false,again=false;
-  const api=cfg&&`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}`;
-  const utf8=s=>decodeURIComponent(escape(atob(s.replace(/\s/g,''))));
-  const b64=s=>btoa(unescape(encodeURIComponent(s)));
-  const fail=(status)=>Object.assign(new Error('http '+status),{status});
+  const base=on&&`https://firestore.googleapis.com/v1/projects/${encodeURIComponent(cfg.projectId)}/databases/(default)/documents/care`;
+  const fail=status=>Object.assign(new Error('http '+status),{status});
+  const text=e=>e.status===400||e.status===403?'Нет доступа к базе: проверьте ключ и правила Firestore':e.status===404?'База Firestore не найдена: проверьте projectId':e.status?'Ошибка Firebase '+e.status:'Нет связи';
+  const docId=(id,k)=>id+'_'+k;
 
   async function fetchRemote(){
-    const tok=raw(K.tok);
-    if(tok){
-      const r=await fetch(api+'?ref='+encodeURIComponent(cfg.branch)+'&t='+Date.now(),{headers:{Authorization:'Bearer '+tok,Accept:'application/vnd.github+json'},cache:'no-store'});
-      if(r.status===404)return {data:{},sha:null};
+    const data={};let token='';
+    do{
+      const r=await fetch(base+'?pageSize=300&key='+encodeURIComponent(cfg.apiKey)+(token?'&pageToken='+encodeURIComponent(token):''),{cache:'no-store'});
       if(!r.ok)throw fail(r.status);
       const j=await r.json();
-      return {data:norm(JSON.parse(utf8(j.content)||'{}')),sha:j.sha};
-    }
-    const r=await fetch(`https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/${cfg.branch}/${cfg.path}?t=${Date.now()}`,{cache:'no-store'});
-    if(r.status===404)return {data:{},sha:null};
+      for(const d of j.documents||[]){
+        const m=/\/care\/([a-z0-9]+)_([wf])$/.exec(d.name),f=d.fields||{};
+        if(!m)continue;
+        const e={d:f.d&&f.d.stringValue||null,by:f.by&&f.by.stringValue||'',t:+(f.t&&f.t.integerValue)||0};
+        if(e.d!==null&&!parse(e.d))continue;
+        (data[m[1]]||(data[m[1]]={}))[m[2]]=e;
+      }
+      token=j.nextPageToken||'';
+    }while(token);
+    return data;
+  }
+  async function push(id,k,e){
+    const q=['d','by','t'].map(x=>'updateMask.fieldPaths='+x).join('&');
+    const body={fields:{d:e.d===null?{nullValue:null}:{stringValue:e.d},by:{stringValue:e.by||''},t:{integerValue:String(e.t)}}};
+    const r=await fetch(`${base}/${docId(id,k)}?${q}&key=${encodeURIComponent(cfg.apiKey)}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     if(!r.ok)throw fail(r.status);
-    return {data:norm(await r.json()),sha:null};
   }
-  async function put(data,sha){
-    const body={message:'Flowers log',content:b64(JSON.stringify(data,null,1)+'\n'),branch:cfg.branch};
-    if(sha)body.sha=sha;
-    return fetch(api,{method:'PUT',headers:{Authorization:'Bearer '+raw(K.tok),Accept:'application/vnd.github+json'},body:JSON.stringify(body)});
-  }
-  const text=e=>e.status===401?'Токен не подошёл':e.status===403||e.status===404?'Нет доступа к репозиторию (проверьте права токена)':e.status?'Ошибка GitHub '+e.status:'Нет связи';
 
   async function run(){
-    if(!cfg)return;
+    if(!on)return;
     if(busy){again=true;return}
-    busy=true;let changed=false;const prev=sync.msg+'|'+sync.mode;
+    busy=true;let changed=false;const prev=sync.msg;
     try{
-      sync.mode=raw(K.tok)?'rw':'ro';
-      for(let i=0;i<4;i++){
-        const {data,sha}=await fetchRemote();
-        const merged=merge(data,mem.log);
-        if(stable(merged)!==stable(mem.log)){mem.log=merged;saveLog();changed=true}
-        if(sync.mode!=='rw'||stable(merged)===stable(data))break;
-        const r=await put(merged,sha);
-        if(r.ok)break;
-        if(r.status===409||r.status===422){if(i===3)throw fail(r.status);continue}
-        throw fail(r.status);
+      const remote=await fetchRemote();
+      const merged=merge(remote,mem.log);
+      if(stable(merged)!==stable(mem.log)){mem.log=merged;saveLog();changed=true}
+      for(const id in merged)for(const k in merged[id]){
+        const e=merged[id][k],r=(remote[id]||{})[k];
+        if(!r||e.t>r.t)await push(id,k,e);
       }
       sync.msg='';sync.at=Date.now();
     }catch(e){sync.msg=text(e)}
     busy=false;
-    if(changed||prev!==sync.msg+'|'+sync.mode)api2.onChange();
+    if(changed||prev!==sync.msg)api2.onChange();
     if(again){again=false;run()}
   }
 
@@ -106,10 +106,8 @@ const Store=(()=>{
     setTab(t){mem.tab=t;wr(K.tab,JSON.stringify(t))},
     name:()=>raw(K.name),
     setName(n){wr(K.name,String(n||'').trim().slice(0,40))},
-    token:()=>raw(K.tok),
-    setToken(t){wr(K.tok,String(t||'').trim());sync.mode=cfg?(raw(K.tok)?'rw':'ro'):'off'},
     sync,
-    enabled:!!cfg,
+    enabled:on,
     refresh:run
   };
   return api2;

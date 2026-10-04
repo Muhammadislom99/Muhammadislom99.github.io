@@ -1,3 +1,4 @@
-// Общие отметки ухода хранятся в JSON-файле в репозитории (отдельная ветка, чтобы не пересобирать сайт).
-// Читать может любой, писать — у кого в ⚙ введён токен GitHub (в код токен не кладём).
-window.FLOWERS_SYNC={owner:'Muhammadislom99',repo:'Muhammadislom99.github.io',branch:'flowers-data',path:'log.json'};
+// Общие отметки ухода хранятся в Firebase Firestore (бесплатный тариф Spark).
+// Заполните два значения из настроек проекта Firebase (см. FIREBASE.md). Пока пусто — отметки только на устройстве.
+// Эти значения не секретные: защиту даёт правило базы (firestore.rules), а не скрытие ключа.
+window.FLOWERS_SYNC={apiKey:'',projectId:''};

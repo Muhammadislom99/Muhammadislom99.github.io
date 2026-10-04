@@ -98,3 +98,4 @@ dialog input{display:block;width:100%;margin-top:4px;border:1px solid var(--ln);
 .dbt{display:flex;gap:8px;justify-content:flex-end}
 .dbt button{border:1px solid var(--ln);background:var(--tint);border-radius:12px;padding:8px 14px}
 .dbt .pri{background:var(--ac);border-color:var(--ac);color:var(--bg);font-weight:700}
+[hidden]{display:none!important}

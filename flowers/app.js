@@ -49,7 +49,7 @@ function status(p){
 }
 let refresh=()=>{};
 function ensureName(){
-  if(Store.name())return;
+  if(!Store.enabled||Store.name())return;
   const n=prompt('Как вас зовут? Имя увидят коллеги рядом с отметкой ухода.');
   if(n&&n.trim())Store.setName(n);
 }
@@ -125,11 +125,10 @@ const dlg=document.getElementById('dlg'),cf=document.getElementById('cf');
 if(!Store.enabled)cf.hidden=true;
 const syncText=()=>{
   const s=Store.sync;
-  return s.msg?'⚠ '+s.msg:s.mode==='rw'?'Общие отметки: запись включена'+(s.at?' · обновлено '+new Date(s.at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}):''):'Общие отметки: только чтение. Введите токен, чтобы записывать.';
+  return s.msg?'⚠ '+s.msg:'Общие отметки включены'+(s.at?' · обновлено '+new Date(s.at).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}):'');
 };
 function openDlg(){
   dlg.querySelector('[name=name]').value=Store.name();
-  dlg.querySelector('[name=tok]').value=Store.token();
   dlg.querySelector('.syncst').textContent=syncText();
   dlg.showModal();
 }
@@ -138,12 +137,11 @@ dlg.querySelector('[data-a=close]').onclick=()=>dlg.close();
 dlg.querySelector('form').onsubmit=e=>{
   e.preventDefault();
   Store.setName(dlg.querySelector('[name=name]').value);
-  Store.setToken(dlg.querySelector('[name=tok]').value);
   dlg.querySelector('.syncst').textContent='Проверяю…';
   Store.refresh().then(()=>{dlg.querySelector('.syncst').textContent=syncText()});
 };
 Store.onChange=()=>{refresh();if(dlg.open)dlg.querySelector('.syncst').textContent=syncText()};
 Store.refresh();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)Store.refresh()});
-setInterval(()=>{if(!document.hidden)Store.refresh()},120000);
+setInterval(()=>{if(!document.hidden)Store.refresh()},60000);
 route();

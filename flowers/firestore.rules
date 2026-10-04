@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Одна запись на цветок и вид ухода: id вида "ficus_w" (полив) или "ficus_f" (подкормка).
+    match /care/{id} {
+      allow read: if true;
+      allow create, update: if id.matches('[a-z0-9]+_[wf]')
+        && request.resource.data.keys().hasOnly(['d', 'by', 't'])
+        && request.resource.data.t is int
+        && request.resource.data.by is string
+        && request.resource.data.by.size() <= 40
+        && (request.resource.data.d == null
+            || (request.resource.data.d is string && request.resource.data.d.size() == 10));
+      allow delete: if false;
+    }
+  }
+}

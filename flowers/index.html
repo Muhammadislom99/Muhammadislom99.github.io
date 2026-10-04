@@ -30,11 +30,10 @@
 <dialog id="dlg">
   <form>
     <h3>Общие отметки ухода</h3>
-    <p class="hint">Отметки полива и подкормки видят все, кто открыл сайт. Чтобы записывать свои, нужен токен GitHub: <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">создать</a> (только этот репозиторий, права Contents: Read and write). Токен хранится только в вашем браузере.</p>
+    <p class="hint">Отметки полива и подкормки видны всем, кто открыл сайт. Имя покажется рядом с вашей отметкой.</p>
     <label>Ваше имя<input name="name" maxlength="40" autocomplete="off"></label>
-    <label>Токен GitHub<input name="tok" type="password" autocomplete="off" spellcheck="false"></label>
     <p class="syncst" role="status"></p>
-    <div class="dbt"><button type="submit" class="pri">Сохранить и обновить</button><button type="button" data-a="close">Закрыть</button></div>
+    <div class="dbt"><button type="submit" class="pri">Сохранить</button><button type="button" data-a="close">Закрыть</button></div>
   </form>
 </dialog>
 
