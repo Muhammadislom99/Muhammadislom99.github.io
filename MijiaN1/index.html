@@ -71,9 +71,12 @@ section[data-route].on{display:block}
 .handle{position:absolute;right:-24%;top:40px;width:26%;height:130px;border:14px solid var(--surface);border-left:none;border-radius:0 24px 24px 0;box-shadow:1px 0 0 var(--line)}
 .collar{width:68%;height:34px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-top:none}
 .base{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:22px 22px 30px 30px;padding:1.4rem .8rem 1.6rem;display:grid;grid-template-columns:1fr auto 1fr;grid-template-rows:auto auto;gap:.7rem .5rem;align-items:center}
-.lcd{grid-row:1/3;grid-column:2;width:118px;height:118px;border-radius:50%;background:var(--lcd);color:var(--lcd-on);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.lcd .mode{font-size:.72rem;min-height:1.1em;padding:0 .4rem;line-height:1.1}
-.lcd .time{font-family:"Unbounded",sans-serif;font-size:1.55rem;letter-spacing:.04em}
+.lcd{grid-row:1/3;grid-column:2;width:146px;height:146px;border-radius:50%;background:var(--lcd);color:var(--lcd-on);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.lcd .mode{font-size:.62rem;min-height:1.1em;padding:0 .4rem;line-height:1.1}
+.lcd .row{display:flex;gap:.3rem;font-size:.56rem;line-height:1.2;white-space:nowrap;margin:.1rem 0}
+.lcd .row span{opacity:.4}
+.lcd .row span.act{opacity:1;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.lcd .time{font-family:"Unbounded",sans-serif;font-size:1.45rem;letter-spacing:.04em}
 .lcd .sub{font-size:.62rem;opacity:.75;min-height:1em}
 .lcd.blink .time{animation:blink 1s steps(2) infinite}
 @keyframes blink{50%{opacity:.2}}
@@ -94,6 +97,16 @@ section[data-route].on{display:block}
 .note{font-size:.85rem;color:var(--muted)}
 .tools{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
 .tools button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:.45rem .8rem;cursor:pointer;min-height:40px}
+
+/* ===== Рецепты ===== */
+.recipes{display:grid;gap:.9rem;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));margin-bottom:1rem}
+.recipe{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem}
+.recipe h2{margin-bottom:.1rem}
+.recipe .zh{display:inline-block;background:var(--card);color:var(--card-ink);border-radius:6px;padding:.05rem .5rem;font-size:.85rem;margin-bottom:.5rem}
+.recipe .tag{color:var(--muted);font-size:.82rem;margin:0 0 .5rem}
+.recipe h3{font-size:.85rem;margin:.6rem 0 .2rem}
+.recipe ul,.recipe ol{margin:0 0 .4rem;padding-left:1.2rem}
+.recipe li{margin-bottom:.15rem}
 
 /* ===== Контент ===== */
 .steps{counter-reset:s;list-style:none;padding:0;margin:0 0 1.2rem}
@@ -134,6 +147,7 @@ th{font-weight:500;background:var(--bg)}
     <a href="#/first">Первый запуск</a>
     <a href="#/modes">Режимы</a>
     <a href="#/recipe">Соевое молоко</a>
+    <a href="#/recipes">Рецепты</a>
     <a href="#/rules">Запреты</a>
     <a href="#/care">Мойка</a>
     <a href="#/specs">О модели</a>
@@ -159,8 +173,10 @@ th{font-weight:500;background:var(--bg)}
         <button class="key k1" id="kDelay"><span class="zh">预约</span>Отложить</button>
         <button class="key k2" id="kClean"><span class="zh">清洗</span>Очистка<span class="hold" id="holdBar"></span></button>
         <div class="lcd" id="lcd" aria-live="polite">
-          <div class="mode" id="lcdMode"></div>
+          <div class="row" id="lcdTop" aria-hidden="true"></div>
           <div class="time" id="lcdTime"></div>
+          <div class="row" id="lcdBot" aria-hidden="true"></div>
+          <div class="mode" id="lcdMode"></div>
           <div class="sub" id="lcdSub"></div>
         </div>
         <button class="key k3" id="kMode"><span class="zh">模式</span>Режим</button>
@@ -206,10 +222,13 @@ th{font-weight:500;background:var(--bg)}
 <!-- ================= РЕЖИМЫ ================= -->
 <section data-route="/modes">
   <h1>Восемь режимов</h1>
-  <p class="prose">Переключаются кнопкой «Режим». На экране режим подписан иероглифами, ниже перевод. Точный порядок режимов на твоём экране может отличаться.</p>
+  <p class="prose">Переключаются кнопкой «Режим». На экране режимы подписаны иероглифами, ниже перевод. Порядок и расположение ниже взяты с фото экрана настоящего блендера: четыре режима сверху и четыре снизу. Выбранный режим подсвечивается.</p>
+  <h2>Как они расположены на экране</h2>
+  <div class="modes" id="modesScreen"></div>
+  <h2>Что есть что</h2>
   <div class="modes" id="modesList"></div>
   <p class="prose">После горячих программ блендер может держать напиток тёплым до 12 часов.</p>
-  <p class="src">Источник списка режимов, 12-часовой задержки и подогрева: описание N1 на сайте IT之家 (через Sina Tech) и обзор на smzdm.com. Время режимов, кроме соевого молока, в этих источниках не указано. Деление на горячие и холодные режимы сделано по смыслу названий и не подтверждено документом.</p>
+  <p class="src">Источник списка режимов, 12-часовой задержки и подогрева: описание N1 на сайте IT之家 (через Sina Tech) и обзор на smzdm.com, расположение: фото экрана. Время режимов, кроме соевого молока, в этих источниках не указано. Деление на горячие и холодные режимы сделано по смыслу названий и не подтверждено документом.</p>
 </section>
 
 <!-- ================= РЕЦЕПТ ================= -->
@@ -232,6 +251,82 @@ th{font-weight:500;background:var(--bg)}
   </ol>
   <p>Другие рецепты, по словам карточки, есть в полной инструкции. Ещё рецепты бывают в приложении Mi Home.</p>
   <p class="src">Источник: карточка из коробки, раздел «推荐食谱».</p>
+</section>
+
+<!-- ================= РЕЦЕПТЫ ================= -->
+<section data-route="/recipes">
+  <h1>Рецепты под Mijia N1</h1>
+  <p class="prose">Для каждого из восьми режимов один простой рецепт. Соевое молоко вынесено в отдельный раздел, там рецепт с карточки из коробки.</p>
+  <ul class="ban must prose">
+    <li>Сначала клади продукты, потом доливай воду. Уровень не выше верхней отметки: для горячих режимов она ниже, чем для холодных.</li>
+    <li>Закрывай крышку и заглушку до щелчка. Колба в горячих режимах сильно нагревается.</li>
+  </ul>
+  <div class="recipes">
+    <article class="recipe">
+      <h2>Рисовая каша-пюре</h2>
+      <span class="zh">米糊</span>
+      <p class="tag">Режим с нагревом</p>
+      <h3>Что нужно</h3>
+      <ul><li>50 г риса (можно половину заменить овсянкой)</li><li>800 мл воды</li><li>щепотка соли или ложка мёда по вкусу</li></ul>
+      <h3>Как делать</h3>
+      <ol><li>Рис промой и засыпь в колбу.</li><li>Долей воду до отметки на колбе.</li><li>Закрой крышку до щелчка, выбери «米糊», нажми «Старт».</li></ol>
+    </article>
+    <article class="recipe">
+      <h2>Кукурузный напиток</h2>
+      <span class="zh">玉米汁</span>
+      <p class="tag">Режим с нагревом</p>
+      <h3>Что нужно</h3>
+      <ul><li>зёрна с 1 початка (около 150 г) или консервированная кукуруза без жидкости</li><li>800 мл воды</li><li>сахар или мёд по вкусу</li></ul>
+      <h3>Как делать</h3>
+      <ol><li>Засыпь кукурузу в колбу, долей воду до отметки.</li><li>Выбери «玉米汁» и нажми «Старт».</li><li>Если не любишь мякоть, процеди напиток через сито.</li></ol>
+    </article>
+    <article class="recipe">
+      <h2>Фруктово-овощной смузи</h2>
+      <span class="zh">果蔬</span>
+      <p class="tag">Режим без нагрева</p>
+      <h3>Что нужно</h3>
+      <ul><li>1 банан</li><li>1 яблоко без сердцевины</li><li>150 г ягод или 1 небольшая морковь</li><li>300–400 мл холодной воды или сока</li></ul>
+      <h3>Как делать</h3>
+      <ol><li>Нарежь фрукты кусками, положи в колбу, долей жидкость.</li><li>Выбери «果蔬» и нажми «Старт».</li><li>Пей сразу, пока смузи не расслоился.</li></ol>
+    </article>
+    <article class="recipe">
+      <h2>Суп-пюре из тыквы</h2>
+      <span class="zh">浓汤</span>
+      <p class="tag">Режим с нагревом</p>
+      <h3>Что нужно</h3>
+      <ul><li>300 г тыквы кубиками</li><li>1 картофель</li><li>½ луковицы</li><li>600 мл бульона или воды</li><li>соль, перец, 50 мл сливок по желанию</li></ul>
+      <h3>Как делать</h3>
+      <ol><li>Овощи нарежь мелко, чтобы они быстрее сварились.</li><li>Положи в колбу, залей бульоном, уровень не выше верхней отметки для горячих напитков.</li><li>Выбери «浓汤», нажми «Старт», в конце посоли и добавь сливки.</li></ol>
+    </article>
+    <article class="recipe">
+      <h2>Мягкая рисовая каша</h2>
+      <span class="zh">绵粥</span>
+      <p class="tag">Режим с нагревом</p>
+      <h3>Что нужно</h3>
+      <ul><li>70 г риса</li><li>900 мл воды</li><li>щепотка соли</li></ul>
+      <h3>Как делать</h3>
+      <ol><li>Рис промой, засыпь в колбу.</li><li>Долей воду, не выше верхней отметки для горячих напитков.</li><li>Выбери «绵粥» и нажми «Старт». Для вкуса добавь тыкву или финики.</li></ol>
+    </article>
+    <article class="recipe">
+      <h2>Миндальное молоко</h2>
+      <span class="zh">果仁露</span>
+      <p class="tag">Режим с нагревом</p>
+      <h3>Что нужно</h3>
+      <ul><li>60 г миндаля или фундука, замоченного на ночь</li><li>800 мл воды</li><li>1–2 финика или ложка мёда</li></ul>
+      <h3>Как делать</h3>
+      <ol><li>Слей воду, в которой мок миндаль, и промой орехи.</li><li>Положи в колбу с финиками, долей свежую воду до отметки.</li><li>Выбери «果仁露» и нажми «Старт». Процеди, если нужна гладкая текстура.</li></ol>
+    </article>
+    <article class="recipe">
+      <h2>Банановый коктейль</h2>
+      <span class="zh">奶昔</span>
+      <p class="tag">Режим без нагрева</p>
+      <h3>Что нужно</h3>
+      <ul><li>1 замороженный банан</li><li>300 мл холодного молока</li><li>2 шарика мороженого</li><li>несколько кубиков льда по желанию</li></ul>
+      <h3>Как делать</h3>
+      <ol><li>Сначала положи в колбу банан и мороженое, потом налей молоко.</li><li>Выбери «奶昔» и нажми «Старт».</li><li>Подавай сразу.</li></ol>
+    </article>
+  </div>
+  <p class="src">Это ориентировочные рецепты, а не данные производителя. Пропорции подобраны с запасом под объёмы колбы (до 1,4 л для горячих режимов, до 1,75 л для холодных), подстрой их под свой вкус. Время программ каждого режима покажет экран блендера.</p>
 </section>
 
 <!-- ================= ЗАПРЕТЫ ================= -->
@@ -329,6 +424,8 @@ th{font-weight:500;background:var(--bg)}
   route();
 
   // список режимов
+  document.getElementById('modesScreen').innerHTML = [MODES.slice(0,4),MODES.slice(4)].map(r=>
+    `<div>${r.map(m=>`<span class="zh">${m.zh}</span> `).join('')}<small>${r.map(m=>m.ru).join(' · ')}</small></div>`).join('');
   document.getElementById('modesList').innerHTML = MODES.map(m =>
     `<div><span class="zh">${m.zh}</span><br>${m.ru}<small>${m.hot?'с нагревом':'без нагрева'}${m.min?' · '+m.min+' мин':''}</small></div>`
   ).join('');
@@ -396,7 +493,7 @@ th{font-weight:500;background:var(--bg)}
   // ---------- тренажёр ----------
   const $ = id => document.getElementById(id);
   const lid=$('lid'), lidTxt=$('lidTxt'), jar=$('jar'), fill=$('fill');
-  const lcd=$('lcd'), lcdMode=$('lcdMode'), lcdTime=$('lcdTime'), lcdSub=$('lcdSub');
+  const lcd=$('lcd'), lcdTop=$('lcdTop'), lcdBot=$('lcdBot'), lcdMode=$('lcdMode'), lcdTime=$('lcdTime'), lcdSub=$('lcdSub');
   const say=$('say'), holdBar=$('holdBar');
 
   let s, tick=null;
@@ -421,13 +518,16 @@ th{font-weight:500;background:var(--bg)}
     jar.classList.toggle('spin', !!s.run && !s.waiting);
     fill.style.height = (s.run||s.warm) ? '55%' : '0';
     lcd.classList.remove('blink');
+    const act = (s.lid && s.sel==='mode' && (!s.run || s.run.kind==='mode')) ? s.mode : -1;
+    const lab = (a,b)=>MODES.slice(a,b).map((m,i)=>`<span${a+i===act?' class="act"':''}>${m.zh}</span>`).join('');
+    lcdTop.innerHTML = lab(0,4); lcdBot.innerHTML = lab(4,8);
 
     if(!s.lid){ lcdMode.textContent=''; lcdTime.textContent='-- --'; lcdSub.textContent='крышка'; lcd.classList.add('blink'); return; }
-    if(s.waiting){ lcdMode.textContent=s.run.name; lcdTime.textContent=hm(s.waiting*60).slice(0,2)+' ч'; lcdSub.textContent='до запуска'; return; }
-    if(s.run){ lcdMode.textContent=s.run.name; lcdTime.textContent = s.run.min==null ? '··:··' : hm(s.left); lcdSub.textContent='работает'; return; }
+    if(s.waiting){ lcdMode.textContent=s.run.kind==='mode'?'':s.run.name; lcdTime.textContent=hm(s.waiting*60).slice(0,2)+' ч'; lcdSub.textContent='до запуска'; return; }
+    if(s.run){ lcdMode.textContent=s.run.kind==='mode'?'':s.run.name; lcdTime.textContent = s.run.min==null ? '··:··' : hm(s.left); lcdSub.textContent='работает'; return; }
     if(s.warm){ lcdMode.textContent='Подогрев'; lcdTime.textContent='12:00'; lcdSub.textContent='держит тёплым'; return; }
     const l=selLabel();
-    lcdMode.textContent=l.name;
+    lcdMode.textContent=s.sel==='quick'?l.name:'';
     lcdTime.textContent = l.min==null ? '··:··' : hm(l.min);
     lcdSub.textContent = s.delay ? 'отложено на '+s.delay+' ч' : '';
   }
