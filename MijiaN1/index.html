@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mijia N1 — инструкция на русском</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ECEEF0; --surface:#FFFFFF; --ink:#1A1D21; --muted:#5F6670;
+  --line:#D5D9DE; --card:#E8DC00; --card-ink:#1A1D21; --lcd:#000; --lcd-on:#F4F6F8;
+  --warn:#B3261E; --glass:rgba(190,215,230,.35); --milk:#F3E9CF;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#15171A; --surface:#202328; --ink:#ECEEF0; --muted:#A3AAB3;
+    --line:#343840; --card:#D9CE00; --glass:rgba(160,190,210,.18); --milk:#CFC4A6;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15171A; --surface:#202328; --ink:#ECEEF0; --muted:#A3AAB3;
+  --line:#343840; --card:#D9CE00; --glass:rgba(160,190,210,.18); --milk:#CFC4A6;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 "Onest",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h2,h3{font-family:"Unbounded","Onest",system-ui,sans-serif;font-weight:700;line-height:1.2;margin:0 0 .6em}
+h1{font-size:1.35rem}
+h2{font-size:1.15rem}
+h3{font-size:1rem;font-weight:500}
+p{margin:0 0 .9em}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--card);outline-offset:2px}
+
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;gap:.6rem;padding:.8rem 1rem .2rem;max-width:960px;margin:0 auto}
+.brand b{font-family:"Unbounded",sans-serif;font-size:1rem}
+.brand span{color:var(--muted);font-size:.85rem}
+nav{display:flex;gap:.4rem;overflow-x:auto;padding:.5rem 1rem .7rem;max-width:960px;margin:0 auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav a{white-space:nowrap;text-decoration:none;padding:.35rem .8rem;border-radius:999px;border:1px solid var(--line);font-size:.9rem;color:var(--muted)}
+nav a[aria-current="page"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+main{max-width:960px;margin:0 auto;padding:1.2rem 1rem 3rem}
+section[data-route]{display:none}
+section[data-route].on{display:block}
+.prose{max-width:62ch}
+
+/* ===== Пульт ===== */
+.console{display:grid;gap:1.5rem;grid-template-columns:1fr}
+@media(min-width:760px){.console{grid-template-columns:minmax(300px,380px) 1fr;align-items:start}}
+
+.device{position:relative;width:100%;max-width:340px;margin:0 auto;padding-top:1rem}
+.jar-wrap{position:relative;width:62%;margin:0 auto}
+.lid{position:relative;height:30px;background:var(--surface);border:1px solid var(--line);border-radius:10px 10px 4px 4px;cursor:pointer;transition:transform .35s ease;z-index:2;box-shadow:0 2px 0 var(--line)}
+.lid::before{content:"";position:absolute;left:50%;top:-14px;width:44%;height:16px;transform:translateX(-50%);background:var(--surface);border:1px solid var(--line);border-radius:6px 6px 0 0}
+.lid.open{transform:translateY(-34px) rotate(-8deg)}
+.lid small{position:absolute;inset:0;display:grid;place-items:center;font-size:.7rem;color:var(--muted)}
+.jar{position:relative;height:200px;background:var(--glass);border:2px solid var(--line);border-top:none;border-radius:0 0 14px 14px;overflow:hidden}
+.jar .fill{position:absolute;left:0;right:0;bottom:0;height:0;background:var(--milk);transition:height .8s ease}
+.jar .scale{position:absolute;right:8px;top:10px;bottom:10px;width:28px;display:flex;flex-direction:column;justify-content:space-between;font-size:.6rem;color:var(--muted);text-align:right}
+.jar .blade{position:absolute;left:50%;bottom:10px;width:46px;height:6px;margin-left:-23px;background:var(--muted);border-radius:3px}
+.spin .blade{animation:spin .25s linear infinite}
+@keyframes spin{to{transform:rotate(180deg)}}
+.handle{position:absolute;right:-24%;top:40px;width:26%;height:130px;border:14px solid var(--surface);border-left:none;border-radius:0 24px 24px 0;box-shadow:1px 0 0 var(--line)}
+.collar{width:68%;height:34px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-top:none}
+.base{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:22px 22px 30px 30px;padding:1.4rem .8rem 1.6rem;display:grid;grid-template-columns:1fr auto 1fr;grid-template-rows:auto auto;gap:.7rem .5rem;align-items:center}
+.lcd{grid-row:1/3;grid-column:2;width:146px;height:146px;border-radius:50%;background:var(--lcd);color:var(--lcd-on);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.lcd .mode{font-size:.62rem;min-height:1.1em;padding:0 .4rem;line-height:1.1}
+.lcd .row{display:flex;gap:.3rem;font-size:.56rem;line-height:1.2;white-space:nowrap;margin:.1rem 0}
+.lcd .row span{opacity:.4}
+.lcd .row span.act{opacity:1;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.lcd .time{font-family:"Unbounded",sans-serif;font-size:1.45rem;letter-spacing:.04em}
+.lcd .sub{font-size:.62rem;opacity:.75;min-height:1em}
+.lcd.blink .time{animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.2}}
+.key{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.45rem .3rem;font-size:.8rem;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;position:relative;overflow:hidden;min-height:44px}
+.key:active{background:var(--bg)}
+.key .zh{display:block;font-size:.62rem;color:var(--muted)}
+.key .hold{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--card)}
+.k1{grid-column:1;grid-row:1}.k2{grid-column:1;grid-row:2}.k3{grid-column:3;grid-row:1}.k4{grid-column:3;grid-row:2}
+.vent{height:8px;width:70%;margin:.4rem auto 0;border-radius:4px;background:repeating-linear-gradient(90deg,var(--line) 0 3px,transparent 3px 7px)}
+
+.panel h2{margin-bottom:.4rem}
+.say{background:var(--card);color:var(--card-ink);border-radius:14px;padding:1rem 1.1rem;margin-bottom:1rem;min-height:5.5rem}
+.say b{display:block;margin-bottom:.2rem}
+.legend{list-style:none;padding:0;margin:0 0 1rem;display:grid;gap:.6rem}
+.legend li{display:grid;grid-template-columns:7.5rem 1fr;gap:.6rem;padding-bottom:.6rem;border-bottom:1px solid var(--line)}
+.legend strong{font-weight:500}
+.legend .zh{color:var(--muted);font-size:.85rem;display:block}
+.note{font-size:.85rem;color:var(--muted)}
+.tools{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+.tools button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:.45rem .8rem;cursor:pointer;min-height:40px}
+
+/* ===== Рецепты ===== */
+.recipes{display:grid;gap:.9rem;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));margin-bottom:1rem}
+.recipe{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1rem 1.1rem}
+.recipe h2{margin-bottom:.1rem}
+.recipe .zh{display:inline-block;background:var(--card);color:var(--card-ink);border-radius:6px;padding:.05rem .5rem;font-size:.85rem;margin-bottom:.5rem}
+.recipe .tag{color:var(--muted);font-size:.82rem;margin:0 0 .5rem}
+.recipe h3{font-size:.85rem;margin:.6rem 0 .2rem}
+.recipe ul,.recipe ol{margin:0 0 .4rem;padding-left:1.2rem}
+.recipe li{margin-bottom:.15rem}
+
+/* ===== Контент ===== */
+.steps{counter-reset:s;list-style:none;padding:0;margin:0 0 1.2rem}
+.steps li{counter-increment:s;position:relative;padding:0 0 1rem 2.6rem}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:1.8rem;height:1.8rem;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:700;font-size:.85rem}
+.tbl-wrap{overflow-x:auto;margin-bottom:1rem}
+table{border-collapse:collapse;min-width:420px;width:100%;background:var(--surface)}
+th,td{border:1px solid var(--line);padding:.55rem .7rem;text-align:left;vertical-align:top}
+th{font-weight:500;background:var(--bg)}
+.ban{list-style:none;padding:0;margin:0 0 1.2rem;display:grid;gap:.7rem}
+.ban li{display:grid;grid-template-columns:2rem 1fr;gap:.6rem;align-items:start;background:var(--surface);border-left:4px solid var(--warn);padding:.75rem .9rem;border-radius:0 10px 10px 0}
+.ban li::before{content:"✕";color:var(--warn);font-weight:700;font-size:1.1rem;line-height:1.4}
+.must li{border-left-color:var(--ink)}
+.must li::before{content:"!";color:var(--ink)}
+.src{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:.8rem;margin-top:1.4rem}
+.modes{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));margin-bottom:1rem}
+.modes div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.8rem .9rem}
+.modes .zh{font-size:1.2rem}
+.modes small{display:block;color:var(--muted)}
+.ill{background:var(--card);border-radius:14px;padding:.5rem;margin:0 0 1.2rem;max-width:340px}
+.ill svg{display:block;width:100%;height:auto;color:#1A1D21}
+.picto{list-style:none;padding:0;margin:0 0 1.4rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem}
+.picto li{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.picto .ill{margin:0;border-radius:0;max-width:none}
+.picto p{padding:.7rem .9rem;margin:0}
+.ill-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.8rem;margin-bottom:1.2rem}
+.ill-row figure{margin:0}
+.ill-row .ill{margin:0 0 .4rem;max-width:none}
+.ill-row figcaption{font-size:.85rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><b>Mijia N1</b><span>блендер с подогревом · инструкция</span></div>
+  <nav aria-label="Разделы">
+    <a href="#/">Пульт</a>
+    <a href="#/first">Первый запуск</a>
+    <a href="#/modes">Режимы</a>
+    <a href="#/recipe">Соевое молоко</a>
+    <a href="#/recipes">Рецепты</a>
+    <a href="#/rules">Запреты</a>
+    <a href="#/care">Мойка</a>
+    <a href="#/specs">О модели</a>
+  </nav>
+</header>
+
+<main>
+<!-- ================= ПУЛЬТ ================= -->
+<section data-route="/">
+  <div class="console">
+    <div class="device" aria-label="Тренажёр блендера">
+      <div class="jar-wrap">
+        <div class="lid" id="lid" role="button" tabindex="0" aria-label="Открыть или закрыть крышку"><small id="lidTxt">крышка закрыта</small></div>
+        <div class="jar" id="jar">
+          <div class="fill" id="fill"></div>
+          <div class="scale" aria-hidden="true"><span>MAX</span><span>1400</span><span>1000</span><span>800</span><span>мл</span></div>
+          <div class="blade"></div>
+        </div>
+        <div class="handle" aria-hidden="true"></div>
+      </div>
+      <div class="collar"></div>
+      <div class="base">
+        <button class="key k1" id="kDelay"><span class="zh">预约</span>Отложить</button>
+        <button class="key k2" id="kClean"><span class="zh">清洗</span>Очистка<span class="hold" id="holdBar"></span></button>
+        <div class="lcd" id="lcd" aria-live="polite">
+          <div class="row" id="lcdTop" aria-hidden="true"></div>
+          <div class="time" id="lcdTime"></div>
+          <div class="row" id="lcdBot" aria-hidden="true"></div>
+          <div class="mode" id="lcdMode"></div>
+          <div class="sub" id="lcdSub"></div>
+        </div>
+        <button class="key k3" id="kMode"><span class="zh">模式</span>Режим</button>
+        <button class="key k4" id="kStart"><span class="zh">开始|取消</span>Старт · Отмена</button>
+      </div>
+      <div class="vent"></div>
+    </div>
+
+    <div class="panel">
+      <h1>Как управлять</h1>
+      <div class="say" id="say" aria-live="polite"><b>Попробуй</b>Нажми «Режим», чтобы выбрать программу, затем «Старт». Нажми на крышку, чтобы открыть её.</div>
+      <div class="tools">
+        <button id="reset">Сбросить тренажёр</button>
+      </div>
+      <ul class="legend">
+        <li><div><strong>Режим</strong><span class="zh">模式</span></div><div>Переключает программы по кругу. Название и время видны на экране.</div></li>
+        <li><div><strong>Старт · Отмена</strong><span class="zh">开始 | 取消</span></div><div>Запускает выбранную программу. Во время работы отменяет её.</div></li>
+        <li><div><strong>Очистка</strong><span class="zh">清洗</span></div><div>Короткое нажатие выбирает быструю мойку, потом нужно нажать «Старт». Удержание 3 секунды сразу запускает горячую мойку с обеззараживанием. При самом первом запуске то же удержание запускает калибровку под высоту, 20 минут.</div></li>
+        <li><div><strong>Отложить</strong><span class="zh">预约</span></div><div>Отложенный запуск, до 12 часов.</div></li>
+        <li><div><strong>Экран «-- --»</strong></div><div>Крышка не защёлкнута. Закрой колбу крышкой и шумопоглощающей заглушкой до щелчка.</div></li>
+      </ul>
+      <p class="note">В тренажёре время идёт быстро: одна секунда равна одной минуте. Время известно только для соевого молока, 38 минут (видно на твоём экране). Для остальных режимов тренажёр показывает «··:··», настоящее время будет на экране блендера.</p>
+      <p class="note">Шаг кнопки «Отложить» здесь +1 час, так это сделано только в тренажёре. Как именно настраивается задержка на реальном блендере, на карточке не написано.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ПЕРВЫЙ ЗАПУСК ================= -->
+<section data-route="/first" class="prose">
+  <h1>Первый запуск</h1>
+  <div class="ill" data-ill="press" role="img" aria-label="Палец удерживает кнопку «Очистка» 3 секунды"></div>
+  <p>Перед первым использованием блендер должен откалиброваться под высоту над уровнем моря. Это нужно, потому что от высоты зависит температура кипения воды.</p>
+  <ol class="steps">
+    <li>Налей чистую воду до <b>верхней отметки для горячих напитков</b>.</li>
+    <li>Закрой крышку до щелчка. Если на экране «-- --», крышка не встала на место.</li>
+    <li>Удерживай кнопку <b>«Очистка» (清洗) 3 секунды</b>.</li>
+    <li>Калибровка идёт около <b>20 минут</b>. Блендер греет и перемешивает воду, колба становится горячей.</li>
+    <li>Когда обратный отсчёт на экране закончится, блендер готов к работе.</li>
+  </ol>
+  <p class="src">Источник: карточка «Быстрый старт» из коробки (米家破壁机N1提示卡).</p>
+</section>
+
+<!-- ================= РЕЖИМЫ ================= -->
+<section data-route="/modes">
+  <h1>Восемь режимов</h1>
+  <p class="prose">Переключаются кнопкой «Режим». На экране режимы подписаны иероглифами, ниже перевод. Порядок и расположение ниже взяты с фото экрана настоящего блендера: четыре режима сверху и четыре снизу. Выбранный режим подсвечивается.</p>
+  <h2>Как они расположены на экране</h2>
+  <div class="modes" id="modesScreen"></div>
+  <h2>Что есть что</h2>
+  <div class="modes" id="modesList"></div>
+  <p class="prose">После горячих программ блендер может держать напиток тёплым до 12 часов.</p>
+  <p class="src">Источник списка режимов, 12-часовой задержки и подогрева: описание N1 на сайте IT之家 (через Sina Tech) и обзор на smzdm.com, расположение: фото экрана. Время режимов, кроме соевого молока, в этих источниках не указано. Деление на горячие и холодные режимы сделано по смыслу названий и не подтверждено документом.</p>
+</section>
+
+<!-- ================= РЕЦЕПТ ================= -->
+<section data-route="/recipe" class="prose">
+  <h1>Соевое молоко (豆浆)</h1>
+  <div class="ill" data-ill="pour" role="img" aria-label="Мерный стаканчик высыпает сою в колбу"></div>
+  <p>Рецепт с карточки из коробки. Соя отмеряется <b>мерным стаканчиком из комплекта</b>: на нём есть свои отметки «800» и «1400».</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Порций</th><th>Соя</th><th>Вода до отметки на колбе</th></tr></thead>
+    <tbody>
+      <tr><td>1–3 человека</td><td>55 г (стаканчик до отметки «800 мл»)</td><td>800 мл</td></tr>
+      <tr><td>4–6 человек</td><td>100 г (стаканчик до отметки «1400 мл»)</td><td>1400 мл</td></tr>
+    </tbody>
+  </table></div>
+  <ol class="steps">
+    <li>Сначала засыпь сою в колбу.</li>
+    <li>Потом долей воду до нужной отметки на колбе.</li>
+    <li>Закрой крышку до щелчка.</li>
+    <li>Кнопкой «Режим» выбери «豆浆» и нажми «Старт». Программа длится 38 минут.</li>
+  </ol>
+  <p>Другие рецепты, по словам карточки, есть в полной инструкции. Ещё рецепты бывают в приложении Mi Home.</p>
+  <p class="src">Источник: карточка из коробки, раздел «推荐食谱».</p>
+</section>
+
+<!-- ================= РЕЦЕПТЫ ================= -->
+<section data-route="/recipes">
+  <h1>Рецепты под Mijia N1</h1>
+  <p class="prose">Для каждого из восьми режимов один простой рецепт. Соевое молоко вынесено в отдельный раздел, там рецепт с карточки из коробки.</p>
+  <ul class="ban must prose">
+    <li>Сначала клади продукты, потом доливай воду. Уровень не выше верхней отметки: для горячих режимов она ниже, чем для холодных.</li>
+    <li>Закрывай крышку и заглушку до щелчка. Колба в горячих режимах сильно нагревается.</li>
+  </ul>
+  <div class="recipes">
+    <article class="recipe">
+      <h2>Рисовая каша-пюре</h2>
+      <span class="zh">米糊</span>
+      <p class="tag">Режим с нагревом</p>
+      <h3>Что нужно</h3>
+      <ul><li>50 г риса (можно половину заменить овсянкой)</li><li>800 мл воды</li><li>щепотка соли или ложка мёда по вкусу</li></ul>
+      <h3>Как делать</h3>
+      <ol><li>Рис промой и засыпь в колбу.</li><li>Долей воду до отметки на колбе.</li><li>Закрой крышку до щелчка, выбери «米糊», нажми «Старт».</li></ol>
+    </article>
+    <article class="recipe">
+      <h2>Кукурузный напиток</h2>
+      <span class="zh">玉米汁</span>
+      <p class="tag">Режим с нагревом</p>
+      <h3>Что нужно</h3>
+      <ul><li>зёрна с 1 початка (около 150 г) или консервированная кукуруза без жидкости</li><li>800 мл воды</li><li>сахар или мёд по вкусу</li></ul>
+      <h3>Как делать</h3>
+      <ol><li>Засыпь кукурузу в колбу, долей воду до отметки.</li><li>Выбери «玉米汁» и нажми «Старт».</li><li>Если не любишь мякоть, процеди напиток через сито.</li></ol>
+    </article>
+    <article class="recipe">
+      <h2>Фруктово-овощной смузи</h2>
+      <span class="zh">果蔬</span>
+      <p class="tag">Режим без нагрева</p>
+      <h3>Что нужно</h3>
+      <ul><li>1 банан</li><li>1 яблоко без сердцевины</li><li>150 г ягод или 1 небольшая морковь</li><li>300–400 мл холодной воды или сока</li></ul>
+      <h3>Как делать</h3>
+      <ol><li>Нарежь фрукты кусками, положи в колбу, долей жидкость.</li><li>Выбери «果蔬» и нажми «Старт».</li><li>Пей сразу, пока смузи не расслоился.</li></ol>
+    </article>
+    <article class="recipe">
+      <h2>Суп-пюре из тыквы</h2>
+      <span class="zh">浓汤</span>
+      <p class="tag">Режим с нагревом</p>
+      <h3>Что нужно</h3>
+      <ul><li>300 г тыквы кубиками</li><li>1 картофель</li><li>½ луковицы</li><li>600 мл бульона или воды</li><li>соль, перец, 50 мл сливок по желанию</li></ul>
+      <h3>Как делать</h3>
+      <ol><li>Овощи нарежь мелко, чтобы они быстрее сварились.</li><li>Положи в колбу, залей бульоном, уровень не выше верхней отметки для горячих напитков.</li><li>Выбери «浓汤», нажми «Старт», в конце посоли и добавь сливки.</li></ol>
+    </article>
+    <article class="recipe">
+      <h2>Мягкая рисовая каша</h2>
+      <span class="zh">绵粥</span>
+      <p class="tag">Режим с нагревом</p>
+      <h3>Что нужно</h3>
+      <ul><li>70 г риса</li><li>900 мл воды</li><li>щепотка соли</li></ul>
+      <h3>Как делать</h3>
+      <ol><li>Рис промой, засыпь в колбу.</li><li>Долей воду, не выше верхней отметки для горячих напитков.</li><li>Выбери «绵粥» и нажми «Старт». Для вкуса добавь тыкву или финики.</li></ol>
+    </article>
+    <article class="recipe">
+      <h2>Миндальное молоко</h2>
+      <span class="zh">果仁露</span>
+      <p class="tag">Режим с нагревом</p>
+      <h3>Что нужно</h3>
+      <ul><li>60 г миндаля или фундука, замоченного на ночь</li><li>800 мл воды</li><li>1–2 финика или ложка мёда</li></ul>
+      <h3>Как делать</h3>
+      <ol><li>Слей воду, в которой мок миндаль, и промой орехи.</li><li>Положи в колбу с финиками, долей свежую воду до отметки.</li><li>Выбери «果仁露» и нажми «Старт». Процеди, если нужна гладкая текстура.</li></ol>
+    </article>
+    <article class="recipe">
+      <h2>Банановый коктейль</h2>
+      <span class="zh">奶昔</span>
+      <p class="tag">Режим без нагрева</p>
+      <h3>Что нужно</h3>
+      <ul><li>1 замороженный банан</li><li>300 мл холодного молока</li><li>2 шарика мороженого</li><li>несколько кубиков льда по желанию</li></ul>
+      <h3>Как делать</h3>
+      <ol><li>Сначала положи в колбу банан и мороженое, потом налей молоко.</li><li>Выбери «奶昔» и нажми «Старт».</li><li>Подавай сразу.</li></ol>
+    </article>
+  </div>
+  <p class="src">Это ориентировочные рецепты, а не данные производителя. Пропорции подобраны с запасом под объёмы колбы (до 1,4 л для горячих режимов, до 1,75 л для холодных), подстрой их под свой вкус. Время программ каждого режима покажет экран блендера.</p>
+</section>
+
+<!-- ================= ЗАПРЕТЫ ================= -->
+<section data-route="/rules" class="prose">
+  <h1>Нельзя</h1>
+  <ul class="picto">
+    <li><div class="ill" data-ill="unplug" role="img" aria-label="Вилку вынимают из розетки"></div><p>Начинать мойку, не вынув вилку из розетки.</p></li>
+    <li><div class="ill" data-ill="blade" role="img" aria-label="Палец тянется к ножу, перечёркнуто"></div><p>Трогать ножи руками, они очень острые.</p></li>
+    <li><div class="ill" data-ill="tap" role="img" aria-label="Колба под краном, перечёркнуто"></div><p>Мыть под струёй воды наружную стенку и дно колбы.</p></li>
+    <li><div class="ill" data-ill="puddle" role="img" aria-label="Основание и колба стоят в воде, перечёркнуто"></div><p>Погружать в воду основание с мотором или дно колбы.</p></li>
+  </ul>
+  <ul class="ban">
+    <li>Заливать продукты и воду выше верхней отметки.</li>
+    <li>Запускать нагрев повторно или варить второй раз ту же порцию: напиток перельётся.</li>
+  </ul>
+  <h2>Обязательно</h2>
+  <div class="ill" data-ill="lid" role="img" aria-label="Крышку опускают на колбу и поворачивают, совмещая метки"></div>
+  <ul class="ban must">
+    <li>Пользоваться мерным стаканчиком из комплекта и класть продукты по рецепту.</li>
+    <li>Сначала класть продукты, потом доливать воду до отметки.</li>
+    <li>Закрывать крышку и шумопоглощающую заглушку до щелчка. Иначе на экране «-- --» и блендер не запустится.</li>
+    <li>Помнить, что во время горячих режимов колба сильно нагревается.</li>
+    <li>Сразу после использования мыть крышку, её уплотнитель, шумопоглощающую заглушку с её уплотнителем и колбу. Иначе появятся пятна, плесень и присохшие остатки.</li>
+  </ul>
+  <p class="src">Источник: обе стороны карточки из коробки (快速操作指南 и 注意事项).</p>
+</section>
+
+<!-- ================= МОЙКА ================= -->
+<section data-route="/care" class="prose">
+  <h1>Мойка</h1>
+  <h2>Быстрая мойка</h2>
+  <ol class="steps">
+    <li>Включи блендер в сеть.</li>
+    <li>Налей воду до <b>верхней отметки для холодных напитков</b>.</li>
+    <li>Нажми «Очистка» (清洗), затем «Старт» (开始).</li>
+  </ol>
+  <h2>Горячая мойка с обеззараживанием</h2>
+  <div class="ill" data-ill="press" role="img" aria-label="Палец удерживает кнопку «Очистка» 3 секунды"></div>
+  <ol class="steps">
+    <li>Налей воду до <b>верхней отметки для горячих напитков</b>.</li>
+    <li>Удерживай «Очистка» 3 секунды. Мойка запустится сама.</li>
+  </ol>
+  <h2>Ручная мойка</h2>
+  <div class="ill-row">
+    <figure><div class="ill" data-ill="unplug" role="img" aria-label="Вилку вынимают из розетки"></div><figcaption>Сначала вынь вилку</figcaption></figure>
+    <figure><div class="ill" data-ill="tap" role="img" aria-label="Колба под краном, перечёркнуто"></div><figcaption>Дно колбы не под струю</figcaption></figure>
+  </div>
+  <p>Перед ней вынь вилку из розетки. Колбу мой изнутри, не подставляя под струю её наружную стенку и дно. Ножи не трогай руками, используй щётку из комплекта.</p>
+  <p class="src">Источник: карточка из коробки, раздел 清洗操作. Щётка указана в комплекте поставки на сайте pconline.</p>
+</section>
+
+<!-- ================= О МОДЕЛИ ================= -->
+<section data-route="/specs" class="prose">
+  <h1>О модели</h1>
+  <div class="tbl-wrap"><table>
+    <tbody>
+      <tr><th>Название</th><td>Mijia N1 (米家破壁机N1)</td></tr>
+      <tr><th>Модель</th><td>MJPBJ01DEM</td></tr>
+      <tr><th>Объём</th><td>1,75 л для холодных напитков, около 1,4 л для горячих</td></tr>
+      <tr><th>Колба</th><td>Толстое боросиликатное стекло, 6 ножей, керамическое покрытие нагревательного диска</td></tr>
+      <tr><th>Режимы</th><td>8 программ, отложенный запуск до 12 ч, подогрев до 12 ч</td></tr>
+      <tr><th>Самоочистка</th><td>Быстрая мойка и горячая мойка с обеззараживанием</td></tr>
+      <tr><th>В коробке</th><td>Основание, колба, шумопоглощающая крышка, щётка, мерный стаканчик, инструкция</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src">Источники: IT之家 через Sina Tech (сентябрь 2024), обзор на smzdm.com, карточки на pconline.com.cn и suning.com. Это данные магазинов и обзоров, а не официальная инструкция. Мощность здесь не указана, потому что найти её удалось только в одном магазине.</p>
+</section>
+</main>
+
+<script>
+(function(){
+  // ---------- данные ----------
+  const MODES = [
+    {zh:'豆浆', ru:'Соевое молоко', min:38,  hot:true},
+    {zh:'米糊', ru:'Рисовая каша-пюре', min:null, hot:true},
+    {zh:'玉米汁', ru:'Кукурузный напиток', min:null, hot:true},
+    {zh:'果蔬', ru:'Фрукты и овощи', min:null, hot:false},
+    {zh:'浓汤', ru:'Суп-пюре', min:null, hot:true},
+    {zh:'绵粥', ru:'Каша', min:null, hot:true},
+    {zh:'果仁露', ru:'Ореховое молоко', min:null, hot:true},
+    {zh:'奶昔', ru:'Молочный коктейль', min:null, hot:false}
+  ];
+
+  // ---------- роутер ----------
+  const sections = [...document.querySelectorAll('section[data-route]')];
+  const links = [...document.querySelectorAll('nav a')];
+  function route(){
+    const r = (location.hash.replace(/^#/,'') || '/');
+    const target = sections.find(s=>s.dataset.route===r) ? r : '/';
+    sections.forEach(s=>s.classList.toggle('on', s.dataset.route===target));
+    links.forEach(a=>{ if(a.getAttribute('href')==='#'+target) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+    window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange', route);
+  route();
+
+  // список режимов
+  document.getElementById('modesScreen').innerHTML = [MODES.slice(0,4),MODES.slice(4)].map(r=>
+    `<div>${r.map(m=>`<span class="zh">${m.zh}</span> `).join('')}<small>${r.map(m=>m.ru).join(' · ')}</small></div>`).join('');
+  document.getElementById('modesList').innerHTML = MODES.map(m =>
+    `<div><span class="zh">${m.zh}</span><br>${m.ru}<small>${m.hot?'с нагревом':'без нагрева'}${m.min?' · '+m.min+' мин':''}</small></div>`
+  ).join('');
+
+
+  // ---------- иллюстрации (линейные, в стиле карточки) ----------
+  const S = 'fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"';
+  const X = (x,y)=>`<g stroke="#B3261E" stroke-width="4" stroke-linecap="round"><path d="M${x} ${y} l18 18 M${x+18} ${y} l-18 18"/></g>`;
+  const gJar = `<path d="M0 0 h50 l-4 56 h-42 z"/><path d="M50 8 h10 a7 7 0 0 1 7 7 v24 a7 7 0 0 1 -7 7 h-12"/><path d="M8 14 h8 M8 26 h8 M8 38 h8"/>`;
+  const gBase = `<path d="M0 0 h50 v34 a7 7 0 0 1 -7 7 h-36 a7 7 0 0 1 -7 -7 z"/><circle cx="25" cy="18" r="7" fill="currentColor"/><path d="M5 37 h40" stroke-dasharray="2 3"/>`;
+  const gLid = `<path d="M-3 0 h56 v-6 h-56 z"/><path d="M16 -6 v-5 h18 v5"/>`;
+  const blender = (x,y)=>`<g transform="translate(${x} ${y})">${gLid}${gJar}<g transform="translate(0 56)">${gBase}</g></g>`;
+  const ILL = {
+    press: `<svg viewBox="0 0 160 120" ${S}>
+      <rect x="62" y="22" width="76" height="34" rx="17"/>
+      <text x="100" y="44" text-anchor="middle" font-size="12" fill="currentColor" stroke="none" font-family="Onest,sans-serif">Очистка</text>
+      <path d="M18 112 Q34 92 52 84 L84 50 a6 6 0 0 1 9 8 L72 84"/>
+      <path d="M72 84 Q80 82 84 88 Q86 96 76 100 Q66 106 54 112"/>
+      <path d="M62 92 Q70 90 74 96"/>
+      <path d="M118 70 a12 12 0 1 1 12 12" /><path d="M128 78 l3 4 -5 2"/>
+      <text x="112" y="106" font-size="12" fill="currentColor" stroke="none" font-family="Onest,sans-serif">3 с</text>
+    </svg>`,
+    pour: `<svg viewBox="0 0 160 120" ${S}>
+      <g transform="translate(30 48)">${gJar}</g>
+      <g transform="rotate(-125 118 30)"><path d="M104 14 h28 l-3 32 h-22 z"/><path d="M106 22 h6 M106 30 h6"/></g>
+      <g fill="currentColor" stroke="none"><circle cx="86" cy="34" r="2.6"/><circle cx="78" cy="42" r="2.6"/><circle cx="72" cy="52" r="2.6"/><circle cx="82" cy="48" r="2.6"/><circle cx="66" cy="62" r="2.6"/></g>
+      <path d="M38 96 q16 -6 34 0" stroke-dasharray="3 3"/>
+    </svg>`,
+    lid: `<svg viewBox="0 0 160 120" ${S}>
+      <g transform="translate(40 56)">${gJar}</g>
+      <g transform="translate(40 22)">${gLid}</g>
+      <path d="M65 30 v16 M59 40 l6 7 6 -7"/>
+      <path d="M132 30 a12 12 0 1 1 -9 -4" /><path d="M121 20 l3 6 -6 2"/>
+      <path d="M54 22 l4 -6 4 6 z" fill="currentColor"/><path d="M54 60 l4 6 4 -6 z" fill="currentColor"/>
+    </svg>`,
+    unplug: `<svg viewBox="0 0 160 120" ${S}>
+      ${blender(14,18)}
+      <path d="M64 100 Q86 104 90 84 Q92 72 104 72"/>
+      <rect x="104" y="64" width="14" height="16" rx="2"/><path d="M118 68 h6 M118 76 h6"/>
+      <rect x="132" y="52" width="22" height="40" rx="3"/><path d="M140 68 v4 M146 68 v4"/>
+      <path d="M118 52 h-22 M102 46 l-6 6 6 6"/>
+    </svg>`,
+    blade: `<svg viewBox="0 0 160 120" ${S}>
+      <path d="M40 84 Q80 72 120 84 Q80 92 40 84 z"/><path d="M62 74 Q80 92 98 74"/>
+      <circle cx="80" cy="84" r="5"/><path d="M76 89 v18 h8 v-18"/><path d="M76 96 h8 M76 102 h8"/>
+      <g transform="rotate(35 96 44)"><rect x="89" y="8" width="15" height="58" rx="7.5"/><path d="M93 20 q3.5 -3 7 0"/><path d="M89 52 h15"/></g>
+      ${X(128,8)}
+    </svg>`,
+    tap: `<svg viewBox="0 0 160 120" ${S}>
+      <path d="M96 12 h40 v10 h-22 v10 h-12 v-10 h-6 z"/><path d="M120 8 h12"/>
+      <path d="M104 38 l-4 9 M110 38 v11 M116 38 l4 9"/>
+      <g transform="rotate(-35 70 80)"><g transform="translate(58 62)">${gJar}</g></g>
+      ${X(20,10)}
+    </svg>`,
+    puddle: `<svg viewBox="0 0 160 120" ${S}>
+      <g transform="translate(14 56)">${gBase}</g>
+      <g transform="translate(84 34)">${gJar}</g>
+      <path d="M6 100 Q24 94 44 100 T84 98 T124 100 T154 98 Q150 112 110 110 Q70 114 30 110 Q4 110 6 100 z"/>
+      <circle cx="16" cy="114" r="2"/><circle cx="150" cy="112" r="2"/>
+      ${X(126,6)}
+    </svg>`
+  };
+  document.querySelectorAll('[data-ill]').forEach(el=>{ el.innerHTML = ILL[el.dataset.ill] || ''; });
+
+  // ---------- тренажёр ----------
+  const $ = id => document.getElementById(id);
+  const lid=$('lid'), lidTxt=$('lidTxt'), jar=$('jar'), fill=$('fill');
+  const lcd=$('lcd'), lcdTop=$('lcdTop'), lcdBot=$('lcdBot'), lcdMode=$('lcdMode'), lcdTime=$('lcdTime'), lcdSub=$('lcdSub');
+  const say=$('say'), holdBar=$('holdBar');
+
+  let s, tick=null;
+  function init(){
+    clearInterval(tick); tick=null;
+    s = {lid:true, mode:0, sel:'mode', run:null, left:0, delay:0, waiting:0, warm:false, firstDone:false};
+    render();
+    tell('Попробуй','Нажми «Режим», чтобы выбрать программу, затем «Старт». Нажми на крышку, чтобы открыть её.');
+  }
+  const pad = n => String(n).padStart(2,'0');
+  const hm = min => pad(Math.floor(min/60))+':'+pad(min%60);
+  function tell(t,txt){ say.innerHTML = `<b>${t}</b>${txt}`; }
+
+  function selLabel(){
+    if(s.sel==='quick') return {name:'Быстрая мойка', min:null};
+    const m=MODES[s.mode]; return {name:m.zh+' · '+m.ru, min:m.min};
+  }
+
+  function render(){
+    lid.classList.toggle('open', !s.lid);
+    lidTxt.textContent = s.lid ? 'крышка закрыта' : 'крышка открыта';
+    jar.classList.toggle('spin', !!s.run && !s.waiting);
+    fill.style.height = (s.run||s.warm) ? '55%' : '0';
+    lcd.classList.remove('blink');
+    const act = (s.lid && s.sel==='mode' && (!s.run || s.run.kind==='mode')) ? s.mode : -1;
+    const lab = (a,b)=>MODES.slice(a,b).map((m,i)=>`<span${a+i===act?' class="act"':''}>${m.zh}</span>`).join('');
+    lcdTop.innerHTML = lab(0,4); lcdBot.innerHTML = lab(4,8);
+
+    if(!s.lid){ lcdMode.textContent=''; lcdTime.textContent='-- --'; lcdSub.textContent='крышка'; lcd.classList.add('blink'); return; }
+    if(s.waiting){ lcdMode.textContent=s.run.kind==='mode'?'':s.run.name; lcdTime.textContent=hm(s.waiting*60).slice(0,2)+' ч'; lcdSub.textContent='до запуска'; return; }
+    if(s.run){ lcdMode.textContent=s.run.kind==='mode'?'':s.run.name; lcdTime.textContent = s.run.min==null ? '··:··' : hm(s.left); lcdSub.textContent='работает'; return; }
+    if(s.warm){ lcdMode.textContent='Подогрев'; lcdTime.textContent='12:00'; lcdSub.textContent='держит тёплым'; return; }
+    const l=selLabel();
+    lcdMode.textContent=s.sel==='quick'?l.name:'';
+    lcdTime.textContent = l.min==null ? '··:··' : hm(l.min);
+    lcdSub.textContent = s.delay ? 'отложено на '+s.delay+' ч' : '';
+  }
+
+  function start(prog){
+    s.run = prog; s.left = prog.min ?? 0; s.warm=false;
+    clearInterval(tick);
+    tick = setInterval(step, 1000);
+    if(s.delay){ s.waiting=s.delay; s.delay=0; }
+    render();
+  }
+  function step(){
+    if(s.waiting){ s.waiting--; if(!s.waiting) tell('Старт по таймеру','Время ожидания вышло, программа началась.'); render(); return; }
+    if(s.run.min==null){ // длительность неизвестна — демо 8 секунд
+      s.left++; if(s.left<8){ render(); return; }
+    } else {
+      s.left--; if(s.left>0){ render(); return; }
+    }
+    finish();
+  }
+  function finish(){
+    clearInterval(tick); tick=null;
+    const p=s.run; s.run=null;
+    if(p.kind==='altitude'){ s.firstDone=true; tell('Калибровка завершена','Блендер готов к работе. Слей воду.'); }
+    else if(p.kind==='mode' && p.hot){ s.warm=true; tell('Готово','Прозвучит сигнал. Блендер переходит в подогрев. Колба горячая, бери за ручку. Не запускай повторный нагрев этой же порции: перельётся.'); }
+    else tell('Готово','Программа закончилась.');
+    render();
+  }
+  function stop(){
+    clearInterval(tick); tick=null;
+    s.run=null; s.waiting=0; s.warm=false; render();
+    tell('Отменено','Программа остановлена кнопкой «Старт · Отмена».');
+  }
+
+  // крышка
+  function toggleLid(){
+    if(s.run && !s.waiting){ tell('Нельзя','Во время работы крышку не открывают. Сначала нажми «Старт · Отмена», чтобы остановить.'); return; }
+    s.lid=!s.lid; render();
+    s.lid ? tell('Крышка закрыта','Экран снова показывает режим. Можно запускать.')
+          : tell('Крышка открыта','На экране «-- --». Блендер не запустится, пока крышка и шумопоглощающая заглушка не защёлкнутся.');
+  }
+  lid.addEventListener('click', toggleLid);
+  lid.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleLid();} });
+
+  // режим
+  $('kMode').addEventListener('click', ()=>{
+    if(s.run){ tell('Идёт программа','Режим меняется только когда блендер не работает. Сначала нажми «Старт · Отмена».'); return; }
+    if(!s.lid){ tell('Крышка открыта','Сначала закрой крышку.'); return; }
+    s.warm=false;
+    if(s.sel==='quick'){ s.sel='mode'; } else { s.mode=(s.mode+1)%MODES.length; }
+    render();
+    const m=MODES[s.mode];
+    tell(m.zh+' — '+m.ru, (m.hot?'Режим с нагревом. ':'Режим без нагрева. ')+(m.min?`Длится ${m.min} минут.`:'Время покажет экран твоего блендера.'));
+  });
+
+  // старт / отмена
+  $('kStart').addEventListener('click', ()=>{
+    if(s.run){ stop(); return; }
+    if(!s.lid){ tell('Не запускается','На экране «-- --»: крышка не защёлкнута.'); return; }
+    if(s.sel==='quick'){
+      start({kind:'quick', name:'Быстрая мойка', min:null});
+      tell('Быстрая мойка','Вода должна быть налита до верхней отметки для холодных напитков.');
+      s.sel='mode'; return;
+    }
+    const m=MODES[s.mode];
+    const wasDelay=s.delay;
+    start({kind:'mode', name:m.zh+' · '+m.ru, min:m.min, hot:m.hot});
+    tell(wasDelay?'Отложенный запуск':'Работает', wasDelay ? `Программа начнётся через ${wasDelay} ч (в тренажёре — через ${wasDelay} с).`
+      : (m.hot?'Блендер греет и измельчает. Колба нагревается, не трогай её.':'Блендер измельчает без нагрева.'));
+  });
+
+  // отложить
+  $('kDelay').addEventListener('click', ()=>{
+    if(s.run){ tell('Идёт программа','Задержку выставляют до запуска.'); return; }
+    if(!s.lid){ tell('Крышка открыта','Сначала закрой крышку.'); return; }
+    s.delay = (s.delay+1)%13; render();
+    tell('Отложить', s.delay ? `Запуск через ${s.delay} ч. Нажми «Старт», чтобы подтвердить.` : 'Задержка сброшена.');
+  });
+
+  // очистка: короткое / удержание 3 с
+  const kClean=$('kClean'); let holdT=null, held=false, holdStart=0, raf=null;
+  function holdAnim(){ const p=Math.min(1,(Date.now()-holdStart)/3000); holdBar.style.width=(p*100)+'%'; if(p<1) raf=requestAnimationFrame(holdAnim); }
+  kClean.addEventListener('pointerdown', e=>{
+    e.preventDefault(); held=false; holdStart=Date.now(); holdAnim();
+    holdT=setTimeout(()=>{
+      held=true; cancelAnimationFrame(raf); holdBar.style.width='0';
+      if(s.run){ tell('Идёт программа','Сначала останови текущую программу.'); return; }
+      if(!s.lid){ tell('Не запускается','Крышка не защёлкнута.'); return; }
+      if(!s.firstDone){
+        start({kind:'altitude', name:'Калибровка высоты', min:20});
+        tell('Калибровка под высоту','Первый запуск: вода до верхней отметки для горячих напитков, 20 минут. Блендер греет и перемешивает, колба горячая.');
+      } else {
+        start({kind:'sterile', name:'Горячая мойка', min:null});
+        tell('Горячая мойка с обеззараживанием','Вода должна быть до верхней отметки для горячих напитков. Запускается сразу, без кнопки «Старт».');
+      }
+    },3000);
+  });
+  function endHold(){
+    clearTimeout(holdT); cancelAnimationFrame(raf); holdBar.style.width='0';
+    if(held || !holdStart) { holdStart=0; return; }
+    holdStart=0;
+    if(s.run){ tell('Идёт программа','Сначала останови текущую программу.'); return; }
+    if(!s.lid){ tell('Крышка открыта','Сначала закрой крышку.'); return; }
+    s.sel='quick'; s.warm=false; render();
+    tell('Быстрая мойка выбрана','Налей воду до верхней отметки для холодных напитков и нажми «Старт». Удержание кнопки 3 секунды запускает горячую мойку.');
+  }
+  kClean.addEventListener('pointerup', endHold);
+  kClean.addEventListener('pointerleave', ()=>{ if(holdStart && !held){ clearTimeout(holdT); cancelAnimationFrame(raf); holdBar.style.width='0'; holdStart=0; } });
+  kClean.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); holdStart=Date.now(); held=false; endHold(); } });
+
+  $('reset').addEventListener('click', init);
+  init();
+})();
+</script>
+</body>
+</html>
