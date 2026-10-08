@@ -37,7 +37,7 @@
   addEventListener('scroll', function () {
     var h = document.documentElement.scrollHeight - innerHeight;
     bar.style.width = (h > 0 ? (scrollY / h) * 100 : 0) + '%';
-    var reading = location.hash.indexOf('#/reader') === 0 || location.hash.indexOf('#/lesson/') === 0;
+    var reading = location.hash.indexOf('#/reader') === 0 || location.hash.indexOf('#/lesson/') === 0 || location.hash.indexOf('#/comic/') === 0;
     var down = scrollY > lastY + 6, up = scrollY < lastY - 6;
     if (reading && down && scrollY > 120 && !nav.classList.contains('open')) document.body.classList.add('hide-bar');
     else if (up || !reading || scrollY < 120) document.body.classList.remove('hide-bar');
@@ -72,6 +72,7 @@
 
       '<section><div class="eyebrow">Разделы</div><div class="grid">' +
         card('#/life', 'Хронология', 'Жизнь Хидэёси', 'От деревни Накамура до замка Фусими — ' + LIFE.length + ' событий с иллюстрациями.', ART.castle) +
+        card('#/comic', COMIC.length + ' эпизодов', 'Комикс', 'Ключевые моменты жизни Хидэёси в картинках, с пересказом каждого эпизода.', ART.sword) +
         card('#/lessons', LESSONS.length + ' тем', 'Уроки', 'Каждый принцип — история, суть, практика и вопрос для размышления.', ART.scroll) +
         card('#/quiz', QUIZ.length + ' вопросов', 'Проверь себя', 'Короткий тест по событиям и идеям книги.', ART.enso) +
         card('#/reader', 'Ваш экземпляр', 'Читать книгу', 'Откройте свой файл PDF, FB2 или TXT — с главами, поиском и закладками.', ART.lantern) +
@@ -111,6 +112,38 @@
         h.setAttribute('aria-expanded', open);
       });
     });
+  }
+
+  /* ---------- Комикс ---------- */
+  function comicById(id) { return COMIC.find(function (e) { return e.id === id; }); }
+  function comicList() {
+    return '<div class="fade-in"><div class="eyebrow">Манхва по мотивам книги</div><h1>Комикс</h1>' +
+      '<p class="lead">' + COMIC.length + ' эпизодов из жизни Хидэёси: картинки, реплики и подробный пересказ каждого момента.</p>' +
+      '<div class="grid">' + COMIC.map(function (e, i) {
+        return '<a class="card" href="#/comic/' + e.id + '"><div class="thumb comic-thumb">' + Comic.render(e.panels[0], true) + '</div>' +
+          '<div class="num">' + (i + 1) + ' · ' + esc(e.year) + '</div><h3>' + esc(e.title) + '</h3><p>' + esc(e.intro) + '</p></a>';
+      }).join('') + '</div></div>';
+  }
+  function comicEpisode(id) {
+    var e = comicById(id);
+    if (!e) return notFound();
+    var i = COMIC.indexOf(e), prev = COMIC[i - 1], next = COMIC[i + 1], l = lessonById(e.lesson);
+    return '<article class="fade-in comic-page">' +
+      '<a href="#/comic" class="muted">← Все эпизоды</a>' +
+      '<div class="eyebrow" style="margin-top:20px">Эпизод ' + (i + 1) + ' · ' + esc(e.year) + '</div>' +
+      '<h1>' + esc(e.title) + '</h1><p class="lead">' + esc(e.intro) + '</p>' +
+      '<div class="strip">' + e.panels.map(function (p, k) {
+        return '<figure class="panel' + (e.panels.length % 2 && k === 0 ? ' span2' : '') + '">' + Comic.render(p) +
+          '<figcaption><b>' + (k + 1) + '.</b> ' + esc(p.cap) + '</figcaption></figure>';
+      }).join('') + '</div>' +
+      '<p class="muted comic-note">Реплики и сцены придуманы для иллюстрации; события и преданья переданы по историческим источникам.</p>' +
+      '<div class="narrow prose"><h2>Подробно</h2>' + e.detail.map(function (d) { return '<p>' + esc(d) + '</p>'; }).join('') +
+      (l ? '<div class="box"><h3>Урок</h3><p style="margin:0"><a href="#/lesson/' + l.id + '">' + esc(l.title) + '</a> — ' + esc(l.summary) + '</p></div>' : '') +
+      '</div>' +
+      '<nav class="pager">' +
+        (prev ? '<a href="#/comic/' + prev.id + '"><small>← Назад</small>' + esc(prev.title) + '</a>' : '<span></span>') +
+        (next ? '<a href="#/comic/' + next.id + '" style="text-align:right"><small>Далее →</small>' + esc(next.title) + '</a>' : '<a href="#/lessons" style="text-align:right"><small>Дальше →</small>Уроки</a>') +
+      '</nav></article>';
   }
 
   /* ---------- Уроки ---------- */
@@ -369,6 +402,7 @@
     switch (r) {
       case 'home': html = home(); break;
       case 'life': html = life(); bind = bindLife; break;
+      case 'comic': html = parts[1] ? comicEpisode(parts[1]) : comicList(); break;
       case 'lessons': html = lessons(); break;
       case 'lesson': html = lesson(parts[1]); if (lessonById(parts[1])) bind = function () { bindLesson(parts[1]); }; break;
       case 'quiz': html = quizView(); bind = bindQuiz; break;
@@ -382,7 +416,7 @@
     nav.querySelectorAll('a').forEach(function (a) { a.classList.toggle('active', a.dataset.route === navKey); });
     nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false');
     if (!keepScroll) { scrollTo(0, 0); app.focus({ preventScroll: true }); }
-    var titles = { life: 'Жизнь', lessons: 'Уроки', quiz: 'Тест', notes: 'Заметки', reader: 'Читать' };
+    var titles = { comic: 'Комикс', life: 'Жизнь', lessons: 'Уроки', quiz: 'Тест', notes: 'Заметки', reader: 'Читать' };
     var l = r === 'lesson' && lessonById(parts[1]);
     document.title = (l ? l.title + ' · ' : titles[r] ? titles[r] + ' · ' : '') + 'Самурай без меча';
   }

@@ -234,3 +234,39 @@ body.hide-bar .progress { top: 0; }
   .reader-text { max-width: none; }
   .reader-tools .btn.small { padding: 6px 10px; }
 }
+
+/* Комикс */
+.comic-page { max-width: 880px; margin: 0 auto; }
+.strip { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 26px 0 8px; }
+.panel { margin: 0; background: var(--surface); border: 2px solid var(--ink); border-radius: 6px; overflow: hidden; box-shadow: var(--shadow); }
+.panel.span2 { grid-column: 1 / -1; }
+.panel .stage { position: relative; aspect-ratio: 320 / 220; container-type: inline-size; color: var(--ink); border-bottom: 2px solid var(--ink); }
+.panel.span2 .stage { aspect-ratio: 320 / 150; }
+.panel.span2 .stage svg { object-position: center; }
+.panel svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.panel figcaption { padding: 10px 14px 12px; font-size: .92rem; line-height: 1.5; color: var(--text); }
+.comic-note { font-size: .85rem; text-align: center; margin: 4px 0 28px; }
+.comic-thumb { height: 150px !important; padding: 0; overflow: hidden; border-radius: 10px; margin: -6px -6px 12px !important; }
+.comic-thumb .stage { width: 100%; height: 100%; position: relative; color: var(--ink); }
+.comic-thumb svg { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+.card .comic-thumb svg { height: 100%; }
+
+.bubble { position: absolute; max-width: 62%; padding: .35em .7em; background: #fff; color: #22201c; border: 2px solid #22201c; border-radius: 14px;
+  font-family: var(--sans); font-weight: 500; font-size: clamp(10px, 3.7cqw, 15px); line-height: 1.3; }
+.bubble::after { content: ""; position: absolute; width: 12px; height: 12px; background: #fff; border: 2px solid #22201c; border-top: 0; border-left: 0; transform: rotate(45deg); }
+.bubble[data-tail="bl"]::after { left: 18px; bottom: -8px; }
+.bubble[data-tail="br"]::after { right: 18px; bottom: -8px; }
+.bubble[data-tail="tl"]::after { left: 18px; top: -8px; transform: rotate(225deg); }
+.bubble[data-tail="tr"]::after { right: 18px; top: -8px; transform: rotate(225deg); }
+.bubble.shout { font-weight: 700; border-width: 3px; border-radius: 6px; background: #fff7d6; text-transform: none; }
+.bubble.shout::after { background: #fff7d6; border-width: 3px; }
+.bubble.think { border-style: dashed; border-radius: 22px; font-style: italic; background: #f6f3ec; }
+.bubble.think::after { display: none; }
+.bubble.narr { border-radius: 2px; background: #f4ead2; font-family: var(--serif); font-style: italic; font-size: clamp(9px, 3.2cqw, 13px); }
+.bubble.narr::after { display: none; }
+
+@media (max-width: 640px) {
+  .strip { grid-template-columns: 1fr; }
+  .panel.span2 .stage { aspect-ratio: 320 / 220; }
+  .bubble { font-size: clamp(11px, 4.1cqw, 15px); }
+}
