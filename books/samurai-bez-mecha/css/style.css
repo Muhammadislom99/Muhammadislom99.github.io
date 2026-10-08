@@ -187,7 +187,8 @@ textarea { min-height: 120px; resize: vertical; font-family: var(--serif); font-
 /* Reader */
 .drop { border: 2px dashed var(--line); border-radius: var(--radius); padding: 36px 20px; text-align: center; background: var(--surface); }
 .drop.over { border-color: var(--accent); background: var(--accent-soft); }
-.drop input { display: none; }
+.drop input { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+.drop { position: relative; cursor: pointer; display: block; }
 .reader { display: grid; grid-template-columns: 260px 1fr; gap: 28px; align-items: start; }
 .toc { position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow: auto; padding-right: 6px; }
 .toc a { display: block; padding: 6px 10px; border-radius: 8px; color: var(--muted); font-size: .92rem; line-height: 1.35; }
