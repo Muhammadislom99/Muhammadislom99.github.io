@@ -560,6 +560,7 @@
         '<label class="drop" id="drop"><input type="file" id="file">' +
         '<div style="max-width:140px;margin:0 auto;color:var(--ink)">' + ART.scroll + '</div>' +
         '<p><b>Перетащите файл сюда</b> или нажмите, чтобы выбрать</p><p class="muted" style="margin:0">PDF, FB2 или TXT · файл обрабатывается только в вашем браузере, без интернета</p></label>' +
+        '<p class="muted" style="font-size:.92rem">Загружать нужно один раз: книга сохраняется в этом браузере и открывается сразу при следующих визитах. Не сохранится в режиме инкогнито или после очистки данных сайта.</p>' +
         '<p id="readerErr" class="muted" role="alert"></p></div>';
     }
     var i = Math.max(0, Math.min(book.chapters.length - 1, ch == null ? Store.get('chapter', 0) : ch));
@@ -607,6 +608,7 @@
         try {
           Reader.parseFile(f, function (m) { err.textContent = 'Обработка: ' + m + '…'; }).then(function (b) {
             book = b; bookLoaded = true; Store.setBig('book', b); Store.set('chapter', 0);
+            try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
             if (location.hash === '#/reader/0') render(true); else location.hash = '#/reader/0';
           }).catch(fail);
         } catch (e) { fail(e); }
