@@ -270,3 +270,75 @@ body.hide-bar .progress { top: 0; }
   .panel.span2 .stage { aspect-ratio: 320 / 220; }
   .bubble { font-size: clamp(11px, 4.1cqw, 15px); }
 }
+
+/* ---------- Книга по главам ---------- */
+.meter { height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.meter div { height: 100%; background: var(--gold); border-radius: inherit; transition: width .3s; }
+.book-progress { display: grid; gap: 8px; margin: 18px 0 4px; max-width: 420px; color: var(--muted); font-size: .95rem; }
+.book-progress b { color: var(--text); }
+.ch-list { display: grid; gap: 12px; margin-top: 32px; }
+a.ch-row { display: grid; grid-template-columns: 120px 1fr; gap: 20px; align-items: center; padding: 16px 20px; }
+.ch-art { color: var(--ink); background: var(--surface-2); border-radius: 10px; height: 84px; display: flex; align-items: center; justify-content: center; padding: 6px; }
+.ch-art svg { height: 100%; width: auto; }
+.ch-body h3 { margin: 2px 0 4px; }
+.ch-body p { margin-bottom: 10px; }
+@media (max-width: 560px) { a.ch-row { grid-template-columns: 1fr; gap: 12px; } .ch-art { height: 90px; } }
+.cheat { columns: 2 320px; column-gap: 32px; }
+.cheat-ch { break-inside: avoid; margin-bottom: 20px; }
+.cheat-ch h3 { font-size: 1.02rem; margin-bottom: .4em; }
+.cheat-ch h3 a { color: var(--text); }
+.cheat ul { margin: 0; padding-left: 1.1em; font-size: .95rem; color: var(--muted); }
+.cheat li { margin-bottom: .35em; }
+.cheat li.is-done::marker { content: "✓ "; color: var(--gold); }
+
+.secrets-h { margin-top: 1.6em; }
+.secrets { display: grid; gap: 12px; margin: 16px 0 8px; }
+.secret { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); scroll-margin-top: 80px; }
+.secret[open] { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+.secret summary { list-style: none; display: flex; gap: 14px; align-items: center; padding: 16px 18px; cursor: pointer; }
+.secret summary::-webkit-details-marker { display: none; }
+.s-num { flex: none; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-family: var(--serif); font-weight: 600; }
+.secret.is-done .s-num { background: color-mix(in srgb, var(--gold) 22%, var(--surface)); color: var(--gold); }
+.s-head { flex: 1; display: grid; gap: 2px; }
+.s-name { font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.s-rule { font-family: var(--serif); font-size: 1.12rem; line-height: 1.35; }
+.s-mark { color: var(--muted); font-size: 1.2rem; transition: transform .2s; }
+.secret.is-done .s-mark { color: var(--gold); }
+.secret[open] .s-mark { transform: rotate(90deg); }
+.secret.is-done[open] .s-mark { transform: none; }
+.s-body { padding: 0 22px 18px; }
+.s-body .box { margin: 1em 0; }
+.s-note { font-family: var(--sans); font-size: .9rem; color: var(--muted); font-style: italic; }
+.s-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; font-family: var(--sans); }
+.s-actions .check { margin: 0; }
+@media (max-width: 560px) { .secret summary { padding: 14px; gap: 10px; } .s-body { padding: 0 14px 16px; } }
+
+/* Карточки */
+.flash { display: block; width: 100%; min-height: 220px; text-align: center; padding: 34px 24px; margin-top: 8px; font: inherit; color: var(--text); }
+.flash:hover { border-color: var(--accent); }
+.flash.flipped { background: var(--surface-2); }
+.flash-rule { font-family: var(--serif); font-size: clamp(1.35rem, 4vw, 1.8rem); line-height: 1.3; margin: 14px 0; }
+.flash p { margin: 0; }
+.done-card { text-align: center; margin-top: 20px; }
+button.card.mode { text-align: left; font: inherit; color: var(--text); width: 100%; transition: transform .15s, border-color .15s; }
+button.card.mode:hover { transform: translateY(-2px); border-color: var(--accent); }
+
+/* Люди */
+.person .p-top { display: flex; gap: 14px; align-items: center; margin-bottom: 10px; }
+.p-mark { flex: none; width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: #fff; font-size: 22px; }
+.person h3 { margin: 0; }
+.person .num { font-family: var(--sans); font-size: .85rem; }
+.p-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.tag { font-size: .8rem; padding: 3px 10px; border-radius: 999px; background: var(--surface-2); color: var(--text); }
+.tag:hover { text-decoration: none; background: var(--accent-soft); }
+
+/* Эпоха */
+.ladder { display: grid; gap: 6px; justify-items: center; margin: 16px 0; }
+.rung { width: var(--w); min-width: 200px; max-width: 100%; display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 10px 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); text-align: left; }
+.rung span { color: var(--muted); font-size: .85rem; }
+.rung:hover { border-color: var(--accent); }
+.rung[aria-current="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.rung[aria-current="true"] span { color: rgba(255,255,255,.85); }
+@media (max-width: 560px) { .rung { width: 100%; flex-direction: column; gap: 0; } }
+
+@media (max-width: 900px) and (min-width: 761px) { .nav a { padding: 6px 8px; font-size: .9rem; } }
