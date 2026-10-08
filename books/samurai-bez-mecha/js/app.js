@@ -17,7 +17,8 @@
     return root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   }
   document.getElementById('themeBtn').addEventListener('click', function () {
-    var t = currentTheme() === 'dark' ? 'light' : 'dark';
+    var order = ['light', 'sepia', 'dark'];
+    var t = order[(order.indexOf(currentTheme()) + 1) % 3];
     root.dataset.theme = t;
     Store.set('theme', t);
     try { localStorage.setItem('sbm-theme', t); } catch (e) {}
@@ -32,9 +33,15 @@
 
   /* ---------- Прогресс прокрутки ---------- */
   var bar = document.getElementById('progressBar');
+  var lastY = 0;
   addEventListener('scroll', function () {
     var h = document.documentElement.scrollHeight - innerHeight;
     bar.style.width = (h > 0 ? (scrollY / h) * 100 : 0) + '%';
+    var reading = location.hash.indexOf('#/reader') === 0 || location.hash.indexOf('#/lesson/') === 0;
+    var down = scrollY > lastY + 6, up = scrollY < lastY - 6;
+    if (reading && down && scrollY > 120 && !nav.classList.contains('open')) document.body.classList.add('hide-bar');
+    else if (up || !reading || scrollY < 120) document.body.classList.remove('hide-bar');
+    if (down || up) lastY = scrollY;
   }, { passive: true });
 
   /* ---------- Главная ---------- */
@@ -266,6 +273,7 @@
         '<span class="muted" style="font-size:.9rem">Китами Масао · ' + esc(book.title) + ' · ' + book.chapters.length + ' гл. · ' + book.words.toLocaleString('ru-RU') + ' слов</span>' +
         '<span class="spacer"></span>' +
         '<button class="btn small" id="fMinus" aria-label="Уменьшить шрифт">A−</button><button class="btn small" id="fPlus" aria-label="Увеличить шрифт">A+</button>' +
+        '<button class="btn small" id="lMinus" aria-label="Уменьшить интервал">↕−</button><button class="btn small" id="lPlus" aria-label="Увеличить интервал">↕+</button>' +
         '<button class="btn small" id="bookClose">Другой файл</button>' +
       '</div>' +
       '<input type="search" id="search" placeholder="Поиск по книге…" value="' + esc(q) + '"><div class="search-results" id="results"></div>' +
@@ -316,6 +324,13 @@
       var s = Math.max(14, Math.min(28, Store.get('fontSize', 19) + d));
       Store.set('fontSize', s); document.documentElement.style.setProperty('--reader-size', s + 'px');
     }
+    document.documentElement.style.setProperty('--reader-lh', Store.get('lineHeight', 1.6));
+    function lh(d) {
+      var v = Math.round(Math.max(1.3, Math.min(2.1, Store.get('lineHeight', 1.6) + d)) * 100) / 100;
+      Store.set('lineHeight', v); document.documentElement.style.setProperty('--reader-lh', v);
+    }
+    document.getElementById('lMinus').addEventListener('click', function () { lh(-0.1); });
+    document.getElementById('lPlus').addEventListener('click', function () { lh(0.1); });
     document.getElementById('fMinus').addEventListener('click', function () { font(-1); });
     document.getElementById('fPlus').addEventListener('click', function () { font(1); });
     document.getElementById('tocBtn').addEventListener('click', function () { document.getElementById('toc').classList.toggle('open'); });
