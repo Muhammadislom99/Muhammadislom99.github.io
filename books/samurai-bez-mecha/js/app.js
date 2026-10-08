@@ -37,7 +37,7 @@
   addEventListener('scroll', function () {
     var h = document.documentElement.scrollHeight - innerHeight;
     bar.style.width = (h > 0 ? (scrollY / h) * 100 : 0) + '%';
-    var reading = location.hash.indexOf('#/reader') === 0 || location.hash.indexOf('#/lesson/') === 0 || location.hash.indexOf('#/comic/') === 0;
+    var reading = location.hash.indexOf('#/reader') === 0 || location.hash.indexOf('#/lesson/') === 0 || location.hash.indexOf('#/comic/') === 0 || location.hash.indexOf('#/chapter/') === 0;
     var down = scrollY > lastY + 6, up = scrollY < lastY - 6;
     if (reading && down && scrollY > 120 && !nav.classList.contains('open')) document.body.classList.add('hide-bar');
     else if (up || !reading || scrollY < 120) document.body.classList.remove('hide-bar');
@@ -53,7 +53,8 @@
         '<h1>' + esc(B.title) + '</h1>' +
         '<p class="lead">Как сын крестьянина без знатного имени и без меча стал правителем Японии — и что из этого можно взять себе.</p>' +
         '<div class="btn-row">' +
-          '<a class="btn primary" href="#/lessons">' + (done ? 'Продолжить уроки (' + done + '/' + LESSONS.length + ')' : 'Начать с уроков') + '</a>' +
+          '<a class="btn primary" href="#/book">' + (studied().length ? 'Продолжить по главам (' + studied().length + '/' + SECRETS.length + ')' : 'Читать по главам') + '</a>' +
+          '<a class="btn" href="#/lessons">' + (done ? 'Уроки (' + done + '/' + LESSONS.length + ')' : 'Уроки') + '</a>' +
           '<a class="btn" href="#/life">Жизнь Хидэёси</a>' +
         '</div>' +
       '</div><div class="art">' + ART.cover + '</div></div>' +
@@ -71,6 +72,10 @@
       '</section>' +
 
       '<section><div class="eyebrow">Разделы</div><div class="grid">' +
+        card('#/book', (CH.length - 1) + ' глав · ' + SECRETS.length + ' секретов', 'Книга по главам', 'Все главы книги: эпизоды, суть каждого секрета и практика. Отмечайте изученное.', ART.scroll) +
+        card('#/cards', SECRETS.length + ' карточек', 'Карточки секретов', 'Вспомните правило по названию — и проверьте себя, перевернув карточку.', ART.ear) +
+        card('#/people', (window.PEOPLE || []).length + ' человек', 'Люди Хидэёси', 'Нобунага, Нэнэ, Хидэнага, Хамбэй, соперники и бывшие враги — кто есть кто.', ART.people) +
+        card('#/era', '7 ступеней', 'Эпоха', 'Социальная лестница феодальной Японии и краткая история самураев.', ART.mountain) +
         card('#/life', 'Хронология', 'Жизнь Хидэёси', 'От деревни Накамура до замка Фусими — ' + LIFE.length + ' событий с иллюстрациями.', ART.castle) +
         card('#/comic', COMIC.length + ' эпизодов', 'Комикс', 'Ключевые моменты жизни Хидэёси в картинках, с пересказом каждого эпизода.', ART.sword) +
         card('#/lessons', LESSONS.length + ' тем', 'Уроки', 'Каждый принцип — история, суть, практика и вопрос для размышления.', ART.scroll) +
@@ -99,6 +104,7 @@
           '<button class="t-head" aria-expanded="false"><span class="t-year">' + esc(ev.year) + '</span><span class="t-title">' + esc(ev.title) + '</span><span class="t-arrow">›</span></button>' +
           '<div class="t-body"><div class="art">' + ART[ev.art] + '</div><div><p class="prose" style="font-size:1.05rem">' + esc(ev.text) + '</p>' +
           (l ? '<a class="lesson-link" href="#/lesson/' + l.id + '">Урок: ' + esc(l.title) + ' →</a>' : '') +
+          (ev.sec && secretById(ev.sec) ? '<br><a class="lesson-link" href="#/chapter/' + secretById(ev.sec).ch + '/' + ev.sec + '">В книге: ' + esc(secretById(ev.sec).name) + ' →</a>' : '') +
           '</div></div></div>';
       }).join('') + '</div></div>';
   }
@@ -204,49 +210,289 @@
     });
   }
 
+  /* ---------- Книга по главам ---------- */
+  var CH = window.CHAPTERS || [];
+  var SECRETS = [];
+  CH.forEach(function (c) { (c.secrets || []).forEach(function (s) { SECRETS.push(Object.assign({ ch: c.n }, s)); }); });
+  function secretById(id) { return SECRETS.find(function (s) { return s.id === id; }); }
+  function studied() { return Store.get('secrets', []); }
+  function chLabel(n) { return n === 0 ? 'Вступление' : 'Глава ' + n; }
+  function meter(done, total) {
+    return '<div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="' + total + '" aria-valuenow="' + done + '"><div style="width:' + (total ? done / total * 100 : 0) + '%"></div></div>';
+  }
+
+  function bookView() {
+    var st = studied();
+    return '<div class="fade-in">' +
+      '<div class="eyebrow">Книга по главам</div><h1>Самурай без меча</h1>' +
+      '<p class="lead">' + (CH.length - 1) + ' глав и ' + SECRETS.length + ' «секретов» Хидэёси — каждый с эпизодом из книги, сутью и практикой. Пересказ своими словами, без текста книги.</p>' +
+      '<div class="book-progress"><span>Изучено секретов: <b>' + st.length + '</b> из ' + SECRETS.length + '</span>' + meter(st.length, SECRETS.length) + '</div>' +
+      '<div class="btn-row"><a class="btn primary" href="#/chapter/' + (st.length ? nextChapter() : 0) + '">' + (st.length ? 'Продолжить' : 'Начать со вступления') + '</a>' +
+        '<a class="btn" href="#/cards">Карточки секретов</a><a class="btn" href="#/people">Люди</a><a class="btn" href="#/era">Эпоха</a></div>' +
+      '<section class="ch-list">' + CH.map(function (c) {
+        var ids = (c.secrets || []).map(function (s) { return s.id; });
+        var d = ids.filter(function (id) { return st.indexOf(id) >= 0; }).length;
+        return '<a class="ch-row card" href="#/chapter/' + c.n + '"><div class="ch-art">' + ART[c.art] + '</div><div class="ch-body">' +
+          '<div class="num">' + chLabel(c.n) + (ids.length ? ' · ' + d + '/' + ids.length : '') + '</div><h3>' + esc(c.title) + '</h3><p>' + esc(c.sub) + '</p>' +
+          (ids.length ? meter(d, ids.length) : '') + '</div></a>';
+      }).join('') + '</section>' +
+      '<section><div class="eyebrow">Шпаргалка</div><h2>Все секреты одним списком</h2><div class="cheat">' +
+        CH.filter(function (c) { return c.secrets; }).map(function (c) {
+          return '<div class="cheat-ch"><h3><a href="#/chapter/' + c.n + '">' + c.n + '. ' + esc(c.title) + '</a></h3><ul>' + c.secrets.map(function (s) {
+            return '<li class="' + (st.indexOf(s.id) >= 0 ? 'is-done' : '') + '"><a href="#/chapter/' + c.n + '/' + s.id + '"><b>' + esc(s.name) + '</b></a> — ' + esc(s.rule) + '</li>';
+          }).join('') + '</ul></div>';
+        }).join('') + '</div></section></div>';
+  }
+  function nextChapter() {
+    var st = studied();
+    var c = CH.find(function (c) { return c.secrets && c.secrets.some(function (s) { return st.indexOf(s.id) < 0; }); });
+    return c ? c.n : 0;
+  }
+
+  function chapterView(n, openId) {
+    var c = CH.find(function (x) { return x.n === n; });
+    if (!c) return notFound();
+    var i = CH.indexOf(c), prev = CH[i - 1], next = CH[i + 1], st = studied();
+    var html = '<article class="fade-in narrow chapter">' +
+      '<a href="#/book" class="muted">← Все главы</a>' +
+      '<div class="eyebrow" style="margin-top:20px">' + chLabel(c.n) + (c.n ? ' из ' + (CH.length - 1) : '') + '</div>' +
+      '<h1>' + esc(c.title) + '</h1><p class="lead">' + esc(c.sub) + '</p>' +
+      '<div class="lesson-hero">' + ART[c.art] + '</div>' +
+      '<div class="prose">' + c.intro.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') +
+      (c.sections || []).map(function (s) { return '<h2>' + esc(s.h) + '</h2>' + s.p.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join(''); }).join('') +
+      (c.note ? '<div class="box"><h3>Как читать</h3><p style="margin:0">' + esc(c.note) + '</p></div>' : '') +
+      (c.n === 0 ? '<p><a href="#/era">Эпоха: кто есть кто в феодальной Японии →</a></p>' : '') +
+      '</div>';
+    if (c.secrets) {
+      html += '<h2 class="secrets-h">Секреты главы</h2><div class="secrets">' + c.secrets.map(function (s, k) {
+        var done = st.indexOf(s.id) >= 0;
+        return '<details class="secret' + (done ? ' is-done' : '') + '" id="s-' + s.id + '"' + (s.id === openId ? ' open' : '') + '>' +
+          '<summary><span class="s-num">' + (k + 1) + '</span><span class="s-head"><span class="s-name">' + esc(s.name) + '</span><span class="s-rule">' + esc(s.rule) + '</span></span><span class="s-mark" aria-hidden="true">' + (done ? '✓' : '›') + '</span></summary>' +
+          '<div class="s-body prose">' + s.story.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') +
+            '<div class="box"><h3>Суть</h3><p style="margin:0">' + esc(s.key) + '</p></div>' +
+            '<div class="box reflect"><h3>Попробуй</h3><p style="margin:0">' + esc(s.try) + '</p></div>' +
+            (s.note ? '<p class="s-note">' + esc(s.note) + '</p>' : '') +
+            '<div class="s-actions"><label class="check"><input type="checkbox" data-secret="' + s.id + '"' + (done ? ' checked' : '') + '> Изучено</label>' +
+            '<button class="btn small" data-find="' + esc(s.name.toLowerCase()) + '">Найти в своём экземпляре</button></div>' +
+          '</div></details>';
+      }).join('') + '</div>';
+    }
+    if (c.outro) html += '<div class="prose"><h2>' + esc(c.outro.h) + '</h2><p>' + esc(c.outro.p) + '</p></div>';
+    if (c.reflect) html += '<div class="box reflect"><h3>Вопрос к главе</h3><p style="font-family:var(--serif);font-size:1.15rem;margin:0">' + esc(c.reflect) + '</p>' +
+      '<textarea id="chReflect" placeholder="Ваш ответ сохранится в заметках…" style="margin-top:12px">' + esc(Store.get('reflect-ch-' + c.n, '')) + '</textarea></div>';
+    html += '<nav class="pager">' +
+      (prev ? '<a href="#/chapter/' + prev.n + '"><small>← ' + chLabel(prev.n) + '</small>' + esc(prev.title) + '</a>' : '<a href="#/book"><small>← Назад</small>Оглавление</a>') +
+      (next ? '<a href="#/chapter/' + next.n + '" style="text-align:right"><small>' + chLabel(next.n) + ' →</small>' + esc(next.title) + '</a>' : '<a href="#/cards" style="text-align:right"><small>Закрепить →</small>Карточки секретов</a>') +
+      '</nav></article>';
+    return html;
+  }
+  function bindChapter(n, openId) {
+    app.querySelectorAll('[data-secret]').forEach(function (chk) {
+      chk.addEventListener('change', function () {
+        var id = chk.dataset.secret, r = studied().filter(function (x) { return x !== id; });
+        if (chk.checked) r.push(id);
+        Store.set('secrets', r);
+        var d = chk.closest('.secret');
+        d.classList.toggle('is-done', chk.checked);
+        d.querySelector('.s-mark').textContent = chk.checked ? '✓' : '›';
+      });
+    });
+    app.querySelectorAll('[data-find]').forEach(function (b) {
+      b.addEventListener('click', function () { Store.set('search', b.dataset.find); location.hash = '#/reader'; });
+    });
+    var ta = document.getElementById('chReflect'), t;
+    if (ta) ta.addEventListener('input', function () {
+      clearTimeout(t);
+      t = setTimeout(function () { Store.set('reflect-ch-' + n, ta.value); }, 300);
+    });
+    if (openId) {
+      var el = document.getElementById('s-' + openId);
+      if (el) setTimeout(function () { el.scrollIntoView({ block: 'start' }); scrollBy(0, -80); }, 30);
+    }
+  }
+
+  /* ---------- Карточки ---------- */
+  var deck = null;
+  function newDeck(onlyNew) {
+    var known = Store.get('known', []);
+    var list = SECRETS.map(function (s, i) { return i; }).filter(function (i) { return !onlyNew || known.indexOf(SECRETS[i].id) < 0; });
+    for (var k = list.length - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)), x = list[k]; list[k] = list[j]; list[j] = x; }
+    return { list: list, i: 0, flip: false, onlyNew: onlyNew };
+  }
+  function cardsView() {
+    if (!deck) deck = newDeck(false);
+    var known = Store.get('known', []);
+    var head = '<div class="fade-in q-card"><div class="eyebrow">Повторение</div><h1>Карточки секретов</h1>' +
+      '<p class="lead">Вспомни правило по названию секрета, переверни карточку и честно отметь, знаешь ли ты его.</p>' +
+      '<div class="book-progress"><span>Знаю: <b>' + known.length + '</b> из ' + SECRETS.length + '</span>' + meter(known.length, SECRETS.length) + '</div>' +
+      '<div class="era-filter"><button class="chip' + (!deck.onlyNew ? ' active' : '') + '" data-deck="all">Все карточки</button>' +
+      '<button class="chip' + (deck.onlyNew ? ' active' : '') + '" data-deck="new">Только незнакомые</button>' +
+      (known.length ? '<button class="chip" data-deck="reset">Сбросить отметки</button>' : '') + '</div>';
+    if (deck.i >= deck.list.length) {
+      return head + '<div class="card flash done-card"><div style="max-width:140px;margin:0 auto;color:var(--ink)">' + ART.enso + '</div>' +
+        '<h2>' + (deck.list.length ? 'Колода пройдена' : 'Все секреты отмечены как знакомые') + '</h2>' +
+        '<div class="btn-row" style="justify-content:center"><button class="btn primary" data-deck="' + (deck.onlyNew ? 'new' : 'all') + '">Перемешать снова</button><a class="btn" href="#/quiz">Пройти тест</a></div></div></div>';
+    }
+    var s = SECRETS[deck.list[deck.i]];
+    return head + '<div class="q-meta" style="margin-top:20px"><span>Карточка ' + (deck.i + 1) + ' из ' + deck.list.length + '</span><span>' + chLabel(s.ch) + '</span></div>' +
+      '<button class="card flash' + (deck.flip ? ' flipped' : '') + '" id="flash" aria-live="polite">' +
+        (deck.flip
+          ? '<div class="num">' + esc(s.name) + '</div><div class="flash-rule">' + esc(s.rule) + '</div><p class="muted">' + esc(s.key) + '</p>'
+          : '<div class="num">' + chLabel(s.ch) + '</div><div class="flash-rule">' + esc(s.name) + '</div><p class="muted">Как звучит это правило? Нажмите, чтобы перевернуть</p>') +
+      '</button>' +
+      (deck.flip
+        ? '<div class="btn-row" style="justify-content:center"><button class="btn" id="fAgain">Повторить позже</button><button class="btn primary" id="fKnow">Знаю ✓</button></div>' +
+          '<p style="text-align:center"><a href="#/chapter/' + s.ch + '/' + s.id + '">Открыть эпизод в главе →</a></p>'
+        : '') + '</div>';
+  }
+  function bindCards() {
+    app.querySelectorAll('[data-deck]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (b.dataset.deck === 'reset') { if (!confirm('Сбросить все отметки «знаю»?')) return; Store.set('known', []); deck = newDeck(false); }
+        else deck = newDeck(b.dataset.deck === 'new');
+        render(true);
+      });
+    });
+    var f = document.getElementById('flash');
+    if (f) f.addEventListener('click', function () { deck.flip = !deck.flip; render(true); });
+    function step(knowIt) {
+      var id = SECRETS[deck.list[deck.i]].id, k = Store.get('known', []).filter(function (x) { return x !== id; });
+      if (knowIt) k.push(id); else deck.list.push(deck.list[deck.i]);
+      Store.set('known', k); deck.i++; deck.flip = false; render(true);
+    }
+    var a = document.getElementById('fAgain'), kn = document.getElementById('fKnow');
+    if (a) a.addEventListener('click', function () { step(false); });
+    if (kn) kn.addEventListener('click', function () { step(true); });
+  }
+
+  /* ---------- Люди ---------- */
+  var pg = 'all';
+  function peopleView() {
+    var P = window.PEOPLE || [];
+    return '<div class="fade-in"><div class="eyebrow">Действующие лица</div><h1>Люди Хидэёси</h1>' +
+      '<p class="lead">' + P.length + ' человек, без которых не было бы этой истории, — какими их показывает книга.</p>' +
+      '<div class="era-filter">' + PEOPLE_GROUPS.map(function (g) {
+        var cnt = g.id === 'all' ? P.length : P.filter(function (p) { return p.g === g.id; }).length;
+        return '<button class="chip' + (g.id === pg ? ' active' : '') + '" data-pg="' + g.id + '">' + esc(g.name) + ' · ' + cnt + '</button>';
+      }).join('') + '</div>' +
+      '<div class="grid people" style="margin-top:20px">' + P.filter(function (p) { return pg === 'all' || p.g === pg; }).map(function (p) {
+        return '<div class="card person"><div class="p-top"><span class="p-mark" aria-hidden="true">' + p.mark + '</span><div><h3>' + esc(p.name) + '</h3><div class="num">' + esc(p.role) + '</div></div></div>' +
+          '<p>' + esc(p.t) + '</p><div class="p-links">' + p.s.map(function (id) {
+            var s = secretById(id);
+            return s ? '<a class="tag" href="#/chapter/' + s.ch + '/' + s.id + '">' + esc(s.name) + '</a>' : '';
+          }).join('') + '</div></div>';
+      }).join('') + '</div></div>';
+  }
+  function bindPeople() {
+    app.querySelectorAll('[data-pg]').forEach(function (b) {
+      b.addEventListener('click', function () { pg = b.dataset.pg; render(true); });
+    });
+  }
+
+  /* ---------- Эпоха ---------- */
+  function eraView() {
+    var E = window.ERA;
+    return '<div class="fade-in narrow" style="max-width:820px"><div class="eyebrow">Контекст</div><h1>Эпоха сражающихся провинций</h1>' +
+      '<p class="lead">Чтобы понять, насколько невероятен путь Хидэёси, нужно увидеть лестницу, по которой он поднимался — с самой нижней ступени.</p>' +
+      '<h2>Социальная лестница</h2><p class="muted">Нажмите на ступень, чтобы узнать подробнее.</p>' +
+      '<div class="ladder">' + E.ladder.map(function (l, i) {
+        return '<button class="rung" style="--w:' + (46 + i * 9) + '%" data-rung="' + i + '"' + (i === E.ladder.length - 1 ? ' aria-current="true"' : '') + '><b>' + esc(l.name) + '</b><span>' + esc(l.jp) + '</span></button>';
+      }).join('') + '</div>' +
+      '<div class="box" id="rungInfo" aria-live="polite"><h3>' + esc(E.ladder[E.ladder.length - 1].name) + '</h3><p style="margin:0">' + esc(E.ladder[E.ladder.length - 1].t) + '</p></div>' +
+      '<p class="prose">Хидэёси прошёл этот путь почти целиком: от безымянного крестьянина — к самураю, генералу, даймё и регенту императора, второму человеку после самого тэнно.</p>' +
+      '<h2>Краткая история самураев</h2><div class="timeline">' + E.history.map(function (h) {
+        return '<div class="t-item open"><span class="t-dot"></span><div class="t-head" style="cursor:default"><span class="t-year">' + esc(h.y) + '</span><span class="t-title" style="font-weight:400">' + esc(h.t) + '</span></div></div>';
+      }).join('') + '</div>' +
+      '<div class="btn-row"><a class="btn primary" href="#/chapter/0">Вступление к книге</a><a class="btn" href="#/life">Хронология жизни Хидэёси</a></div></div>';
+  }
+  function bindEra() {
+    var info = document.getElementById('rungInfo');
+    app.querySelectorAll('[data-rung]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var l = window.ERA.ladder[+b.dataset.rung];
+        app.querySelectorAll('[data-rung]').forEach(function (x) { x.removeAttribute('aria-current'); });
+        b.setAttribute('aria-current', 'true');
+        info.innerHTML = '<h3>' + esc(l.name) + '</h3><p style="margin:0">' + esc(l.t) + '</p>';
+      });
+    });
+  }
+
   /* ---------- Тест ---------- */
   var quiz = null;
+  var QMODES = [
+    { id: 'quick', name: 'Быстрый', d: '10 случайных вопросов' },
+    { id: 'book', name: 'По главам книги', d: 'вопросы о секретах и эпизодах' },
+    { id: 'life', name: 'По жизни Хидэёси', d: 'события и уроки' },
+    { id: 'all', name: 'Полный', d: 'все вопросы подряд' }
+  ];
+  function quizList(mode) {
+    var all = QUIZ.map(function (q, i) { return i; });
+    if (mode === 'book') return all.filter(function (i) { return QUIZ[i].ch; });
+    if (mode === 'life') return all.filter(function (i) { return !QUIZ[i].ch; });
+    if (mode === 'quick') {
+      for (var k = all.length - 1; k > 0; k--) { var j = Math.floor(Math.random() * (k + 1)), x = all[k]; all[k] = all[j]; all[j] = x; }
+      return all.slice(0, 10);
+    }
+    return all;
+  }
   function quizView() {
-    if (!quiz) quiz = { i: 0, score: 0, answered: false, picked: -1 };
-    if (quiz.i >= QUIZ.length) {
-      var best = Math.max(Store.get('best', 0), quiz.score);
-      Store.set('best', best);
-      var pct = quiz.score / QUIZ.length;
+    if (!quiz) {
+      return '<div class="fade-in q-card"><div class="eyebrow">Проверь себя</div><h1>Тест</h1><p class="lead">Выберите режим — всего ' + QUIZ.length + ' вопросов.</p>' +
+        '<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">' + QMODES.map(function (m) {
+          var n = quizList(m.id).length, best = Store.get('best-' + m.id, null);
+          return '<button class="card mode" data-mode="' + m.id + '"><div class="num">' + n + ' вопр.</div><h3>' + esc(m.name) + '</h3><p>' + esc(m.d) + (best != null ? ' · лучший: ' + best + '/' + n : '') + '</p></button>';
+        }).join('') + '</div></div>';
+    }
+    var total = quiz.list.length;
+    if (quiz.i >= total) {
+      var best = Math.max(Store.get('best-' + quiz.mode, 0), quiz.score);
+      Store.set('best-' + quiz.mode, best);
+      var pct = quiz.score / total;
       var verdict = pct >= .9 ? 'Достойно кампаку!' : pct >= .6 ? 'Хороший путь — ещё немного практики.' : 'Носильщик сандалий тоже когда-то начинал. Перечитайте уроки!';
       return '<div class="fade-in q-card card" style="text-align:center"><div style="max-width:200px;margin:0 auto;color:var(--ink)">' + ART.enso + '</div>' +
-        '<h2>' + quiz.score + ' из ' + QUIZ.length + '</h2><p class="lead">' + verdict + '</p><p class="muted">Лучший результат: ' + best + '</p>' +
-        '<div class="btn-row" style="justify-content:center"><button class="btn primary" id="qRestart">Пройти снова</button><a class="btn" href="#/lessons">К урокам</a></div></div>';
+        '<h2>' + quiz.score + ' из ' + total + '</h2><p class="lead">' + verdict + '</p><p class="muted">Лучший результат: ' + best + '</p>' +
+        '<div class="btn-row" style="justify-content:center"><button class="btn primary" id="qRestart">Пройти снова</button><button class="btn" id="qModes">Другой режим</button><a class="btn" href="#/book">К главам</a></div></div>';
     }
-    var q = QUIZ[quiz.i];
+    var q = QUIZ[quiz.list[quiz.i]];
     return '<div class="fade-in q-card"><div class="eyebrow">Проверь себя</div>' +
-      '<div class="card"><div class="q-meta"><span>Вопрос ' + (quiz.i + 1) + ' из ' + QUIZ.length + '</span><span>Счёт: ' + quiz.score + '</span></div>' +
+      '<div class="card"><div class="q-meta"><span>Вопрос ' + (quiz.i + 1) + ' из ' + total + '</span><span>Счёт: ' + quiz.score + '</span></div>' +
       '<div class="q-text">' + esc(q.q) + '</div><div class="opts">' +
       q.o.map(function (o, k) {
         var cls = '';
         if (quiz.answered) { if (k === q.a) cls = ' right'; else if (k === quiz.picked) cls = ' wrong'; }
         return '<button class="opt' + cls + '" data-k="' + k + '"' + (quiz.answered ? ' disabled' : '') + '>' + esc(o) + '</button>';
       }).join('') + '</div>' +
-      (quiz.answered ? '<div class="explain box">' + esc(q.e) + '</div><div class="btn-row"><button class="btn primary" id="qNext">' + (quiz.i + 1 < QUIZ.length ? 'Следующий вопрос' : 'Результат') + '</button></div>' : '') +
+      (quiz.answered ? '<div class="explain box">' + esc(q.e) + (q.ch ? ' <a href="#/chapter/' + q.ch + '">Глава ' + q.ch + ' →</a>' : '') + '</div><div class="btn-row"><button class="btn primary" id="qNext">' + (quiz.i + 1 < total ? 'Следующий вопрос' : 'Результат') + '</button></div>' : '') +
       '</div></div>';
   }
   function bindQuiz() {
+    app.querySelectorAll('[data-mode]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        quiz = { mode: b.dataset.mode, list: quizList(b.dataset.mode), i: 0, score: 0, answered: false, picked: -1 };
+        render(true);
+      });
+    });
     app.querySelectorAll('.opt').forEach(function (b) {
       b.addEventListener('click', function () {
         quiz.picked = +b.dataset.k; quiz.answered = true;
-        if (quiz.picked === QUIZ[quiz.i].a) quiz.score++;
+        if (quiz.picked === QUIZ[quiz.list[quiz.i]].a) quiz.score++;
         render(true);
       });
     });
     var n = document.getElementById('qNext');
     if (n) n.addEventListener('click', function () { quiz.i++; quiz.answered = false; quiz.picked = -1; render(true); });
     var r = document.getElementById('qRestart');
-    if (r) r.addEventListener('click', function () { quiz = null; render(true); });
+    if (r) r.addEventListener('click', function () { var m = quiz.mode; quiz = { mode: m, list: quizList(m), i: 0, score: 0, answered: false, picked: -1 }; render(true); });
+    var qm = document.getElementById('qModes');
+    if (qm) qm.addEventListener('click', function () { quiz = null; render(true); });
   }
 
   /* ---------- Заметки ---------- */
   function notes() {
     var list = Store.get('notes', []);
-    var reflections = LESSONS.map(function (l) { return { l: l, v: Store.get('reflect-' + l.id, '') }; }).filter(function (x) { return x.v.trim(); });
+    var reflections = LESSONS.map(function (l) { return { l: l, v: Store.get('reflect-' + l.id, ''), href: '#/lesson/' + l.id }; })
+      .concat(CH.filter(function (c) { return c.reflect; }).map(function (c) { return { l: { title: 'Глава ' + c.n + '. ' + c.title, reflect: c.reflect }, v: Store.get('reflect-ch-' + c.n, ''), href: '#/chapter/' + c.n }; }))
+      .filter(function (x) { return x.v.trim(); });
     return '<div class="fade-in narrow"><div class="eyebrow">Личное</div><h1>Заметки</h1>' +
       '<p class="lead">Мысли и выводы хранятся только в этом браузере.</p>' +
       '<textarea id="noteText" placeholder="Что вы вынесли из прочитанного?"></textarea>' +
@@ -256,7 +502,7 @@
         return '<div class="card note"><div class="meta"><span>' + esc(new Date(n.d).toLocaleString('ru-RU')) + '</span><button class="link-btn" data-del="' + n.d + '">удалить</button></div><p>' + esc(n.t) + '</p></div>';
       }).join('') : '<p class="muted">Пока нет заметок.</p>') + '</section>' +
       (reflections.length ? '<section><h2>Ответы на вопросы уроков</h2>' + reflections.map(function (x) {
-        return '<div class="card note"><div class="meta"><a href="#/lesson/' + x.l.id + '">' + esc(x.l.title) + '</a></div><p class="muted" style="font-style:italic;margin-bottom:6px">' + esc(x.l.reflect) + '</p><p>' + esc(x.v) + '</p></div>';
+        return '<div class="card note"><div class="meta"><a href="' + x.href + '">' + esc(x.l.title) + '</a></div><p class="muted" style="font-style:italic;margin-bottom:6px">' + esc(x.l.reflect) + '</p><p>' + esc(x.v) + '</p></div>';
       }).join('') + '</section>' : '') + '</div>';
   }
   function bindNotes() {
@@ -276,7 +522,9 @@
         return new Date(n.d).toLocaleString('ru-RU') + '\n' + n.t;
       }).join('\n\n') + '\n\n' + LESSONS.map(function (l) {
         var v = Store.get('reflect-' + l.id, ''); return v ? l.title + ' — ' + l.reflect + '\n' + v : '';
-      }).filter(Boolean).join('\n\n');
+      }).concat(CH.map(function (c) {
+        var v = Store.get('reflect-ch-' + c.n, ''); return v ? 'Глава ' + c.n + '. ' + c.title + ' — ' + c.reflect + '\n' + v : '';
+      })).filter(Boolean).join('\n\n');
       var a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain;charset=utf-8' }));
       a.download = 'samurai-zametki.txt'; a.click();
@@ -405,6 +653,11 @@
       case 'comic': html = parts[1] ? comicEpisode(parts[1]) : comicList(); break;
       case 'lessons': html = lessons(); break;
       case 'lesson': html = lesson(parts[1]); if (lessonById(parts[1])) bind = function () { bindLesson(parts[1]); }; break;
+      case 'book': html = bookView(); break;
+      case 'chapter': html = chapterView(+parts[1] || 0, parts[2]); bind = function () { bindChapter(+parts[1] || 0, parts[2]); }; break;
+      case 'cards': html = cardsView(); bind = bindCards; break;
+      case 'people': html = peopleView(); bind = bindPeople; break;
+      case 'era': html = eraView(); bind = bindEra; break;
       case 'quiz': html = quizView(); bind = bindQuiz; break;
       case 'notes': html = notes(); bind = bindNotes; break;
       case 'reader': html = readerView(parts[1] != null && parts[1] !== '' ? +parts[1] : null); if (bookLoaded) bind = bindReader; break;
@@ -412,12 +665,14 @@
     }
     app.innerHTML = html;
     if (bind) bind();
-    var navKey = r === 'lesson' ? 'lessons' : r;
+    var navKey = r === 'lesson' ? 'lessons' : (r === 'chapter' || r === 'cards' || r === 'era') ? 'book' : r;
     nav.querySelectorAll('a').forEach(function (a) { a.classList.toggle('active', a.dataset.route === navKey); });
     nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false');
-    if (!keepScroll) { scrollTo(0, 0); app.focus({ preventScroll: true }); }
-    var titles = { comic: 'Комикс', life: 'Жизнь', lessons: 'Уроки', quiz: 'Тест', notes: 'Заметки', reader: 'Читать' };
+    if (!keepScroll && !(r === 'chapter' && parts[2])) { scrollTo(0, 0); app.focus({ preventScroll: true }); }
+    var titles = { book: 'Книга', cards: 'Карточки', people: 'Люди', era: 'Эпоха', comic: 'Комикс', life: 'Жизнь', lessons: 'Уроки', quiz: 'Тест', notes: 'Заметки', reader: 'Читать' };
     var l = r === 'lesson' && lessonById(parts[1]);
+    var cc = r === 'chapter' && CH.find(function (x) { return x.n === (+parts[1] || 0); });
+    if (cc) l = cc;
     document.title = (l ? l.title + ' · ' : titles[r] ? titles[r] + ' · ' : '') + 'Самурай без меча';
   }
   addEventListener('hashchange', function () { render(); });
