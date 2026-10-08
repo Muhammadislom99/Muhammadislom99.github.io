@@ -8,6 +8,50 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
+  function sayBtn(key, label) {
+    if (!window.TTS || !TTS.supported) return '';
+    return '<button class="say' + (label ? ' wide' : '') + '" type="button" data-say="' + esc(key) + '" aria-label="Слушать"><span class="ic" aria-hidden="true">▶</span>' + (label ? '<span>' + esc(label) + '</span>' : '') + '</button>';
+  }
+  function sayText(key) {
+    var k = key.split(':'), id = k.slice(1).join(':'), out = [];
+    if (k[0] === 'secret' || k[0] === 'secretfull') {
+      var s = secretById(id), x = (window.SX || {})[id];
+      if (!s) return '';
+      out.push(s.name + '. ' + s.rule + '.');
+      if (x && k[0] === 'secret') {
+        out.push('Ситуация. ' + x.sit, 'Что он сделал. ' + x.do.map(function (d, i) { return (i + 1) + '. ' + d + '.'; }).join(' '), 'Итог. ' + x.res);
+      } else out = out.concat(s.story);
+      out.push('Суть. ' + s.key);
+    } else if (k[0] === 'chapter') {
+      var c = CH.find(function (x) { return x.n === +id; });
+      if (!c) return '';
+      out.push((c.n ? 'Глава ' + c.n + '. ' : '') + c.title + '. ' + c.sub + '.');
+      out = out.concat(c.intro);
+      (c.sections || []).forEach(function (sc) { out.push(sc.h + '.'); out = out.concat(sc.p); });
+      (c.secrets || []).forEach(function (sc, i) { out.push('Секрет ' + (i + 1) + '. ' + sc.name + ': ' + sc.rule + '. ' + sc.key); });
+      if (c.outro) out.push(c.outro.h + '. ' + c.outro.p);
+    } else if (k[0] === 'lesson') {
+      var l = lessonById(id);
+      if (l) out.push(l.title + '. ' + l.summary, l.story, 'Принцип. ' + l.points.join(' '));
+    } else if (k[0] === 'comic') {
+      var e = COMIC.find(function (x) { return x.id === id; });
+      if (e) out = [e.title + '. ' + e.intro].concat(e.detail);
+    } else if (k[0] === 'person') {
+      var pp = (window.PEOPLE || []).find(function (x) { return x.id === id; });
+      if (pp) out.push(pp.name + ', ' + pp.role + '. ' + pp.t);
+    } else if (k[0] === 'life') {
+      var ev = LIFE[+id];
+      if (ev) out.push(ev.year + '. ' + ev.title + '. ' + ev.text);
+    }
+    return out.join(' ');
+  }
+  app.addEventListener('click', function (e) {
+    var b = e.target.closest('.say');
+    if (!b) return;
+    e.preventDefault(); e.stopPropagation();
+    TTS.speak(sayText(b.dataset.say), b);
+  });
+
   function lessonById(id) { return LESSONS.find(function (l) { return l.id === id; }); }
   function readSet() { return Store.get('read', []); }
 
@@ -103,7 +147,7 @@
         var l = lessonById(ev.lesson);
         return '<div class="t-item" id="ev' + i + '"><span class="t-dot"></span>' +
           '<button class="t-head" aria-expanded="false"><span class="t-year">' + esc(ev.year) + '</span><span class="t-title">' + esc(ev.title) + '</span><span class="t-arrow">›</span></button>' +
-          '<div class="t-body"><div class="art">' + ART[ev.art] + '</div><div><p class="prose" style="font-size:1.05rem">' + esc(ev.text) + '</p>' +
+          '<div class="t-body"><div class="art">' + ART[ev.art] + '</div><div><div class="say-row">' + sayBtn('life:' + LIFE.indexOf(ev), 'Слушать') + '</div><p class="prose" style="font-size:1.05rem">' + esc(ev.text) + '</p>' +
           (l ? '<a class="lesson-link" href="#/lesson/' + l.id + '">Урок: ' + esc(l.title) + ' →</a>' : '') +
           (ev.sec && secretById(ev.sec) ? '<br><a class="lesson-link" href="#/chapter/' + secretById(ev.sec).ch + '/' + ev.sec + '">В книге: ' + esc(secretById(ev.sec).name) + ' →</a>' : '') +
           '</div></div></div>';
@@ -144,7 +188,7 @@
           '<figcaption><b>' + (k + 1) + '.</b> ' + esc(p.cap) + '</figcaption></figure>';
       }).join('') + '</div>' +
       '<p class="muted comic-note">Реплики и сцены придуманы для иллюстрации; события и преданья переданы по историческим источникам.</p>' +
-      '<div class="narrow prose"><h2>Подробно</h2>' + e.detail.map(function (d) { return '<p>' + esc(d) + '</p>'; }).join('') +
+      '<div class="narrow prose"><h2>Подробно</h2><div class="say-row">' + sayBtn('comic:' + e.id, 'Слушать') + '</div>' + e.detail.map(function (d) { return '<p>' + esc(d) + '</p>'; }).join('') +
       (l ? '<div class="box"><h3>Урок</h3><p style="margin:0"><a href="#/lesson/' + l.id + '">' + esc(l.title) + '</a> — ' + esc(l.summary) + '</p></div>' : '') +
       '</div>' +
       '<nav class="pager">' +
@@ -180,6 +224,7 @@
       '<a href="#/lessons" class="muted">← Все уроки</a>' +
       '<div class="eyebrow" style="margin-top:20px">Урок ' + (i + 1) + ' · ' + esc(l.part) + '</div>' +
       '<h1>' + esc(l.title) + '</h1><p class="lead">' + esc(l.summary) + '</p>' +
+      '<div class="say-row">' + sayBtn('lesson:' + l.id, 'Слушать урок') + '</div>' +
       '<div class="lesson-hero">' + ART[l.art] + '</div>' +
       '<div class="prose">' +
         '<h2>История</h2><p>' + esc(l.story) + '</p>' +
@@ -259,7 +304,7 @@
         (x.viz && D[x.viz] ? '<figure class="diagram">' + D[x.viz] + '</figure>' : '') +
         '<div class="sx result"><div class="sx-label">Итог</div><p>' + esc(x.res) + '</p></div>';
     }
-    h += '<details class="more"' + (x ? '' : ' open') + '><summary>Полная история' + (x ? ' · ' + s.story.length + ' абз.' : '') + '</summary><div class="more-body">' +
+    h += '<details class="more"' + (x ? '' : ' open') + '><summary>Полная история' + (x ? ' · ' + s.story.length + ' абз.' : '') + '</summary><div class="more-body">' + sayBtn('secretfull:' + s.id, 'Слушать полностью') +
       s.story.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + '</div></details>';
     return h;
   }
@@ -271,6 +316,7 @@
       '<a href="#/book" class="muted">← Все главы</a>' +
       '<div class="eyebrow" style="margin-top:20px">' + chLabel(c.n) + (c.n ? ' из ' + (CH.length - 1) : '') + '</div>' +
       '<h1>' + esc(c.title) + '</h1><p class="lead">' + esc(c.sub) + '</p>' +
+      '<div class="say-row">' + sayBtn('chapter:' + c.n, 'Слушать главу') + '</div>' +
       '<div class="lesson-hero">' + ART[c.art] + '</div>' +
       ((window.TLDR || {})[c.n] ? '<div class="tldr"><div class="sx-label">Главное за 30 секунд</div><ul>' + TLDR[c.n].map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>' : '') +
       '<div class="prose ch-prose">' + c.intro.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') +
@@ -282,7 +328,7 @@
       html += '<h2 class="secrets-h">Секреты главы</h2><div class="secrets">' + c.secrets.map(function (s, k) {
         var done = st.indexOf(s.id) >= 0;
         return '<details class="secret' + (done ? ' is-done' : '') + '" id="s-' + s.id + '"' + (s.id === openId ? ' open' : '') + '>' +
-          '<summary><span class="s-num">' + (k + 1) + '</span><span class="s-head"><span class="s-name">' + esc(s.name) + '</span><span class="s-rule">' + esc(s.rule) + '</span></span><span class="s-mark" aria-hidden="true">' + (done ? '✓' : '›') + '</span></summary>' +
+          '<summary><span class="s-num">' + (k + 1) + '</span><span class="s-head"><span class="s-name">' + esc(s.name) + '</span><span class="s-rule">' + esc(s.rule) + '</span></span>' + sayBtn('secret:' + s.id) + '<span class="s-mark" aria-hidden="true">' + (done ? '✓' : '›') + '</span></summary>' +
           '<div class="s-body">' + secretBody(s) +
             '<div class="box key"><h3>Суть</h3><p>' + esc(s.key) + '</p></div>' +
             '<div class="box reflect"><h3>Попробуй</h3><p style="margin:0">' + esc(s.try) + '</p></div>' +
@@ -391,7 +437,7 @@
         return '<button class="chip' + (g.id === pg ? ' active' : '') + '" data-pg="' + g.id + '">' + esc(g.name) + ' · ' + cnt + '</button>';
       }).join('') + '</div>' +
       '<div class="grid people" style="margin-top:20px">' + P.filter(function (p) { return pg === 'all' || p.g === pg; }).map(function (p) {
-        return '<div class="card person"><div class="p-top"><span class="p-mark" aria-hidden="true">' + p.mark + '</span><div><h3>' + esc(p.name) + '</h3><div class="num">' + esc(p.role) + '</div></div></div>' +
+        return '<div class="card person"><div class="p-top"><span class="p-mark" aria-hidden="true">' + p.mark + '</span><div><h3>' + esc(p.name) + '</h3><div class="num">' + esc(p.role) + '</div></div>' + sayBtn('person:' + p.id) + '</div>' +
           '<p>' + esc(p.t) + '</p><div class="p-links">' + p.s.map(function (id) {
             var s = secretById(id);
             return s ? '<a class="tag" href="#/chapter/' + s.ch + '/' + s.id + '">' + esc(s.name) + '</a>' : '';

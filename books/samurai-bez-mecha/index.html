@@ -8,7 +8,9 @@
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/style.css">
   <script>
-    try { var t = localStorage.getItem('sbm-theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+    try { var t = localStorage.getItem('sbm-theme'); if (t) document.documentElement.dataset.theme = t;
+      var pr = JSON.parse(localStorage.getItem('sbm-prefs') || '{}'), r = document.documentElement;
+      if (pr.fs) r.style.setProperty('--fs', pr.fs); if (pr.align) r.dataset.align = pr.align; if (pr.font) r.dataset.font = pr.font; } catch (e) {}
   </script>
 </head>
 <body>
@@ -29,10 +31,12 @@
       <a href="#/notes" data-route="notes">Заметки</a>
       <a href="#/reader" data-route="reader">Читать</a>
     </nav>
+    <button class="theme-btn prefs-btn" id="prefsBtn" aria-label="Настройки текста" title="Настройки текста" aria-expanded="false" aria-controls="prefsPanel">Аа</button>
     <button class="theme-btn" id="themeBtn" aria-label="Сменить тему" title="Сменить тему">
       <span class="sun">☀</span><span class="sep">☕</span><span class="moon">☾</span>
     </button>
   </header>
+  <div class="prefs-panel" id="prefsPanel" role="dialog" aria-label="Настройки текста" hidden></div>
   <div class="progress" aria-hidden="true"><div id="progressBar"></div></div>
 
   <main id="app" tabindex="-1"></main>
@@ -52,6 +56,7 @@
   <script src="js/data/people.js"></script>
   <script src="js/data/secrets-extra.js"></script>
   <script src="js/diagrams.js"></script>
+  <script src="js/settings.js"></script>
   <script src="js/store.js"></script>
   <script src="js/reader.js"></script>
   <script src="js/app.js"></script>
