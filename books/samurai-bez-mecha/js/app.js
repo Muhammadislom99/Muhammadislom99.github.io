@@ -253,7 +253,7 @@
     if (!book) {
       return '<div class="fade-in narrow"><div class="eyebrow">Читалка</div><h1>Читать книгу</h1>' +
         '<p class="lead">Откройте свой экземпляр книги — PDF, FB2 или TXT. Приложение извлечёт текст и покажет его целиком, по главам, с удобным шрифтом и тёмной темой.</p>' +
-        '<label class="drop" id="drop"><input type="file" id="file" accept=".pdf,.fb2,.txt,application/pdf,text/plain,application/xml">' +
+        '<label class="drop" id="drop"><input type="file" id="file">' +
         '<div style="max-width:140px;margin:0 auto;color:var(--ink)">' + ART.scroll + '</div>' +
         '<p><b>Перетащите файл сюда</b> или нажмите, чтобы выбрать</p><p class="muted" style="margin:0">PDF, FB2 или TXT · файл обрабатывается только в вашем браузере, без интернета</p></label>' +
         '<p id="readerErr" class="muted" role="alert"></p></div>';
@@ -295,10 +295,16 @@
       var drop = document.getElementById('drop'), err = document.getElementById('readerErr');
       var load = function (f) {
         if (!f) return;
-        err.textContent = 'Обработка файла…';
-        Reader.parseFile(f, function (m) { err.textContent = 'Обработка: ' + m + '…'; }).then(function (b) {
-          book = b; Store.setBig('book', b); Store.set('chapter', 0); location.hash = '#/reader/0'; render(true);
-        }).catch(function (e) { err.textContent = 'Ошибка: ' + e.message; });
+        err.textContent = 'Обработка файла «' + f.name + '»…';
+        var fail = function (e) {
+          err.textContent = 'Ошибка: ' + ((e && (e.message || e.name)) || String(e)) + '. Попробуйте другой браузер (Chrome, Safari) или пришлите этот текст ошибки.';
+        };
+        try {
+          Reader.parseFile(f, function (m) { err.textContent = 'Обработка: ' + m + '…'; }).then(function (b) {
+            book = b; bookLoaded = true; Store.setBig('book', b); Store.set('chapter', 0);
+            if (location.hash === '#/reader/0') render(true); else location.hash = '#/reader/0';
+          }).catch(fail);
+        } catch (e) { fail(e); }
       };
       file.addEventListener('change', function () { load(file.files[0]); });
       ['dragover', 'dragenter'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('over'); }); });

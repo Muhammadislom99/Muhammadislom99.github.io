@@ -255,7 +255,13 @@
 
   window.Reader = {
     parseFile: function (file, progress) {
-      return file.arrayBuffer().then(function (buf) {
+      var read = file.arrayBuffer ? file.arrayBuffer() : new Promise(function (res, rej) {
+        var fr = new FileReader();
+        fr.onload = function () { res(fr.result); };
+        fr.onerror = function () { rej(fr.error || new Error('Не удалось прочитать файл')); };
+        fr.readAsArrayBuffer(file);
+      });
+      return read.then(function (buf) {
         if (/\.pdf$/i.test(file.name) || new TextDecoder('ascii').decode(buf.slice(0, 5)) === '%PDF-') {
           return parsePDF(buf, file.name, progress).then(finish);
         }
