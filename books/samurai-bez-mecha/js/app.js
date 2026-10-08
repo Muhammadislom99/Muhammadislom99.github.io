@@ -94,6 +94,7 @@
     return '<div class="fade-in narrow" style="max-width:820px">' +
       '<div class="eyebrow">Хронология</div><h1>Жизнь Тоётоми Хидэёси</h1>' +
       '<p class="lead">Нажмите на событие, чтобы раскрыть историю и связанный с ней урок.</p>' +
+      (window.DIAGRAMS ? '<figure class="diagram">' + DIAGRAMS.career + '</figure>' : '') +
       '<div class="era-filter">' + ERAS.map(function (e) {
         return '<button class="chip' + (e.id === era ? ' active' : '') + '" data-era="' + e.id + '">' + esc(e.name) + '</button>';
       }).join('') + '</div>' +
@@ -249,6 +250,19 @@
     return c ? c.n : 0;
   }
 
+  function secretBody(s) {
+    var x = (window.SX || {})[s.id], D = window.DIAGRAMS || {}, h = '';
+    if (x) {
+      h += '<div class="facts-row">' + x.f.map(function (f) { return '<div class="fx"><b>' + esc(f[0]) + '</b><span>' + esc(f[1]) + '</span></div>'; }).join('') + '</div>' +
+        '<div class="sx"><div class="sx-label">Ситуация</div><p>' + esc(x.sit) + '</p></div>' +
+        '<div class="sx"><div class="sx-label">Что он сделал</div><ol class="steps">' + x.do.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join('') + '</ol></div>' +
+        (x.viz && D[x.viz] ? '<figure class="diagram">' + D[x.viz] + '</figure>' : '') +
+        '<div class="sx result"><div class="sx-label">Итог</div><p>' + esc(x.res) + '</p></div>';
+    }
+    h += '<details class="more"' + (x ? '' : ' open') + '><summary>Полная история' + (x ? ' · ' + s.story.length + ' абз.' : '') + '</summary><div class="more-body">' +
+      s.story.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + '</div></details>';
+    return h;
+  }
   function chapterView(n, openId) {
     var c = CH.find(function (x) { return x.n === n; });
     if (!c) return notFound();
@@ -258,18 +272,19 @@
       '<div class="eyebrow" style="margin-top:20px">' + chLabel(c.n) + (c.n ? ' из ' + (CH.length - 1) : '') + '</div>' +
       '<h1>' + esc(c.title) + '</h1><p class="lead">' + esc(c.sub) + '</p>' +
       '<div class="lesson-hero">' + ART[c.art] + '</div>' +
-      '<div class="prose">' + c.intro.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') +
+      ((window.TLDR || {})[c.n] ? '<div class="tldr"><div class="sx-label">Главное за 30 секунд</div><ul>' + TLDR[c.n].map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>' : '') +
+      '<div class="prose ch-prose">' + c.intro.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') +
       (c.sections || []).map(function (s) { return '<h2>' + esc(s.h) + '</h2>' + s.p.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join(''); }).join('') +
       (c.note ? '<div class="box"><h3>Как читать</h3><p style="margin:0">' + esc(c.note) + '</p></div>' : '') +
-      (c.n === 0 ? '<p><a href="#/era">Эпоха: кто есть кто в феодальной Японии →</a></p>' : '') +
+      (c.n === 0 && window.DIAGRAMS ? '<h2>Где всё происходило</h2><figure class="diagram">' + DIAGRAMS.japan + '</figure><p><a href="#/era">Эпоха: кто есть кто в феодальной Японии →</a></p>' : '') +
       '</div>';
     if (c.secrets) {
       html += '<h2 class="secrets-h">Секреты главы</h2><div class="secrets">' + c.secrets.map(function (s, k) {
         var done = st.indexOf(s.id) >= 0;
         return '<details class="secret' + (done ? ' is-done' : '') + '" id="s-' + s.id + '"' + (s.id === openId ? ' open' : '') + '>' +
           '<summary><span class="s-num">' + (k + 1) + '</span><span class="s-head"><span class="s-name">' + esc(s.name) + '</span><span class="s-rule">' + esc(s.rule) + '</span></span><span class="s-mark" aria-hidden="true">' + (done ? '✓' : '›') + '</span></summary>' +
-          '<div class="s-body prose">' + s.story.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') +
-            '<div class="box"><h3>Суть</h3><p style="margin:0">' + esc(s.key) + '</p></div>' +
+          '<div class="s-body">' + secretBody(s) +
+            '<div class="box key"><h3>Суть</h3><p>' + esc(s.key) + '</p></div>' +
             '<div class="box reflect"><h3>Попробуй</h3><p style="margin:0">' + esc(s.try) + '</p></div>' +
             (s.note ? '<p class="s-note">' + esc(s.note) + '</p>' : '') +
             '<div class="s-actions"><label class="check"><input type="checkbox" data-secret="' + s.id + '"' + (done ? ' checked' : '') + '> Изучено</label>' +
@@ -277,7 +292,7 @@
           '</div></details>';
       }).join('') + '</div>';
     }
-    if (c.outro) html += '<div class="prose"><h2>' + esc(c.outro.h) + '</h2><p>' + esc(c.outro.p) + '</p></div>';
+    if (c.outro) html += '<div class="prose ch-prose"><h2>' + esc(c.outro.h) + '</h2><p>' + esc(c.outro.p) + '</p></div>';
     if (c.reflect) html += '<div class="box reflect"><h3>Вопрос к главе</h3><p style="font-family:var(--serif);font-size:1.15rem;margin:0">' + esc(c.reflect) + '</p>' +
       '<textarea id="chReflect" placeholder="Ваш ответ сохранится в заметках…" style="margin-top:12px">' + esc(Store.get('reflect-ch-' + c.n, '')) + '</textarea></div>';
     html += '<nav class="pager">' +
@@ -400,6 +415,7 @@
       }).join('') + '</div>' +
       '<div class="box" id="rungInfo" aria-live="polite"><h3>' + esc(E.ladder[E.ladder.length - 1].name) + '</h3><p style="margin:0">' + esc(E.ladder[E.ladder.length - 1].t) + '</p></div>' +
       '<p class="prose">Хидэёси прошёл этот путь почти целиком: от безымянного крестьянина — к самураю, генералу, даймё и регенту императора, второму человеку после самого тэнно.</p>' +
+      (window.DIAGRAMS ? '<h2>Карта событий</h2><figure class="diagram">' + DIAGRAMS.japan + '</figure>' : '') +
       '<h2>Краткая история самураев</h2><div class="timeline">' + E.history.map(function (h) {
         return '<div class="t-item open"><span class="t-dot"></span><div class="t-head" style="cursor:default"><span class="t-year">' + esc(h.y) + '</span><span class="t-title" style="font-weight:400">' + esc(h.t) + '</span></div></div>';
       }).join('') + '</div>' +

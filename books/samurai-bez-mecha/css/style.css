@@ -342,3 +342,74 @@ button.card.mode:hover { transform: translateY(-2px); border-color: var(--accent
 @media (max-width: 560px) { .rung { width: 100%; flex-direction: column; gap: 0; } }
 
 @media (max-width: 900px) and (min-width: 761px) { .nav a { padding: 6px 8px; font-size: .9rem; } }
+
+/* ---------- Читабельность глав и схемы ---------- */
+.ch-prose { font-family: var(--sans); font-size: 1.06rem; line-height: 1.7; }
+.ch-prose p { margin-bottom: 1.1em; }
+.ch-prose h2 { font-family: var(--serif); }
+.tldr { border-left: 4px solid var(--accent); background: var(--surface); border-radius: 0 var(--radius) var(--radius) 0; padding: 14px 18px; margin: 0 0 28px; box-shadow: var(--shadow); }
+.tldr ul { margin: 6px 0 0; padding-left: 1.1em; font-size: 1.04rem; line-height: 1.55; }
+.tldr li { margin-bottom: .35em; }
+.tldr li::marker { color: var(--accent); }
+.sx-label { font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 6px; }
+
+.s-body { font-family: var(--sans); font-size: 1.04rem; line-height: 1.65; color: var(--text); padding: 4px 20px 20px; border-top: 1px solid var(--line); }
+.s-body p { margin: 0 0 .8em; }
+.facts-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin: 16px 0 18px; }
+.fx { background: var(--surface-2); border-radius: 10px; padding: 10px 12px; line-height: 1.25; }
+.fx b { display: block; font-family: var(--serif); font-size: 1.3rem; color: var(--accent); margin-bottom: 3px; }
+.fx span { font-size: .84rem; color: var(--muted); }
+.sx { margin: 0 0 16px; }
+.sx p { margin: 0; }
+.steps { list-style: none; counter-reset: st; margin: 0; padding: 0; }
+.steps li { counter-increment: st; position: relative; padding: 0 0 12px 38px; }
+.steps li::before { content: counter(st); position: absolute; left: 0; top: 1px; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff; font-size: .85rem; font-weight: 600; display: grid; place-items: center; }
+.steps li:not(:last-child)::after { content: ""; position: absolute; left: 12px; top: 28px; bottom: 2px; width: 2px; background: var(--line); }
+.sx.result { background: color-mix(in srgb, var(--gold) 14%, var(--surface)); border-radius: 12px; padding: 12px 14px; }
+.sx.result .sx-label { color: var(--gold); }
+.box.key { background: var(--accent-soft); }
+.box.key p { margin: 0; font-family: var(--serif); font-size: 1.12rem; line-height: 1.5; }
+.s-body .box { margin: 14px 0; padding: 14px 16px; }
+details.more { margin: 14px 0; border: 1px dashed var(--line); border-radius: 12px; }
+details.more summary { cursor: pointer; padding: 10px 14px; color: var(--accent); font-weight: 500; font-size: .95rem; }
+.more-body { padding: 0 14px 6px; font-family: var(--serif); font-size: 1.05rem; line-height: 1.7; }
+
+figure.diagram { margin: 18px 0; padding: 12px; background: var(--surface-2); border-radius: 12px; }
+.dg { width: 100%; height: auto; display: block; font-family: var(--sans); }
+.dg .tx { fill: var(--text); font-size: 12.5px; }
+.dg .tx.sm { font-size: 11.5px; }
+.dg .tx.xs { font-size: 9.5px; }
+.dg .tx.b { font-weight: 600; }
+.dg .tx.mut { fill: var(--muted); }
+.dg .tx.inv { fill: #fff; }
+.dg .tx.acc-tx { fill: var(--accent); }
+.dg .tx.strike { text-decoration: line-through; fill: var(--muted); }
+.dg .bx { fill: var(--surface); stroke: var(--ink); stroke-width: 1.4; }
+.dg .soft { fill: var(--surface); stroke: var(--line); stroke-width: 1.2; }
+.dg .acc { fill: var(--accent); stroke: none; }
+.dg .gold { fill: var(--gold); stroke: none; }
+.dg .mutf { fill: var(--muted); opacity: .55; }
+.dg .water { fill: color-mix(in srgb, #4a86b4 22%, transparent); stroke: none; }
+.dg .ln { stroke: var(--ink); stroke-width: 1.4; fill: none; }
+.dg .ln.thick { stroke-width: 3; }
+.dg .ln.acc-ln { stroke: var(--accent); }
+.dg .ln.mut-ln { stroke: var(--muted); }
+.dg .ln.dash { stroke-dasharray: 6 5; }
+.dg .ln.dash2 { stroke-dasharray: 3 4; stroke: var(--muted); fill: none; }
+.dg circle.ln.dash2 { fill: none; }
+.dg .ah { fill: var(--ink); }
+
+@media (max-width: 640px) {
+  .chapter.narrow { max-width: none; }
+  .secret { border-radius: 12px; box-shadow: none; }
+  .secret summary { padding: 14px 12px; }
+  .s-rule { font-size: 1.05rem; }
+  .s-body { padding: 4px 12px 16px; font-size: 1.02rem; }
+  .s-body .box { margin: 12px -4px; }
+  figure.diagram { margin: 14px -6px; padding: 8px; }
+  .facts-row { grid-template-columns: 1fr 1fr; }
+  .fx b { font-size: 1.15rem; }
+  .ch-prose { font-size: 1.03rem; }
+  .lesson-hero { padding: 12px; margin: 14px 0 20px; }
+  .lesson-hero svg { max-height: 150px; }
+}
