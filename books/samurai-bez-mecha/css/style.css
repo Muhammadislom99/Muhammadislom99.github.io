@@ -39,10 +39,10 @@
 }
 
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; font-size: calc(100% * var(--fs, 1)); }
 body {
   margin: 0; background: var(--bg); color: var(--text);
-  font-family: var(--sans); font-size: 16px; line-height: 1.6;
+  font-family: var(--sans); font-size: 1rem; line-height: 1.6;
   transition: background .25s, color .25s;
 }
 a { color: var(--accent); text-decoration: none; }
@@ -413,3 +413,39 @@ figure.diagram { margin: 18px 0; padding: 12px; background: var(--surface-2); bo
   .lesson-hero { padding: 12px; margin: 14px 0 20px; }
   .lesson-hero svg { max-height: 150px; }
 }
+
+/* ---------- Настройки текста ---------- */
+.prefs-btn { font-family: var(--serif); font-weight: 600; font-size: .95rem; }
+.prefs-btn[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+.prefs-panel { position: fixed; z-index: 40; top: 64px; right: 12px; width: min(380px, calc(100vw - 24px)); max-height: calc(100vh - 80px); overflow: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 10px 40px rgba(0,0,0,.18); padding: 16px; font-size: 15px; }
+.prefs-panel[hidden] { display: none; }
+.sp-row { display: grid; gap: 6px; margin-bottom: 14px; }
+.sp-row > span { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.sp-row.end { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 0; }
+.seg { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.seg button { flex: 1 1 auto; padding: 8px 10px; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; font-size: 14px; color: var(--text); min-height: 40px; }
+.seg button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.seg output { min-width: 56px; text-align: center; font-weight: 600; }
+.prefs-panel select { padding: 8px 10px; font-size: 14px; }
+
+/* Выравнивание по ширине */
+:root[data-align="justify"] .prose p, :root[data-align="justify"] .prose li, :root[data-align="justify"] .ch-prose p,
+:root[data-align="justify"] .s-body p, :root[data-align="justify"] .steps li, :root[data-align="justify"] .more-body p,
+:root[data-align="justify"] .reader-text p, :root[data-align="justify"] .tldr li, :root[data-align="justify"] .card p,
+:root[data-align="justify"] .lead { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+
+/* Выбор шрифта */
+:root[data-font="sans"] .prose, :root[data-font="sans"] .more-body, :root[data-font="sans"] .reader-text,
+:root[data-font="sans"] .lead, :root[data-font="sans"] .box.key p, :root[data-font="sans"] .s-rule { font-family: var(--sans); }
+:root[data-font="serif"] .ch-prose, :root[data-font="serif"] .s-body, :root[data-font="serif"] .tldr { font-family: var(--serif); }
+
+/* Кнопка «Слушать» */
+.say { display: inline-flex; align-items: center; gap: 8px; flex: none; min-width: 40px; height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--accent); font-family: var(--sans); font-size: .9rem; font-weight: 500; justify-content: center; }
+.say:not(.wide) { width: 40px; padding: 0; }
+.say .ic { font-size: .8rem; line-height: 1; }
+.say:hover { border-color: var(--accent); }
+.say.playing { background: var(--accent); border-color: var(--accent); color: #fff; animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent); } }
+.say-row { margin: 4px 0 16px; }
+.more-body .say { margin: 6px 0 10px; }
+.person .p-top .say { margin-left: auto; }
