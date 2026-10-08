@@ -206,7 +206,7 @@ textarea { min-height: 120px; resize: vertical; font-family: var(--serif); font-
 .toc-toggle { display: none; }
 .reader-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 20px; }
 .reader-tools .spacer { flex: 1; }
-.reader-text { font-family: var(--serif); font-size: var(--reader-size); line-height: var(--reader-lh); max-width: 680px; hyphens: auto; -webkit-hyphens: auto; }
+.reader-text { font-family: var(--serif); font-size: var(--reader-size); line-height: var(--reader-lh); max-width: 680px; hyphens: none; -webkit-hyphens: none; word-break: normal; overflow-wrap: break-word; text-align: left; }
 .reader-text h2 { font-size: 1.5em; margin: 0 0 1em; }
 .reader-text h3 { font-size: 1.15em; margin: 1.6em 0 .6em; }
 .reader-text p { margin: 0 0 .55em; text-indent: 1.3em; }
