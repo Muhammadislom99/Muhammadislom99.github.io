@@ -670,3 +670,12 @@ body.film-mode main { max-width: none; padding: 0; min-height: 0; }
 .film-cta b { display: block; font-family: var(--serif); font-size: 1.1rem; }
 .film-cta small { color: #a39d90; }
 .btn.film-ep { color: var(--accent); }
+
+/* 3D-режим комикса */
+.panel .stage canvas.c3d { position: absolute; inset: 0; width: 100%; height: 100%; display: none; touch-action: pan-y; cursor: grab; }
+.panel .stage.is3d canvas.c3d { display: block; }
+.panel .stage.is3d > svg { visibility: hidden; }
+.panel .stage.dragging canvas.c3d { cursor: grabbing; }
+.panel .stage .bubble { z-index: 2; pointer-events: none; }
+.view-toggle { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; }
+.view-toggle .muted { font-size: .85rem; margin-left: 6px; }
