@@ -499,3 +499,20 @@ mark.hl.flash { animation: hlflash 1.4s ease 2; }
 .hl-bar.dock .hl-dot { min-width: 64px; }
 .hl-bar.dock .hl-dot i { width: 34px; height: 34px; }
 .build { opacity: .7; }
+
+/* Заметка к выделению */
+.hl-bar { flex-wrap: wrap; justify-content: center; max-width: calc(100vw - 16px); }
+.hl-plus i { display: grid; place-items: center; background: var(--bg) !important; color: var(--text); font-style: normal; font-size: 22px; font-weight: 600; line-height: 1; }
+.hl-preview { flex-basis: 100%; order: -1; color: var(--bg); font-size: 13px; line-height: 1.35; padding: 4px 10px 6px; max-height: 4.2em; overflow: hidden; opacity: .9; }
+mark.hl.has-note::after { content: "✎"; font-size: .7em; vertical-align: super; margin-left: 2px; color: var(--accent); }
+mark.hl[title]:not([title=""]) { border-bottom: 0; }
+.hl-sheet-wrap { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.35); display: flex; align-items: flex-start; justify-content: center; padding: max(12px, 6vh) 12px 12px; }
+.hl-sheet-wrap[hidden] { display: none; }
+.hl-sheet { width: min(560px, 100%); max-height: calc(100vh - 24px); overflow: auto; background: var(--surface); color: var(--text); border-radius: 18px; padding: 18px; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+.hl-quote { margin: 6px 0 14px; padding: 10px 12px; border-left: 4px solid var(--hl); background: color-mix(in srgb, var(--hl) 18%, transparent); border-radius: 0 10px 10px 0; font-size: 1rem; }
+.hl-colors button { display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
+.hl-colors button[aria-pressed="true"] { background: color-mix(in srgb, var(--hl) 30%, var(--surface)); border-color: var(--hl); color: var(--text); }
+.hl-sheet textarea { margin-top: 12px; min-height: 120px; }
+body.sheet-open { overflow: hidden; }
+.toast { white-space: nowrap; }
+@media (max-width: 420px) { .hl-bar.dock .hl-dot { min-width: 52px; } .hl-bar.dock .hl-act { width: 34px; } }

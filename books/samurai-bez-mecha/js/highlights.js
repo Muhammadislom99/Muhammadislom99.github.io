@@ -79,6 +79,7 @@
       var f = findSeg(bl, g);
       if (f) { var m = wrap(f[0], f[1], f[2], h); if (!first) first = m; }
     });
+    if (first && h.n) paintMarks(h);
     return first;
   }
 
@@ -157,9 +158,11 @@
     bar.innerHTML = COLORS.map(function (c) {
       return '<button class="hl-dot hl-' + c.id + (existing && existing.c === c.id ? ' on' : '') + '" data-a="color" data-c="' + c.id + '" aria-label="' + c.name + '" title="' + c.name + '"><i></i><span>' + c.name + '</span></button>';
     }).join('') +
+      (!existing ? '<button class="hl-dot hl-plus" data-a="add" aria-label="Выделить с комментарием" title="Выделить с комментарием"><i>+</i><span>Заметка</span></button>' : '') +
       (existing ? '<button class="hl-act" data-a="note" aria-label="Комментарий" title="Комментарий">✎</button>' +
         '<button class="hl-act" data-a="copy" aria-label="Копировать" title="Копировать">⧉</button>' +
-        '<button class="hl-act" data-a="del" aria-label="Удалить выделение" title="Удалить">🗑</button>' : '');
+        '<button class="hl-act" data-a="del" aria-label="Удалить выделение" title="Удалить">🗑</button>' : '') +
+      (existing && existing.n ? '<div class="hl-preview">✎ ' + esc(existing.n) + '</div>' : '');
     bar.hidden = false;
     bar.classList.toggle('dock', touch);
     var w = bar.offsetWidth, h = bar.offsetHeight;
@@ -184,30 +187,83 @@
       var l = all(), h = l.find(function (x) { return x.id === current; });
       if (!h) { hide(); return; }
       if (a === 'color') {
-        h.c = c; saveAll(l);
-        app.querySelectorAll('mark.hl[data-hl="' + h.id + '"]').forEach(function (m) { m.className = 'hl hl-' + c; });
+        h.c = c; saveAll(l); paintMarks(h);
       } else if (a === 'del') {
         saveAll(l.filter(function (x) { return x.id !== h.id; })); unwrap(h.id);
       } else if (a === 'note') {
-        var n = prompt('Комментарий к выделению:', h.n || '');
-        if (n !== null) { h.n = n.trim(); saveAll(l); app.querySelectorAll('mark.hl[data-hl="' + h.id + '"]').forEach(function (m) { m.title = h.n; }); }
+        hide(); barDown = 0; openSheet({ h: h, c: h.c, n: h.n || '' }); return;
       } else if (a === 'copy') {
         try { navigator.clipboard.writeText('«' + h.text + '» — Китами Масао, «Самурай без меча»'); toast('Скопировано'); } catch (e) {}
       }
       hide(); barDown = 0; return;
     }
-    if (pending && a === 'color') {
-      var ctx = context(pending.anchor);
-      var hl = { id: 'h' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), c: c, page: pageKey(),
-        segs: pending.segs.map(function (g) { return { bi: g.bi, s: g.s, e: g.e, t: g.t, ctx: g.ctx }; }),
-        text: pending.segs.map(function (g) { return g.t; }).join(' … '), title: ctx.title, sub: ctx.sub, link: ctx.link, d: Date.now() };
-      var list = all(); list.push(hl); saveAll(list);
-      try { getSelection().removeAllRanges(); } catch (e) {}
-      apply(hl, blocks());
-      toast(colorName(c) + ' · сохранено в заметки');
-    }
+    if (pending && a === 'color') create(pending, c, '');
+    else if (pending && a === 'add') { var snap = pending; hide(); barDown = 0; openSheet({ sel: snap, c: 'y', n: '' }); return; }
     hide();
     barDown = 0;
+  }
+  function create(sel, c, note) {
+    var ctx = context(sel.anchor);
+    var hl = { id: 'h' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), c: c, page: pageKey(),
+      segs: sel.segs.map(function (g) { return { bi: g.bi, s: g.s, e: g.e, t: g.t, ctx: g.ctx }; }),
+      text: sel.segs.map(function (g) { return g.t; }).join(' … '), title: ctx.title, sub: ctx.sub, link: ctx.link, d: Date.now() };
+    if (note) hl.n = note;
+    var list = all(); list.push(hl); saveAll(list);
+    try { getSelection().removeAllRanges(); } catch (e) {}
+    apply(hl, blocks());
+    toast(note ? 'Заметка сохранена' : colorName(c) + ' · сохранено');
+  }
+  function paintMarks(h) {
+    var ms = app.querySelectorAll('mark.hl[data-hl="' + h.id + '"]');
+    ms.forEach(function (m, i) {
+      m.className = 'hl hl-' + h.c + (h.n && i === ms.length - 1 ? ' has-note' : '');
+      m.title = h.n || '';
+    });
+  }
+
+  /* ---------- Окно заметки: цвет + комментарий ---------- */
+  var sheet = null, sheetState = null;
+  function openSheet(st) {
+    sheetState = st;
+    if (!sheet) {
+      sheet = document.createElement('div');
+      sheet.className = 'hl-sheet-wrap'; sheet.hidden = true;
+      sheet.innerHTML = '<div class="hl-sheet" role="dialog" aria-modal="true" aria-label="Заметка к выделению"></div>';
+      document.body.appendChild(sheet);
+      sheet.addEventListener('click', function (e) {
+        if (e.target === sheet) { closeSheet(); return; }
+        var b = e.target.closest('button'); if (!b) return;
+        if (b.dataset.sc) { sheetState.c = b.dataset.sc; sheet.querySelectorAll('[data-sc]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); sheet.querySelector('.hl-quote').className = 'hl-quote hl-' + sheetState.c; }
+        else if (b.dataset.s === 'cancel') closeSheet();
+        else if (b.dataset.s === 'save') saveSheet();
+      });
+      sheet.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeSheet();
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) saveSheet();
+      });
+    }
+    var text = st.h ? st.h.text : st.sel.segs.map(function (g) { return g.t; }).join(' … ');
+    sheet.firstChild.innerHTML =
+      '<div class="sx-label">' + (st.h ? 'Изменить заметку' : 'Новая заметка') + '</div>' +
+      '<blockquote class="hl-quote hl-' + st.c + '">' + esc(text.length > 280 ? text.slice(0, 280) + '…' : text) + '</blockquote>' +
+      '<div class="seg hl-colors">' + COLORS.map(function (c) {
+        return '<button type="button" class="hl-' + c.id + '" data-sc="' + c.id + '" aria-pressed="' + (st.c === c.id) + '"><i class="sw hl-' + c.id + '"></i>' + c.name + '</button>';
+      }).join('') + '</div>' +
+      '<textarea id="hlNote" placeholder="Ваша мысль: почему это важно, как применить…">' + esc(st.n || '') + '</textarea>' +
+      '<div class="btn-row" style="justify-content:flex-end;margin-top:12px"><button type="button" class="btn" data-s="cancel">Отмена</button><button type="button" class="btn primary" data-s="save">Сохранить</button></div>';
+    sheet.hidden = false;
+    document.body.classList.add('sheet-open');
+    setTimeout(function () { var t = document.getElementById('hlNote'); if (t) { t.focus(); t.setSelectionRange(t.value.length, t.value.length); } }, 60);
+  }
+  function closeSheet() { if (sheet) sheet.hidden = true; sheetState = null; document.body.classList.remove('sheet-open'); }
+  function saveSheet() {
+    var st = sheetState; if (!st) return;
+    var note = document.getElementById('hlNote').value.trim();
+    if (st.h) {
+      var l = all(), h = l.find(function (x) { return x.id === st.h.id; });
+      if (h) { h.c = st.c; if (note) h.n = note; else delete h.n; saveAll(l); paintMarks(h); toast('Заметка обновлена'); }
+    } else create(st.sel, st.c, note);
+    closeSheet();
   }
   var toastEl, toastT;
   function toast(t) {
