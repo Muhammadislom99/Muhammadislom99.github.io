@@ -495,8 +495,7 @@ mark.hl.flash { animation: hlflash 1.4s ease 2; }
 .btn-row + section { margin-top: 32px; }
 
 /* Панель маркеров на телефоне — внизу экрана */
-.hl-bar.dock { left: 50%; right: auto; top: auto; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom)); }
-body.has-player .hl-bar.dock { bottom: calc(96px + env(safe-area-inset-bottom)); }
+.hl-bar.dock { box-shadow: 0 10px 34px rgba(0,0,0,.35); }
 .hl-bar.dock .hl-dot { min-width: 64px; }
 .hl-bar.dock .hl-dot i { width: 34px; height: 34px; }
 .build { opacity: .7; }
