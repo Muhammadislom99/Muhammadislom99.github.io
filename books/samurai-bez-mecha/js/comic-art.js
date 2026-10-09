@@ -208,6 +208,13 @@
 
   var BUBBLE_TAIL = { bl: 1, br: 1, tl: 1, tr: 1 };
 
+  function speakerOf(panel, b) {
+    var cs = panel.c || []; if (!cs.length || b.k === 'narr') return -1;
+    var w = Math.min(b.w || 62, 10 + String(b.t).length * 1.7), tail = b.tail || 'bl';
+    var ax = (tail === 'br' || tail === 'tr') ? b.x + w - 8 : b.x + 8, best = 0, bd = 1e9;
+    cs.forEach(function (c, i) { var cx = (c.s >= 1.5 ? 50 : c.x / 3.2), d = Math.abs(cx - ax); if (d < bd) { bd = d; best = i; } });
+    return best;
+  }
   function render(panel, noBubbles, style) {
     var sc = S[panel.s] || S.village;
     var svg = '<svg viewBox="0 0 320 220" preserveAspectRatio="xMidYMid slice" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="' + (panel.cap ? panel.cap.replace(/"/g, '&quot;') : 'Иллюстрация') + '">' +
@@ -222,7 +229,7 @@
     var html = '<div class="stage">' + svg;
     if (!noBubbles) (panel.b || []).forEach(function (b) {
       var tail = BUBBLE_TAIL[b.tail] ? b.tail : 'bl';
-      html += '<div class="bubble ' + (b.k || 'say') + '" data-tail="' + tail + '" style="left:' + b.x + '%;top:' + b.y + '%;' + (b.w ? 'max-width:' + b.w + '%' : '') + '">' + b.t.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</div>';
+      html += '<div class="bubble ' + (b.k || 'say') + '" data-sp="' + speakerOf(panel, b) + '" data-tail="' + tail + '" style="left:' + b.x + '%;top:' + b.y + '%;' + (b.w ? 'max-width:' + b.w + '%' : '') + '">' + b.t.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</div>';
     });
     return html + '</div>';
   }

@@ -713,3 +713,13 @@ body.film-mode main { max-width: none; padding: 0; min-height: 0; }
 .sil-flick { animation: sil-flick .7s ease-in-out infinite; }
 .sil-sun { animation: sil-sun 5s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .sil-idle, .sil-scarf, .sil-ring, .sil-flick, .sil-sun { animation: none; } }
+
+/* Живые герои: выход в кадр, моргание, разговор */
+@keyframes sil-enter { from { transform: translateX(var(--dx, 0)); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes sil-blink { 0%, 90%, 100% { transform: scaleY(1); } 94% { transform: scaleY(.08); } }
+@keyframes sil-talk { 0%, 100% { transform: scaleY(1) scaleX(1); } 35% { transform: scaleY(1.9) scaleX(.9); } 70% { transform: scaleY(.55) scaleX(1.1); } }
+.sil-char { animation: sil-enter .7s cubic-bezier(.2, .8, .2, 1) both; }
+.sil-eyes { animation: sil-blink 4.2s infinite; transform-box: view-box; }
+.sil-char.talking .sil-mouth { animation: sil-talk .24s ease-in-out infinite; transform-box: view-box; }
+.sil-char.talking .sil-idle { animation-duration: 1.1s; }
+@media (prefers-reduced-motion: reduce) { .sil-char, .sil-eyes, .sil-char.talking .sil-mouth { animation: none; } }
