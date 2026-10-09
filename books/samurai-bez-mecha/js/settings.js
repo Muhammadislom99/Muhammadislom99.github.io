@@ -78,7 +78,7 @@
       else if (b.dataset.set) prefs[b.dataset.set] = b.dataset.set === 'rate' ? +b.dataset.val : b.dataset.val;
       else if (b.hasAttribute('data-reset')) prefs = Object.assign({}, def);
       else if (b.hasAttribute('data-close')) { open(false); return; }
-      else if (b.hasAttribute('data-howto')) { open(false); if (window.Onboarding) Onboarding.open(0); return; }
+      else if (b.hasAttribute('data-howto')) { open(false); if (window.Onboarding) Onboarding.tour(); return; }
       save(); apply(); render();
     });
   }

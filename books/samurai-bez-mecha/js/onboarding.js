@@ -84,6 +84,7 @@
 
   /* ---------- Тур по настоящему интерфейсу ---------- */
   var STEPS = [
+    { welcome: true, t: 'Добро пожаловать!', d: 'За минуту покажу главное: где разделы, как слушать книгу, выделять маркером, писать заметки и настроить текст под себя.' },
     { route: '#/', sel: ['#menuBtn', '#nav'], t: 'Разделы', d: 'Книга, Люди, Жизнь, Комикс, Уроки, Тест, Заметки и Читалка — всё здесь.' },
     { route: '#/', sel: ['#prefsBtn'], t: 'Настройки текста', d: 'Размер шрифта, выравнивание, шрифт, скорость и голос озвучки. Здесь же — «Как пользоваться».' },
     { route: '#/', sel: ['#themeBtn'], t: 'Тема', d: 'Светлая, сепия или тёмная — для чтения ночью.' },
@@ -112,7 +113,8 @@
         var b = e.target.closest('[data-t]'); if (!b) return;
         var a = b.dataset.t;
         if (a === 'next') { k++; if (k >= STEPS.length) endTour(); else step(); }
-        else if (a === 'prev') { k = Math.max(0, k - 1); step(); }
+        else if (a === 'prev') { k = Math.max(1, k - 1); step(); }
+        else if (a === 'cards') { endTour(); open(0); }
         else endTour();
       });
       addEventListener('resize', function () { if (!tw.hidden) place(); });
@@ -126,8 +128,20 @@
   function endTour() { if (tw) tw.hidden = true; document.body.classList.remove('touring'); Store.set(KEY, true); }
   var curEl = null;
   function step() {
-    var st = STEPS[k];
+    var st = STEPS[k], N = STEPS.length - 1;
+    var tip = tw.querySelector('.tour-tip');
     var go = function () {
+      if (st.welcome) {
+        curEl = null; tw.classList.add('centered');
+        tip.innerHTML = '<div class="tour-hello" aria-hidden="true">侍</div><h3>' + st.t + '</h3><p>' + st.d + '</p>' +
+          '<div class="tour-nav"><button class="link-btn" data-t="end">Пропустить</button><button class="btn small primary" data-t="next">Показать</button></div>';
+        var w = Math.min(340, innerWidth - 24);
+        tip.style.width = w + 'px'; tip.style.left = (innerWidth - w) / 2 + 'px';
+        tip.style.top = Math.max(12, (innerHeight - tip.offsetHeight) / 2) + 'px';
+        setTimeout(function () { var b = tip.querySelector('.btn.primary'); if (b) b.focus(); }, 50);
+        return;
+      }
+      tw.classList.remove('centered');
       curEl = target(st);
       if (!curEl) { k++; if (k >= STEPS.length) endTour(); else step(); return; }
       document.body.classList.remove('hide-bar');
@@ -136,14 +150,15 @@
       setTimeout(function () {
         place();
         tw.querySelector('.tour-tip').innerHTML =
-          '<div class="eyebrow">Шаг ' + (k + 1) + ' из ' + STEPS.length + '</div><h3>' + st.t + '</h3><p>' + st.d + '</p>' +
+          '<div class="eyebrow">Шаг ' + k + ' из ' + N + '</div><h3>' + st.t + '</h3><p>' + st.d + '</p>' +
+          (k === N ? '<p style="margin-top:-6px"><button class="link-btn tour-cards" data-t="cards">Посмотреть карточки с примерами →</button></p>' : '') +
           '<div class="tour-nav"><button class="link-btn" data-t="end">Закончить</button><span>' +
-          (k > 0 ? '<button class="btn small" data-t="prev">Назад</button>' : '') +
+          (k > 1 ? '<button class="btn small" data-t="prev">Назад</button>' : '') +
           '<button class="btn small primary" data-t="next">' + (k === STEPS.length - 1 ? 'Готово' : 'Далее') + '</button></span></div>';
         place();
       }, 120);
     };
-    if (location.hash.replace(/\/$/, '') !== st.route.replace(/\/$/, '') && !(st.route === '#/' && (location.hash === '' || location.hash === '#/'))) {
+    if (st.route && location.hash.replace(/\/$/, '') !== st.route.replace(/\/$/, '') && !(st.route === '#/' && (location.hash === '' || location.hash === '#/'))) {
       location.hash = st.route; setTimeout(go, 450);
     } else go();
   }
@@ -167,9 +182,10 @@
     if (!h) return;
     e.preventDefault();
     var p = document.getElementById('prefsPanel'); if (p) p.hidden = true;
-    open(0);
+    tour();
   });
-  setTimeout(function () { if (!Store.get(KEY, false)) open(0); }, 700);
+  // Первый запуск — сразу тур по настоящим кнопкам
+  setTimeout(function () { if (!Store.get(KEY, false)) tour(); }, 700);
 
   window.Onboarding = { open: open, tour: tour };
 })();
