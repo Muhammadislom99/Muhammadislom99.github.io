@@ -185,7 +185,7 @@
     tour();
   });
   // Первый запуск — сразу тур по настоящим кнопкам
-  setTimeout(function () { if (!Store.get(KEY, false)) tour(); }, 700);
+  setTimeout(function () { if (!Store.get(KEY, false) && location.hash.indexOf('#/film') !== 0) tour(); }, 700);
 
   window.Onboarding = { open: open, tour: tour };
 })();
