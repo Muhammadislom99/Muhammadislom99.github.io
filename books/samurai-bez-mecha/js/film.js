@@ -99,6 +99,13 @@
     requestAnimationFrame(function () { f.classList.add('in'); });
     old.forEach(function (o) { o.classList.add('out'); setTimeout(function () { o.remove(); }, 700); });
   }
+  function talk(sp) {
+    if (!root) return;
+    root.querySelectorAll('.sil-char.talking').forEach(function (n) { n.classList.remove('talking'); });
+    if (sp == null || +sp < 0) return;
+    var n = root.querySelector('.fl-frame:last-child .sil-char[data-ci="' + sp + '"]');
+    if (n) n.classList.add('talking');
+  }
   function setSub(t) {
     var s = root.querySelector('.fl-sub');
     s.textContent = t || '';
@@ -129,18 +136,19 @@
       var x = L[li];
       if (x.bubble != null) {
         var b = root.querySelector('.fl-frame:last-child .bubble[data-j="' + x.bubble + '"]');
-        if (b) b.classList.remove('fl-hidden');
+        if (b) { b.classList.remove('fl-hidden'); talk(b.dataset.sp); }
       }
       setSub(x.sub);
       var text = x.t + (x.say && x.say !== x.t ? ' ' + x.say : '');
-      say(text, x, function () { if (my !== token) return; li++; next(); });
+      if (x.bubble == null) talk(-1);
+      say(text, x, function () { if (my !== token) return; talk(-1); li++; next(); });
     })();
   }
   function play() {
     if (window.Player) Player.stop();
     playing = true; root.classList.remove('paused'); updateUi(); playItem(idx, li); peek();
   }
-  function pause() { playing = false; token++; cancel(); root.classList.add('paused'); updateUi(); showUi(); }
+  function pause() { playing = false; token++; cancel(); talk(-1); root.classList.add('paused'); updateUi(); showUi(); }
   function toggle() { if (playing) pause(); else play(); }
   function go(d) { var was = playing; token++; cancel(); li = 0; playing = was; playItem(idx + d); peek(); }
   function goEp(e) { idx = startOf(e); li = 0; closeList(); if (playing) playItem(idx); else play(); }

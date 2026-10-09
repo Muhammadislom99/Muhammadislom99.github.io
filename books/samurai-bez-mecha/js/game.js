@@ -72,6 +72,14 @@
 
   /* ---------- Запуск ---------- */
   function bind(id) {
+    try { bindInner(id); }
+    catch (e) {
+      var st = document.getElementById('gStage');
+      if (st) st.innerHTML = '<div class="game-overlay" style="display:flex"><h2>Игра не запустилась</h2><p>' + esc((e && e.message) || e) + '</p><p>Обновите страницу или откройте в Chrome. Сообщите этот текст разработчику.</p></div>';
+      if (window.console) console.error(e);
+    }
+  }
+  function bindInner(id) {
     stop();
     var L = LEVELS[(+id) - 1]; if (!L) return;
     var stage = document.getElementById('gStage'), cv = document.getElementById('gCanvas');
@@ -312,41 +320,62 @@
     if (Math.abs(G.p.x - h.x) < 40 && G.state === 'play') { c.fillStyle = 'rgba(246,236,208,.85)'; c.font = '600 11px sans-serif'; c.textAlign = 'center'; c.fillText('↓ спрятаться', sx, gy - 128); }
   }
 
+  var COSTS = {
+    hide:  { robe: '#8a6d4b', dark: '#5b4630', sash: '#e0523f', skin: '#e8c19a', hair: '#1b1714', feet: '#c9a96a' },
+    nobu:  { robe: '#2a2733', dark: '#16141c', sash: '#b3322b', skin: '#f0d2b0', hair: '#14110f', feet: '#2a2220' },
+    sam:   { robe: '#3d5a73', dark: '#22313d', sash: '#c9a24a', skin: '#e6bd95', hair: '#1b1714', feet: '#3a2a22' },
+    guard: { robe: '#4a5f7a', dark: '#2a3447', sash: '#c98a3a', skin: '#e2b78f', hair: '#1b1714', feet: '#3a2a22' }
+  };
   function human(c, x, y, o) {
+    var C = COSTS[o.cost || 'hide'], OLN = 'rgba(14,10,12,.9)';
     var f = o.face || 1, cr = o.crouch || 0, t = o.t || 0, mv = o.moving, run = o.run;
     var sw = mv ? Math.sin(t * (run ? 13 : 8)) : 0, bob = mv ? Math.abs(Math.sin(t * (run ? 13 : 8))) * 2 : Math.sin(G.t * 2 + (o.ph || 0)) * 0.8;
     var H = 1 - cr * 0.34, lean = (run ? 0.22 : mv ? 0.08 : 0) - cr * 0.1;
     c.save(); c.translate(x, y); c.scale(f, 1); c.globalAlpha = o.alpha == null ? 1 : o.alpha;
-    var rim = 'rgba(255,236,200,.4)', ink = o.ink || DARK;
+    var rim = 'rgba(255,240,205,.5)';
     c.lineCap = 'round'; c.lineJoin = 'round';
+    // хвост пояса
+    c.strokeStyle = C.sash; c.lineWidth = 4; c.beginPath(); c.moveTo(-10, -44 * H);
+    for (var i = 1; i <= 5; i++) c.lineTo(-10 - i * (mv ? (run ? 8 : 5) : 2.5), -44 * H + Math.sin(G.t * (mv ? 11 : 3) + i * 0.9) * (mv ? 2.6 : 1.2) + i * (mv ? 1 : 2.4));
+    c.stroke();
     // ноги
-    c.strokeStyle = ink; c.lineWidth = 9;
-    c.beginPath(); c.moveTo(-3, -42 * H); c.lineTo(-3 + sw * 14, -(cr ? 8 : 0) * 0); c.moveTo(3, -42 * H); c.lineTo(3 - sw * 14, 0); c.stroke();
+    c.strokeStyle = OLN; c.lineWidth = 10.5; c.beginPath(); c.moveTo(-3, -42 * H); c.lineTo(-3 + sw * 14, -3); c.moveTo(3, -42 * H); c.lineTo(3 - sw * 14, -3); c.stroke();
+    c.strokeStyle = C.dark; c.lineWidth = 8; c.beginPath(); c.moveTo(-3, -42 * H); c.lineTo(-3 + sw * 14, -3); c.moveTo(3, -42 * H); c.lineTo(3 - sw * 14, -3); c.stroke();
+    c.fillStyle = C.feet; c.strokeStyle = OLN; c.lineWidth = 1.2;
+    c.beginPath(); c.ellipse(-3 + sw * 14, -1.5, 8, 3, 0, 0, 6.3); c.fill(); c.stroke(); c.beginPath(); c.ellipse(3 - sw * 14, -1.5, 8, 3, 0, 0, 6.3); c.fill(); c.stroke();
     // хакама
-    c.fillStyle = ink; c.beginPath(); c.moveTo(-13, -40 * H); c.lineTo(-17 + sw * 6, -4); c.lineTo(17 - sw * 6, -4); c.lineTo(13, -40 * H); c.closePath(); c.fill();
+    c.fillStyle = C.dark; c.strokeStyle = OLN; c.lineWidth = 1.4; c.beginPath(); c.moveTo(-13, -40 * H); c.lineTo(-17 + sw * 6, -5); c.lineTo(17 - sw * 6, -5); c.lineTo(13, -40 * H); c.closePath(); c.fill(); c.stroke();
     // торс
     c.save(); c.translate(0, -42 * H - bob); c.rotate(lean);
-    c.fillStyle = ink; c.beginPath(); c.moveTo(-12, 2); c.lineTo(-10, -36 * H); c.quadraticCurveTo(0, -42 * H, 10, -36 * H); c.lineTo(12, 2); c.closePath(); c.fill();
-    c.strokeStyle = rim; c.lineWidth = 1.4; c.beginPath(); c.moveTo(11, -33 * H); c.lineTo(12, 2); c.stroke();
-    c.fillStyle = o.accent || ACC; c.fillRect(-12, -6, 24, 6);
+    c.fillStyle = C.robe; c.beginPath(); c.moveTo(-12, 2); c.lineTo(-10, -36 * H); c.quadraticCurveTo(0, -42 * H, 10, -36 * H); c.lineTo(12, 2); c.closePath(); c.fill(); c.stroke();
+    c.fillStyle = 'rgba(0,0,0,.17)'; c.beginPath(); c.moveTo(-12, 2); c.lineTo(-10, -36 * H); c.lineTo(-2, -38 * H); c.lineTo(-2, 2); c.closePath(); c.fill();
+    c.strokeStyle = rim; c.lineWidth = 1.3; c.beginPath(); c.moveTo(10, -34 * H); c.lineTo(12, 2); c.stroke();
+    c.fillStyle = '#efe6d2'; c.beginPath(); c.moveTo(-4, -37 * H); c.lineTo(0, -26 * H); c.lineTo(4, -37 * H); c.closePath(); c.fill();
+    c.fillStyle = C.sash; c.fillRect(-12, -6, 24, 6); c.strokeStyle = OLN; c.lineWidth = 1; c.strokeRect(-12, -6, 24, 6);
     // руки
-    c.strokeStyle = ink; c.lineWidth = 7;
-    c.beginPath(); c.moveTo(-9, -32 * H); c.lineTo(-14 - sw * 5, -14); c.moveTo(9, -32 * H); c.lineTo(15 + sw * 5, -16); c.stroke();
-    if (o.hold === 'spear') { c.strokeStyle = 'rgba(246,236,208,.7)'; c.lineWidth = 2.4; c.beginPath(); c.moveTo(18, 8); c.lineTo(18, -86); c.stroke(); c.fillStyle = LIGHT; c.beginPath(); c.moveTo(18, -98); c.lineTo(14, -84); c.lineTo(22, -84); c.fill(); }
-    if (o.hold === 'sandals') { c.fillStyle = GOLD; c.fillRect(8, -22, 14, 4); c.fillRect(8, -16, 14, 4); }
-    if (o.hold === 'scroll') { c.fillStyle = LIGHT; c.fillRect(6, -22, 18, 6); }
+    var armsPts = [[-9, -32 * H, -14 - sw * 5, -14], [9, -32 * H, 15 + sw * 5, -16]];
+    armsPts.forEach(function (a) {
+      c.strokeStyle = OLN; c.lineWidth = 8.5; c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(a[2], a[3]); c.stroke();
+      c.strokeStyle = C.robe; c.lineWidth = 5.6; c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(a[2], a[3]); c.stroke();
+      c.fillStyle = C.skin; c.strokeStyle = OLN; c.lineWidth = 1; c.beginPath(); c.arc(a[2], a[3], 3.3, 0, 6.3); c.fill(); c.stroke();
+    });
+    if (o.hold === 'spear') { c.strokeStyle = OLN; c.lineWidth = 3.4; c.beginPath(); c.moveTo(18, 8); c.lineTo(18, -86); c.stroke(); c.strokeStyle = '#8a6a44'; c.lineWidth = 2; c.beginPath(); c.moveTo(18, 8); c.lineTo(18, -86); c.stroke(); c.fillStyle = '#d6d6dc'; c.strokeStyle = OLN; c.lineWidth = 1; c.beginPath(); c.moveTo(18, -100); c.lineTo(14, -84); c.lineTo(22, -84); c.closePath(); c.fill(); c.stroke(); }
+    if (o.hold === 'sandals') { c.fillStyle = '#d6b66a'; c.strokeStyle = OLN; c.lineWidth = 1; c.fillRect(8, -22, 14, 4); c.strokeRect(8, -22, 14, 4); c.fillRect(8, -16, 14, 4); c.strokeRect(8, -16, 14, 4); }
+    if (o.hold === 'scroll') { c.fillStyle = '#f4ead2'; c.strokeStyle = OLN; c.lineWidth = 1; c.fillRect(6, -22, 18, 6); c.strokeRect(6, -22, 18, 6); }
     // голова
-    c.fillStyle = ink; c.beginPath(); c.arc(0, -46 * H - 2, 11, 0, 6.3); c.fill();
-    c.strokeStyle = rim; c.lineWidth = 1.2; c.beginPath(); c.arc(0, -46 * H - 2, 11, -1.1, 0.9); c.stroke();
-    if (o.hat === 'helm') { c.fillStyle = ink; c.beginPath(); c.moveTo(-14, -46 * H - 3); c.quadraticCurveTo(0, -46 * H - 28, 14, -46 * H - 3); c.fill(); c.fillStyle = o.accent || GOLD; c.beginPath(); c.moveTo(0, -46 * H - 32); c.lineTo(-6, -46 * H - 22); c.lineTo(6, -46 * H - 22); c.fill(); }
-    else { c.strokeStyle = ink; c.lineWidth = 4; c.beginPath(); c.moveTo(1, -46 * H - 12); c.quadraticCurveTo(7, -46 * H - 22, 14, -46 * H - 18); c.stroke(); }
-    // глаза-прорезь
-    c.strokeStyle = o.alert ? ACC : LIGHT; c.lineWidth = 2.4; c.beginPath(); c.moveTo(1, -46 * H - 3); c.lineTo(8, -46 * H - 3); c.stroke();
-    // шарф
-    var sc = o.scarf || (o.accent || ACC);
-    c.strokeStyle = sc; c.lineWidth = 5; c.beginPath(); c.moveTo(-8, -38 * H);
-    for (var i = 1; i <= 6; i++) c.lineTo(-8 - i * (mv ? (run ? 9 : 6) : 3), -38 * H + Math.sin(G.t * (mv ? 11 : 3) + i * 0.9) * (mv ? 3.2 : 1.6) + i * (mv ? 0.6 : 2.2));
-    c.stroke();
+    var hy = -46 * H - 2;
+    c.fillStyle = C.skin; c.strokeStyle = OLN; c.lineWidth = 1.3;
+    c.beginPath(); c.ellipse(-11.5, hy, 3, 4.6, 0, 0, 6.3); c.fill(); c.stroke(); c.beginPath(); c.ellipse(11.5, hy, 3, 4.6, 0, 0, 6.3); c.fill(); c.stroke();
+    c.beginPath(); c.arc(0, hy, 11, 0, 6.3); c.fill(); c.stroke();
+    c.strokeStyle = rim; c.lineWidth = 1.1; c.beginPath(); c.arc(0, hy, 11, -1.1, 0.8); c.stroke();
+    c.fillStyle = C.hair; c.strokeStyle = OLN; c.lineWidth = 1; c.beginPath(); c.moveTo(-11, hy - 2); c.quadraticCurveTo(-10, hy - 13, 0, hy - 13); c.quadraticCurveTo(10, hy - 13, 11, hy - 2); c.quadraticCurveTo(5, hy - 8, 0, hy - 8); c.quadraticCurveTo(-5, hy - 8, -11, hy - 2); c.closePath(); c.fill(); c.stroke();
+    if (o.hat === 'helm') { c.fillStyle = '#5a5a64'; c.strokeStyle = OLN; c.lineWidth = 1.3; c.beginPath(); c.moveTo(-14, hy - 2); c.quadraticCurveTo(0, hy - 28, 14, hy - 2); c.closePath(); c.fill(); c.stroke(); c.fillStyle = '#d8a93c'; c.beginPath(); c.moveTo(0, hy - 32); c.lineTo(-6, hy - 22); c.lineTo(6, hy - 22); c.closePath(); c.fill(); c.stroke(); }
+    else if (o.hat === 'kasa') { c.fillStyle = '#d6b66a'; c.strokeStyle = OLN; c.lineWidth = 1.3; c.beginPath(); c.moveTo(-23, hy - 6); c.quadraticCurveTo(0, hy - 30, 23, hy - 6); c.closePath(); c.fill(); c.stroke(); }
+    else { c.strokeStyle = OLN; c.lineWidth = 4.6; c.beginPath(); c.moveTo(1, hy - 12); c.quadraticCurveTo(7, hy - 22, 14, hy - 18); c.stroke(); c.strokeStyle = C.hair; c.lineWidth = 2.8; c.beginPath(); c.moveTo(1, hy - 12); c.quadraticCurveTo(7, hy - 22, 14, hy - 18); c.stroke(); }
+    // глаз
+    c.fillStyle = '#fbf6ea'; c.strokeStyle = OLN; c.lineWidth = 0.9; c.beginPath(); c.ellipse(5, hy - 1, 3.4, 2.4, 0, 0, 6.3); c.fill(); c.stroke();
+    c.fillStyle = o.alert ? ACC : OLN; c.beginPath(); c.arc(6, hy - 1, 1.3, 0, 6.3); c.fill();
+    c.strokeStyle = OLN; c.lineWidth = 1.5; c.beginPath(); c.moveTo(2, hy - 5); c.lineTo(8.5, hy - (o.alert ? 3 : 4.6)); c.stroke();
     c.restore(); c.restore();
   }
 
@@ -373,7 +402,7 @@
     // цель
     var ex = L.exit; c.fillStyle = 'rgba(255,220,130,.22)'; c.fillRect(ex - 36, gy - 120, 72, 120);
     c.fillStyle = GOLD; c.fillRect(ex - 36, gy - 124, 72, 5);
-    human(c, ex + 8, gy, { face: -1, accent: GOLD, hat: L.who === 'sam' ? 'helm' : null, scarf: GOLD, ph: 3 });
+    human(c, ex + 8, gy, { face: -1, cost: L.who === 'nobu' ? 'nobu' : L.who === 'sam' ? 'sam' : 'hide', hat: L.who === 'sam' ? 'helm' : null, ph: 3 });
     // конусы зрения
     g.guards.forEach(function (gd) {
       var col = gd.m > 0.05 ? 'rgba(224,82,63,' + (0.16 + gd.m * 0.28) + ')' : 'rgba(255,225,130,.18)';
@@ -385,7 +414,7 @@
     g.puffs.forEach(function (q) { c.fillStyle = 'rgba(240,220,190,' + (0.25 * (1 - q.t)) + ')'; c.beginPath(); c.arc(q.x, q.y - 4 - q.t * 8, 4 + q.t * 8, 0, 6.3); c.fill(); });
     // стража
     g.guards.forEach(function (gd) {
-      human(c, gd.x, gy, { face: gd.face, moving: gd.mode !== 'patrol' || gd.wait <= 0, t: gd.ph * 0.9, hat: 'helm', hold: 'spear', accent: '#b06ac0', scarf: '#b06ac0', ph: gd.ph, alert: gd.m > 0.2, ink: '#0b0a10' });
+      human(c, gd.x, gy, { face: gd.face, moving: gd.mode !== 'patrol' || gd.wait <= 0, t: gd.ph * 0.9, hat: 'helm', hold: 'spear', cost: 'guard', ph: gd.ph, alert: gd.m > 0.2 });
       if (gd.m > 0.04) { var bx = gd.x - 14, by = gy - 128; c.fillStyle = 'rgba(0,0,0,.55)'; c.fillRect(bx, by, 28, 6); c.fillStyle = ACC; c.fillRect(bx, by, 28 * Math.min(1, gd.m), 6); c.fillStyle = LIGHT; c.font = '700 15px sans-serif'; c.textAlign = 'center'; c.fillText(gd.m > 0.6 ? '!' : '?', gd.x, by - 4); }
       else if (gd.mode === 'invest') { c.fillStyle = GOLD; c.font = '700 14px sans-serif'; c.textAlign = 'center'; c.fillText('?', gd.x, gy - 130); }
     });
@@ -393,7 +422,7 @@
     g.stoneList.forEach(function (s) { c.fillStyle = LIGHT; c.beginPath(); c.arc(s.x, s.y, 4, 0, 6.3); c.fill(); });
     // игрок
     var p = g.p;
-    human(c, p.x, gy, { face: p.face, moving: p.moving, run: p.run, t: p.tPhase, crouch: p.crouch, alpha: p.hid ? 0.38 : (p.exposed ? 1 : 0.78), hold: L.id === 1 ? 'sandals' : 'scroll', accent: ACC, scarf: ACC });
+    human(c, p.x, gy, { face: p.face, moving: p.moving, run: p.run, t: p.tPhase, crouch: p.crouch, alpha: p.hid ? 0.38 : (p.exposed ? 1 : 0.78), hold: L.id === 1 ? 'sandals' : 'scroll', cost: 'hide', hat: (L.id === 2 || L.id === 4) ? 'kasa' : null });
     c.restore();
     // земля и затемнение
     c.fillStyle = S.gnd; c.fillRect(0, gy, g.VW, g.VH - gy);

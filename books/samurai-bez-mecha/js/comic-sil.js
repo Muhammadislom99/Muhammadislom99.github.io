@@ -138,44 +138,99 @@
   };
   SC.room = SC.hall;
 
-  /* ---------- Персонажи-силуэты ---------- */
-  var ACCENT = { hide: ACC, hideL: ACC, hideK: '#a07be0', nobu: GOLD, sam: '#6fa3c8', pea: '#b59b6e', foe: '#b06ac0', mon: '#d9d2c0' };
-  function sArm(d) { return '<path d="' + d + '" fill="none" stroke="' + DARK + '" stroke-width="8.5"/>'; }
+  /* ---------- Персонажи: цветные, по облику героев книги ---------- */
+  var COST = {
+    hide:  { robe: '#8a6d4b', dark: '#5b4630', sash: '#d9c28a', trim: '#b08a55', skin: '#e8c19a', hair: '#1b1714', feet: '#c9a96a' },
+    hideL: { robe: '#a3402f', dark: '#5a2a20', sash: '#d8a93c', trim: '#d8a93c', skin: '#e8c19a', hair: '#1b1714', feet: '#3a2a22' },
+    hideK: { robe: '#5d4687', dark: '#35264f', sash: '#d8a93c', trim: '#e6c76a', skin: '#eed0aa', hair: '#1b1714', feet: '#efe6d2' },
+    nobu:  { robe: '#2a2733', dark: '#16141c', sash: '#b3322b', trim: '#d8a93c', skin: '#f0d2b0', hair: '#14110f', feet: '#2a2220' },
+    sam:   { robe: '#3d5a73', dark: '#22313d', sash: '#c9a24a', trim: '#c9a24a', skin: '#e6bd95', hair: '#1b1714', feet: '#3a2a22' },
+    foe:   { robe: '#6a3d5e', dark: '#3a2034', sash: '#c98a3a', trim: '#c98a3a', skin: '#e2b78f', hair: '#1b1714', feet: '#3a2a22' },
+    pea:   { robe: '#a9906a', dark: '#7a6648', sash: '#6e5a3c', trim: '#8f7a52', skin: '#e2b78f', hair: '#1b1714', feet: '#c9a96a' },
+    mon:   { robe: '#d9d2c0', dark: '#a9a28c', sash: '#7a6a4a', trim: '#a9a28c', skin: '#e8c19a', hair: '#3a3430', feet: '#efe6d2' }
+  };
+  var OL = 'rgba(18,12,14,.88)';
 
-  function silPerson(o) {
-    var s = o.s || 1, m = o.mood || 'calm', pose = o.pose || 'down', acc = ACCENT[o.k] || GOLD;
-    var h = o.k === 'nobu' ? 1.1 : (o.k.indexOf('hide') === 0) ? 0.92 : 1;
-    var rim = 'rgba(255,236,200,.42)';
-    var g = '<g transform="translate(' + o.x + ',' + o.y + ') scale(' + ((o.flip ? -1 : 1) * s * h) + ',' + (s * h) + ')" stroke="' + rim + '" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">';
-    g += '<g class="sil-idle" style="animation-delay:-' + ((o.x || 0) % 7 / 3).toFixed(2) + 's">';
-    g += '<path class="sil-scarf" d="M-6 -88 Q-22 -91 -31 -82 Q-40 -73 -50 -80" fill="none" stroke="' + acc + '" stroke-width="5.5" style="transform-origin:-6px -88px"/>';
-    if (o.k === 'nobu') g += '<path d="M-19 -86 Q-36 -48 -28 -2 L-12 -2 L-14 -60 Z" fill="' + DARK + '"/><path d="M19 -86 Q38 -48 30 -2 L14 -2 L16 -60 Z" fill="' + acc + '" opacity=".8" stroke="none"/>';
-    g += '<path d="M-17 -48 L-23 0 H-4 L0 -20 L4 0 H23 L17 -48 Z" fill="' + DARK + '"/>';
-    g += '<path d="M-19 -50 L-16 -89 Q0 -95 16 -89 L19 -50 Z" fill="' + DARK + '"/>';
-    g += '<path d="M-19 -55 H19 V-47 H-19 Z" fill="' + acc + '" stroke="none"/><path d="M12 -55 l9 14 l-5 1 z" fill="' + acc + '" stroke="none"/>';
+  function sArm(d, C) {
+    return '<path d="' + d + '" fill="none" stroke="' + OL + '" stroke-width="10"/><path d="' + d + '" fill="none" stroke="' + C.robe + '" stroke-width="6.4"/>';
+  }
+  function sHand(x, y, C) { return '<circle cx="' + x + '" cy="' + y + '" r="3.7" fill="' + C.skin + '" stroke="' + OL + '" stroke-width="1.2"/>'; }
+
+  function mouthOf(m) {
+    if (m === 'happy') return '<path d="M-4.5 -95 q4.5 5 9 0" fill="none" stroke="' + OL + '" stroke-width="1.6"/>';
+    if (m === 'angry' || m === 'shout') return '<ellipse cx="0" cy="-93.5" rx="3.4" ry="3" fill="#5a1d1a" stroke="' + OL + '" stroke-width="1"/>';
+    if (m === 'shock') return '<ellipse cx="0" cy="-93.5" rx="2" ry="2.6" fill="#5a1d1a" stroke="' + OL + '" stroke-width="1"/>';
+    if (m === 'worry') return '<path d="M-3 -92.5 q3 -2.5 6 0" fill="none" stroke="' + OL + '" stroke-width="1.6"/>';
+    return '<path d="M-3 -94 h6" fill="none" stroke="' + OL + '" stroke-width="1.6"/>';
+  }
+  function eyesOf(m) {
+    var w = function (x) { return '<ellipse cx="' + x + '" cy="-101" rx="2.7" ry="2.1" fill="#fbf6ea" stroke="' + OL + '" stroke-width=".9"/><circle cx="' + (x + 0.5) + '" cy="-101" r="1.2" fill="' + OL + '"/>'; };
+    if (m === 'happy') return '<path d="M-8 -100 q3 -3.6 6 0 M2 -100 q3 -3.6 6 0" fill="none" stroke="' + OL + '" stroke-width="1.7"/>';
+    if (m === 'det') return '<path d="M-8 -101 h6 M2 -101 h6" fill="none" stroke="' + OL + '" stroke-width="2.4"/>';
+    if (m === 'angry') return w(-5) + w(5) + '<path d="M-9 -105.5 L-2 -102 M9 -105.5 L2 -102" fill="none" stroke="' + OL + '" stroke-width="1.9"/>';
+    if (m === 'worry') return w(-5) + w(5) + '<path d="M-9 -104 L-2 -106 M9 -104 L2 -106" fill="none" stroke="' + OL + '" stroke-width="1.6"/>';
+    if (m === 'shock') return '<circle cx="-5" cy="-101" r="3.1" fill="#fbf6ea" stroke="' + OL + '" stroke-width=".9"/><circle cx="5" cy="-101" r="3.1" fill="#fbf6ea" stroke="' + OL + '" stroke-width=".9"/><circle cx="-5" cy="-101" r="1" fill="' + OL + '"/><circle cx="5" cy="-101" r="1" fill="' + OL + '"/>';
+    return w(-5) + w(5);
+  }
+
+  function silPerson(o, ci) {
+    var C = COST[o.k] || COST.sam, s = o.s || 1, m = o.mood || 'calm', pose = o.pose || 'down';
+    var isH = o.k.indexOf('hide') === 0, h = o.k === 'nobu' ? 1.1 : isH ? 0.92 : 1;
+    var rim = 'rgba(255,240,205,.55)';
+    var dx = o.x < 160 ? -34 : 34;
+    var g = '<g class="sil-char" data-ci="' + ci + '" style="--dx:' + dx + 'px;animation-delay:' + (ci * 0.12).toFixed(2) + 's">' +
+      '<g transform="translate(' + o.x + ',' + o.y + ') scale(' + ((o.flip ? -1 : 1) * s * h) + ',' + (s * h) + ')" stroke-linejoin="round" stroke-linecap="round">' +
+      '<g class="sil-idle" style="animation-delay:-' + ((o.x || 0) % 7 / 3).toFixed(2) + 's">';
+    // плащ Нобунаги (сзади)
+    if (o.k === 'nobu') g += '<path d="M-19 -88 Q-38 -48 -30 -2 L-10 -2 L-14 -62 Z" fill="#b3322b" stroke="' + OL + '" stroke-width="1.4"/><path d="M19 -88 Q40 -48 32 -2 L12 -2 L16 -62 Z" fill="#8f2620" stroke="' + OL + '" stroke-width="1.4"/>';
+    // шарф-лента для скрытности и динамики (цвет героя)
+    g += '<path class="sil-scarf" d="M-18 -51 Q-28 -46 -33 -34 Q-36 -26 -43 -22" fill="none" stroke="' + C.sash + '" stroke-width="4.5" style="transform-origin:-18px -51px"/>';
+    // ноги и хакама
+    g += '<path d="M-17 -48 L-23 -3 H-4 L0 -20 L4 -3 H23 L17 -48 Z" fill="' + C.dark + '" stroke="' + OL + '" stroke-width="1.5"/>';
+    g += '<path d="M-17 -48 L-23 -3 H-4 L0 -20 Z" fill="#000" opacity=".14" stroke="none"/>';
+    g += '<ellipse cx="-12" cy="-1.5" rx="9" ry="3.2" fill="' + C.feet + '" stroke="' + OL + '" stroke-width="1.2"/><ellipse cx="12" cy="-1.5" rx="9" ry="3.2" fill="' + C.feet + '" stroke="' + OL + '" stroke-width="1.2"/>';
+    // торс
+    g += '<path d="M-19 -50 L-16 -89 Q0 -95 16 -89 L19 -50 Z" fill="' + C.robe + '" stroke="' + OL + '" stroke-width="1.5"/>';
+    g += '<path d="M-19 -50 L-16 -89 Q-8 -92 -3 -91 L-3 -50 Z" fill="#000" opacity=".16" stroke="none"/>';
+    g += '<path d="M17 -86 L19 -50" stroke="' + rim + '" stroke-width="1.5" fill="none"/>';
+    if (o.k === 'hide') g += '<rect x="5" y="-72" width="7" height="6" fill="' + C.dark + '" opacity=".55" stroke="none"/><path d="M5 -69 h7 M8.5 -72 v6" stroke="' + C.sash + '" stroke-width=".7" fill="none" opacity=".7"/>';
+    if (o.k === 'hideL' || o.k === 'sam' || o.k === 'foe') g += '<path d="M-14 -84 V-56 M-7 -86 V-56 M0 -87 V-56 M7 -86 V-56 M14 -84 V-56" fill="none" stroke="' + C.trim + '" stroke-width="1.1" opacity=".75"/>';
+    if (o.k === 'nobu') g += '<circle cx="0" cy="-70" r="5" fill="none" stroke="' + C.trim + '" stroke-width="1.5"/><circle cx="0" cy="-70" r="1.8" fill="' + C.trim + '"/>';
+    if (o.k === 'hideK') g += '<path d="M-19 -70 Q0 -62 19 -70" fill="none" stroke="' + C.trim + '" stroke-width="1.6"/>';
+    g += '<path d="M-6 -91 L0 -72 L6 -91" fill="#efe6d2" stroke="' + OL + '" stroke-width="1.1"/>';
+    g += '<path d="M-19 -55 H19 V-47 H-19 Z" fill="' + C.sash + '" stroke="' + OL + '" stroke-width="1.2"/><path d="M12 -55 l9 15 l-5 1 z" fill="' + C.sash + '" stroke="' + OL + '" stroke-width="1"/>';
+    // руки
     var arms = {
-      down:  'M-17 -85 L-25 -57 M17 -85 L25 -57', up: 'M-17 -85 L-25 -57 M17 -85 L31 -112', point: 'M-17 -85 L-25 -57 M17 -85 L44 -94',
-      hold:  'M-17 -85 L-9 -64 L6 -66 M17 -85 L9 -64 L-6 -66', cross: 'M-17 -85 L8 -66 M17 -85 L-8 -66', both: 'M-17 -85 L-30 -112 M17 -85 L30 -112', kneel: 'M-17 -85 L-9 -62 L6 -60 M17 -85 L9 -62 L-6 -60'
+      down:  [['M-17 -85 L-25 -57', -25, -55], ['M17 -85 L25 -57', 25, -55]],
+      up:    [['M-17 -85 L-25 -57', -25, -55], ['M17 -85 L31 -112', 31, -115]],
+      point: [['M-17 -85 L-25 -57', -25, -55], ['M17 -85 L44 -94', 47, -94]],
+      hold:  [['M-17 -85 L-9 -64 L6 -66', 0, -66], ['M17 -85 L9 -64 L-6 -66', 0, -66]],
+      cross: [['M-17 -85 L8 -66', 8, -65], ['M17 -85 L-8 -66', -8, -65]],
+      both:  [['M-17 -85 L-30 -112', -30, -115], ['M17 -85 L30 -112', 30, -115]],
+      kneel: [['M-17 -85 L-9 -62 L6 -60', 0, -60], ['M17 -85 L9 -62 L-6 -60', 0, -60]]
     };
-    (arms[pose] || arms.down).split(' M').forEach(function (seg, i) { g += sArm('M' + seg.replace(/^M/, '')); });
-    g += '<circle cx="0" cy="-100" r="12.5" fill="' + DARK + '"/>';
-    if (o.hat === 'kasa') g += '<path d="M-26 -106 Q0 -134 26 -106 Z" fill="' + DARK + '"/>';
-    else if (o.hat === 'helm') g += '<path d="M-15 -104 Q0 -130 15 -104 Z" fill="' + DARK + '"/><path d="M0 -126 l-9 -13 h18 z" fill="' + acc + '" stroke="none"/>';
-    else g += '<path d="M0 -112 Q6 -126 15 -122" fill="none" stroke="' + DARK + '" stroke-width="4"/><path d="M0 -112 Q6 -126 15 -122" fill="none" stroke="' + rim + '" stroke-width="1" opacity=".6"/>';
-    // глаза-прорези светом
-    var ey = '';
-    if (m === 'angry') ey = '<path d="M-9 -104 L-2 -100.5 M9 -104 L2 -100.5" stroke="' + LIGHT + '" stroke-width="2.4" fill="none"/>';
-    else if (m === 'shock') ey = '<circle cx="-5" cy="-101" r="2.8" fill="' + LIGHT + '" stroke="none"/><circle cx="5" cy="-101" r="2.8" fill="' + LIGHT + '" stroke="none"/>';
-    else if (m === 'happy') ey = '<path d="M-8 -100 q3 -3.5 6 0 M2 -100 q3 -3.5 6 0" stroke="' + LIGHT + '" stroke-width="2" fill="none"/>';
-    else if (m === 'worry') ey = '<path d="M-8 -103 L-2 -101 M8 -103 L2 -101" stroke="' + LIGHT + '" stroke-width="2" fill="none"/><circle cx="-5" cy="-99.4" r="1.4" fill="' + LIGHT + '" stroke="none"/><circle cx="5" cy="-99.4" r="1.4" fill="' + LIGHT + '" stroke="none"/>';
-    else ey = '<path d="M-8 -101 h6 M2 -101 h6" stroke="' + LIGHT + '" stroke-width="2.6" fill="none"/>';
-    g += ey;
-    if (o.item === 'sandals') g += '<ellipse cx="-5" cy="-70" rx="9" ry="3.6" fill="' + GOLD + '" stroke="none"/><ellipse cx="9" cy="-70" rx="9" ry="3.6" fill="' + GOLD + '" stroke="none"/>';
-    if (o.item === 'scroll') g += '<rect x="-10" y="-74" width="22" height="8" rx="4" fill="' + LIGHT + '" stroke="none"/>';
-    if (o.item === 'fan') g += '<path d="M30 -94 l-3 -22 q14 -4 25 6 z" fill="' + GOLD + '" stroke="none" transform="translate(' + (pose === 'point' ? 14 : 0) + ',0)"/>';
-    if (o.item === 'spear') g += '<path d="M30 -2 L30 -150" stroke="' + rim + '" stroke-width="2.6"/><path d="M30 -150 l-4 -14 l8 0 z" fill="' + LIGHT + '" stroke="none"/>';
-    if (o.item === 'cup') g += '<path d="M-8 -72 h16 q-2 10 -8 10 q-6 0 -8 -10 z" fill="' + LIGHT + '" stroke="none"/>';
-    return g + '</g></g>';
+    (arms[pose] || arms.down).forEach(function (a) { g += sArm(a[0], C) + sHand(a[1], a[2], C); });
+    // голова
+    g += '<ellipse cx="-12.6" cy="-100" rx="' + (isH ? 3.6 : 2.6) + '" ry="' + (isH ? 5.2 : 4) + '" fill="' + C.skin + '" stroke="' + OL + '" stroke-width="1.1"/><ellipse cx="12.6" cy="-100" rx="' + (isH ? 3.6 : 2.6) + '" ry="' + (isH ? 5.2 : 4) + '" fill="' + C.skin + '" stroke="' + OL + '" stroke-width="1.1"/>';
+    g += '<circle cx="0" cy="-100" r="12.5" fill="' + C.skin + '" stroke="' + OL + '" stroke-width="1.5"/>';
+    g += '<path d="M12 -108 A12.5 12.5 0 0 1 12.5 -96" fill="none" stroke="' + rim + '" stroke-width="1.3"/>';
+    g += '<path d="M-12.5 -102 Q-12 -115 0 -115 Q12 -115 12.5 -102 Q6 -108 0 -108 Q-6 -108 -12.5 -102 Z" fill="' + C.hair + '" stroke="' + OL + '" stroke-width="1"/>';
+    if (isH) g += '<path d="M-10 -96 q2 3 4 3 M10 -96 q-2 3 -4 3 M-7 -108 q2 -1.6 4 0 M3 -108 q2 -1.6 4 0" fill="none" stroke="' + OL + '" stroke-width=".9" opacity=".6"/>';
+    g += '<g class="sil-eyes" style="transform-origin:0 -101px;animation-delay:-' + ((ci * 1.3 + (o.x || 0) % 5) % 4).toFixed(2) + 's">' + eyesOf(m) + '</g>';
+    g += '<g class="sil-mouth" style="transform-origin:0 -94px">' + mouthOf(m) + '</g>';
+    if (o.k === 'nobu') g += '<path d="M-7 -97.5 q3.5 -3 7 0 q3.5 -3 7 0" fill="' + C.hair + '" stroke="' + OL + '" stroke-width="1.2"/><path d="M-3 -90 q3 3 6 0" fill="none" stroke="' + OL + '" stroke-width=".9" opacity=".6"/>';
+    // головные уборы и причёска
+    if (o.hat === 'kasa') g += '<path d="M-27 -106 Q0 -136 27 -106 Z" fill="#d6b66a" stroke="' + OL + '" stroke-width="1.5"/><path d="M-15 -118 L0 -108 L15 -118 M-8 -124 L0 -108 L8 -124" fill="none" stroke="#a98a45" stroke-width="1" opacity=".8"/>';
+    else if (o.hat === 'helm') g += '<path d="M-15 -104 Q0 -131 15 -104 Z" fill="#5a5a64" stroke="' + OL + '" stroke-width="1.5"/><path d="M0 -127 l-9 -13 h18 z" fill="#d8a93c" stroke="' + OL + '" stroke-width="1.2"/><path d="M-15 -104 H15" stroke="' + C.trim + '" stroke-width="2"/>';
+    else if (o.k === 'hideK') g += '<path d="M-9 -112 L-5 -131 H11 L13 -112 Z" fill="#17131f" stroke="' + OL + '" stroke-width="1.3"/>';
+    else g += '<path d="M0 -113 Q6 -127 15 -123" fill="none" stroke="' + OL + '" stroke-width="5"/><path d="M0 -113 Q6 -127 15 -123" fill="none" stroke="' + C.hair + '" stroke-width="3"/>';
+    // предметы
+    if (o.item === 'sandals') g += '<ellipse cx="-5" cy="-70" rx="9" ry="3.8" fill="#d6b66a" stroke="' + OL + '" stroke-width="1.1"/><ellipse cx="9" cy="-70" rx="9" ry="3.8" fill="#d6b66a" stroke="' + OL + '" stroke-width="1.1"/>';
+    if (o.item === 'scroll') g += '<rect x="-10" y="-74" width="22" height="8.5" rx="4" fill="#f4ead2" stroke="' + OL + '" stroke-width="1.1"/><path d="M-5 -70 h12" stroke="' + OL + '" stroke-width=".8" opacity=".6"/>';
+    if (o.item === 'fan') g += '<path d="M30 -94 l-3 -22 q14 -4 25 6 z" fill="#d9ab48" stroke="' + OL + '" stroke-width="1.2" transform="translate(' + (pose === 'point' ? 14 : 0) + ',0)"/>';
+    if (o.item === 'spear') g += '<path d="M30 -2 L30 -150" stroke="' + OL + '" stroke-width="3.2"/><path d="M30 -2 L30 -150" stroke="#8a6a44" stroke-width="1.8"/><path d="M30 -152 l-4 -14 l8 0 z" fill="#d6d6dc" stroke="' + OL + '" stroke-width="1"/>';
+    if (o.item === 'cup') g += '<path d="M-8 -72 h16 q-2 10 -8 10 q-6 0 -8 -10 z" fill="#efe6d2" stroke="' + OL + '" stroke-width="1.1"/>';
+    return g + '</g></g></g>';
   }
 
   /* ---------- Эффекты шума и света ---------- */
@@ -197,7 +252,7 @@
     var F = window.Comic && Comic.fx;
     (panel.fx || []).filter(function (f) { return f.t === 'speed' || f.t === 'focus' || f.t === 'rain'; }).forEach(function (f) { if (F) out += F(f); });
     out += rings(panel);
-    (panel.c || []).forEach(function (c) { out += silPerson(c); });
+    (panel.c || []).forEach(function (c, i) { out += silPerson(c, i); });
     (panel.fx || []).filter(function (f) { return !(f.t === 'speed' || f.t === 'focus' || f.t === 'rain'); }).forEach(function (f) { if (F) out += F(f); });
     return out + '<rect width="320" height="220" fill="url(#' + id + 'v)" stroke="none"/></svg>';
   }
