@@ -154,6 +154,14 @@
           '<div class="num">' + (i + 1) + ' · ' + esc(e.year) + '</div><h3>' + esc(e.title) + '</h3><p>' + esc(e.intro) + '</p></a>';
       }).join('') + '</div></div>';
   }
+  function viewMode() { var m = Store.get('viewmode', 'real'); return m === 'toon' || m === '2d' ? m : 'real'; }
+  function bindComic(id) {
+    var e = comicById(id); if (!e) return;
+    app.querySelectorAll('[data-view]').forEach(function (b) {
+      b.addEventListener('click', function () { Store.set('viewmode', b.dataset.view); render(true); });
+    });
+    if (window.Comic3D && Comic3D.ok && viewMode() !== '2d') Comic3D.mountAll(app, e.panels, viewMode()); else if (window.Comic3D) Comic3D.unmount();
+  }
   function comicEpisode(id) {
     var e = comicById(id);
     if (!e) return notFound();
@@ -162,6 +170,7 @@
       '<a href="#/comic" class="muted">← Все эпизоды</a>' +
       '<div class="eyebrow" style="margin-top:20px">Эпизод ' + (i + 1) + ' · ' + esc(e.year) + '</div>' +
       '<h1>' + esc(e.title) + '</h1><p class="lead">' + esc(e.intro) + '</p>' +
+      (window.Comic3D && Comic3D.ok ? '<div class="view-toggle" role="group" aria-label="Вид комикса">' + [['real', '3D кино'], ['toon', '3D мульт'], ['2d', '2D']].map(function (m) { return '<button class="chip' + (viewMode() === m[0] ? ' active' : '') + '" data-view="' + m[0] + '">' + m[1] + '</button>'; }).join('') + (viewMode() !== '2d' ? '<span class="muted">потяните картинку, чтобы повернуть камеру</span>' : '') + '</div>' : '') +
       (window.Film ? '<div class="say-row"><a class="btn film-ep" href="#/film/' + (i + 1) + '"><span aria-hidden="true">▶</span> Смотреть эпизод как фильм</a></div>' : '') +
       '<div class="strip">' + e.panels.map(function (p, k) {
         return '<figure class="panel' + (e.panels.length % 2 && k === 0 ? ' span2' : '') + '">' + Comic.render(p) +
@@ -698,7 +707,7 @@
     switch (r) {
       case 'home': html = home(); break;
       case 'life': html = life(); bind = bindLife; break;
-      case 'comic': html = parts[1] ? comicEpisode(parts[1]) : comicList(); break;
+      case 'comic': html = parts[1] ? comicEpisode(parts[1]) : comicList(); if (parts[1] && comicById(parts[1])) bind = function () { bindComic(parts[1]); }; break;
       case 'film': html = Film.view(parts[1]); bind = function () { Film.bind(parts[1]); }; break;
       case 'lessons': html = lessons(); break;
       case 'lesson': html = lesson(parts[1]); if (lessonById(parts[1])) bind = function () { bindLesson(parts[1]); }; break;
