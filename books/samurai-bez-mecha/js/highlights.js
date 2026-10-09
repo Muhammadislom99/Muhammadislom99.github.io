@@ -161,10 +161,17 @@
         '<button class="hl-act" data-a="copy" aria-label="Копировать" title="Копировать">⧉</button>' +
         '<button class="hl-act" data-a="del" aria-label="Удалить выделение" title="Удалить">🗑</button>' : '');
     bar.hidden = false;
-    // На телефоне — панель внизу экрана: не перекрывается системным меню и «ручками» выделения
     bar.classList.toggle('dock', touch);
-    if (touch) { bar.style.top = ''; bar.style.left = ''; return; }
     var w = bar.offsetWidth, h = bar.offsetHeight;
+    if (touch) {
+      // Телефон: низ экрана занимает панель «Поиск Google», над выделением — меню «Копировать».
+      // Ставим панель вверху экрана; если выделение у самого верха — под ним, но не ниже 180 px от края.
+      var t = 10;
+      if (rect.top < t + h + 80) t = Math.min(rect.bottom + 40, innerHeight - 180 - h);
+      bar.style.top = Math.max(10, t) + 'px';
+      bar.style.left = Math.max(8, (innerWidth - w) / 2) + 'px';
+      return;
+    }
     var top = rect.bottom + 12;
     if (top + h > innerHeight - (document.body.classList.contains('has-player') ? 90 : 12)) top = Math.max(70, rect.top - h - 12);
     var left = Math.min(innerWidth - w - 8, Math.max(8, rect.left + rect.width / 2 - w / 2));
