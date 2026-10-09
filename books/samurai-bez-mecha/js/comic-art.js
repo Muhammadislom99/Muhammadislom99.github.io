@@ -208,7 +208,7 @@
 
   var BUBBLE_TAIL = { bl: 1, br: 1, tl: 1, tr: 1 };
 
-  function render(panel, noBubbles) {
+  function render(panel, noBubbles, style) {
     var sc = S[panel.s] || S.village;
     var svg = '<svg viewBox="0 0 320 220" preserveAspectRatio="xMidYMid slice" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="' + (panel.cap ? panel.cap.replace(/"/g, '&quot;') : 'Иллюстрация') + '">' +
       '<defs><pattern id="ht" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="currentColor" opacity=".12" stroke="none"/></pattern></defs>' +
@@ -218,6 +218,7 @@
     (panel.c || []).forEach(function (c) { svg += person(c); });
     (panel.fx || []).filter(function (f) { return !(f.t === 'speed' || f.t === 'focus' || f.t === 'rain'); }).forEach(function (f) { svg += fx(f); });
     svg += '</svg>';
+    if ((style || (window.Comic && window.Comic.style)) === 'sil' && window.ComicSil) svg = window.ComicSil.svg(panel);
     var html = '<div class="stage">' + svg;
     if (!noBubbles) (panel.b || []).forEach(function (b) {
       var tail = BUBBLE_TAIL[b.tail] ? b.tail : 'bl';
@@ -226,5 +227,5 @@
     return html + '</div>';
   }
 
-  window.Comic = { render: render };
+  window.Comic = { render: render, fx: fx, style: null };
 })();
