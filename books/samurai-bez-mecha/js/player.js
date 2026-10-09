@@ -95,25 +95,61 @@
   addEventListener('keydown', function (e) { if (playing && /^(Arrow|Page|Home|End| )/.test(e.key) && !e.target.closest('input, textarea')) lastUser = Date.now(); });
 
   /* ---------- Воспроизведение ---------- */
-  function speakAt(i) {
+  /* Android Chrome: cancel() прямо перед speak() «съедает» новую фразу, а onend
+     иногда не приходит. Поэтому: между фразами без cancel(), при перемотке —
+     cancel() и пауза 250 мс, плюс сторож, который двигает очередь, если onend потерялся. */
+  var cur = null, note = '', lastCancel = 0, retryFor = -1;
+  function cancelNow() { if (supported && (synth.speaking || synth.pending)) { synth.cancel(); lastCancel = Date.now(); } }
+  function speakAt(i, interrupt) {
     var my = ++token;
-    if (supported) synth.cancel();
     idx = i;
     if (idx >= items.length) { stop(); return; }
     var it = items[idx];
     if (!document.contains(it.el)) { stop(); return; }
     mark(it);
+    note = '';
     updateBar();
     if (paused) return;
-    var u = new SpeechSynthesisUtterance(it.text), v = window.TTS && TTS.voice && TTS.voice();
-    if (v) u.voice = v;
-    u.lang = v ? v.lang : 'ru-RU';
-    u.rate = (window.Prefs && Prefs.get().rate) || 1;
-    u.onend = function () { if (my === token && playing && !paused) speakAt(idx + 1); };
-    u.onerror = function (e) { if (my === token && playing && !paused && e.error !== 'interrupted' && e.error !== 'canceled') speakAt(idx + 1); };
-    // Chrome иногда не начинает речь сразу после cancel() — небольшой отступ
-    setTimeout(function () { if (my === token) synth.speak(u); }, 40);
+    var go = function () {
+      if (my !== token || paused) return;
+      var u = new SpeechSynthesisUtterance(it.text), v = window.TTS && TTS.voice && TTS.voice();
+      if (v) u.voice = v;
+      u.lang = v ? v.lang : 'ru-RU';
+      u.rate = (window.Prefs && Prefs.get().rate) || 1;
+      var st = cur = { my: my, t0: Date.now(), started: false, done: false, go: go };
+      u.onstart = function () { st.started = true; };
+      u.onend = function () { finish(st); };
+      u.onerror = function (e) {
+        if (e.error === 'interrupted' || e.error === 'canceled') return;
+        if (e.error === 'not-allowed') { blocked(); return; }
+        finish(st);
+      };
+      synth.speak(u);
+      if (synth.paused) synth.resume();
+    };
+    if (interrupt) cancelNow();
+    var wait = 260 - (Date.now() - lastCancel);
+    if (wait > 0) setTimeout(go, wait);
+    else go(); // синхронно — внутри нажатия, иначе мобильный браузер может запретить звук
   }
+  function finish(st) {
+    if (st.done || st.my !== token || !playing || paused) return;
+    st.done = true;
+    speakAt(idx + 1, false);
+  }
+  function blocked() {
+    paused = true; token++;
+    cancelNow();
+    note = 'Нажмите ▶, чтобы продолжить';
+    updateBar();
+  }
+  setInterval(function () {
+    if (!playing || paused || !cur || cur.done || cur.my !== token) return;
+    var age = Date.now() - cur.t0;
+    if (cur.started && age > 800 && !synth.speaking && !synth.pending) finish(cur);
+    else if (!cur.started && !synth.speaking && age > 1500 && retryFor !== idx) { retryFor = idx; var g = cur.go; cancelNow(); setTimeout(g, 260); }
+    else if (!cur.started && age > 6000 && !synth.speaking) blocked();
+  }, 600);
   function setBtn(b, on) {
     if (!b) return;
     b.classList.toggle('playing', on);
@@ -129,11 +165,11 @@
     var h = sc.querySelector('h1, .s-rule, h3, .t-title, h2');
     title = h ? h.textContent.trim() : 'Озвучка';
     setBtn(btn, true); showBar();
-    speakAt(from || 0);
+    speakAt(from || 0, true);
   }
   function stop() {
     token++;
-    if (supported) synth.cancel();
+    cancelNow();
     playing = false; paused = false;
     setBtn(btn, false); btn = null; scope = null; items = [];
     clearMark(); hideBar();
@@ -145,8 +181,8 @@
   function pause() {
     if (!playing) return;
     paused = !paused;
-    if (paused) { token++; synth.cancel(); updateBar(); }
-    else speakAt(idx);
+    if (paused) { token++; cancelNow(); updateBar(); }
+    else speakAt(idx, true);
   }
   addEventListener('hashchange', stop);
   addEventListener('beforeunload', function () { if (supported) synth.cancel(); });
@@ -167,8 +203,8 @@
         var a = b.dataset.pl;
         if (a === 'stop') stop();
         else if (a === 'pause') pause();
-        else if (a === 'prev') { lastUser = 0; speakAt(Math.max(0, idx - 1)); }
-        else if (a === 'next') { lastUser = 0; speakAt(Math.min(items.length - 1, idx + 1)); }
+        else if (a === 'prev') { lastUser = 0; speakAt(Math.max(0, idx - 1), true); }
+        else if (a === 'next') { lastUser = 0; speakAt(Math.min(items.length - 1, idx + 1), true); }
         else if (a === 'follow') { lastUser = 0; if (items[idx]) mark(items[idx], true); }
       });
       document.body.appendChild(bar);
@@ -179,7 +215,7 @@
   function updateBar() {
     if (!bar) return;
     bar.querySelector('.pl-info b').textContent = title;
-    bar.querySelector('.pl-info span').textContent = (paused ? 'Пауза · ' : '') + (idx + 1) + ' из ' + items.length + (bar.classList.contains('detached') ? ' · ↓ к тексту' : '');
+    bar.querySelector('.pl-info span').textContent = note || (paused ? 'Пауза · ' : '') + (idx + 1) + ' из ' + items.length + (bar.classList.contains('detached') ? ' · ↓ к тексту' : '');
     bar.querySelector('.pl-progress div').style.width = (items.length ? (idx + 1) / items.length * 100 : 0) + '%';
     var p = bar.querySelector('[data-pl="pause"]');
     p.textContent = paused ? '▶' : '❚❚'; p.setAttribute('aria-label', paused ? 'Продолжить' : 'Пауза');

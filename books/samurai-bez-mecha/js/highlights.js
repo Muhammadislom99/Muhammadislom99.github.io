@@ -11,7 +11,8 @@
   var BLOCK = 'p, li, h1, h2, h3, figcaption, .s-rule, .t-title, .flash-rule';
   var NO = 'button, textarea, input, select, .note, .hl-bar, .player, .prefs-panel, [data-nohl]';
   var app = document.getElementById('app');
-  var bar = null, pending = null, current = null, selTimer = null;
+  var bar = null, pending = null, current = null, selTimer = null, barDown = 0;
+  var touch = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
 
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function all() { return Store.get('highlights', []); }
@@ -139,16 +140,16 @@
     bar = document.createElement('div');
     bar.className = 'hl-bar'; bar.hidden = true; bar.setAttribute('role', 'toolbar'); bar.setAttribute('aria-label', 'Маркер');
     document.body.appendChild(bar);
-    // pointerdown, а не click: на телефоне выделение исчезает раньше, чем приходит click
-    bar.addEventListener('pointerdown', function (e) {
+    // Касание панели снимает выделение раньше, чем приходит click. Запоминаем момент касания,
+    // чтобы обработчик selectionchange не спрятал панель, а действие выполняем по click.
+    bar.addEventListener('pointerdown', function (e) { barDown = Date.now(); if (e.pointerType === 'mouse') e.preventDefault(); });
+    bar.addEventListener('touchstart', function () { barDown = Date.now(); }, { passive: true });
+    bar.addEventListener('click', function (e) {
       var b = e.target.closest('button'); if (!b) return;
-      e.preventDefault();
+      e.preventDefault(); e.stopPropagation();
       act(b.dataset.a, b.dataset.c);
     });
-    bar.addEventListener('keydown', function (e) {
-      if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('button')) { e.preventDefault(); act(e.target.dataset.a, e.target.dataset.c); }
-      if (e.key === 'Escape') hide();
-    });
+    bar.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
     return bar;
   }
   function show(rect, existing) {
@@ -160,6 +161,9 @@
         '<button class="hl-act" data-a="copy" aria-label="Копировать" title="Копировать">⧉</button>' +
         '<button class="hl-act" data-a="del" aria-label="Удалить выделение" title="Удалить">🗑</button>' : '');
     bar.hidden = false;
+    // На телефоне — панель внизу экрана: не перекрывается системным меню и «ручками» выделения
+    bar.classList.toggle('dock', touch);
+    if (touch) { bar.style.top = ''; bar.style.left = ''; return; }
     var w = bar.offsetWidth, h = bar.offsetHeight;
     var top = rect.bottom + 12;
     if (top + h > innerHeight - (document.body.classList.contains('has-player') ? 90 : 12)) top = Math.max(70, rect.top - h - 12);
@@ -183,7 +187,7 @@
       } else if (a === 'copy') {
         try { navigator.clipboard.writeText('«' + h.text + '» — Китами Масао, «Самурай без меча»'); toast('Скопировано'); } catch (e) {}
       }
-      hide(); return;
+      hide(); barDown = 0; return;
     }
     if (pending && a === 'color') {
       var ctx = context(pending.anchor);
@@ -196,6 +200,7 @@
       toast(colorName(c) + ' · сохранено в заметки');
     }
     hide();
+    barDown = 0;
   }
   var toastEl, toastT;
   function toast(t) {
@@ -206,7 +211,9 @@
 
   document.addEventListener('selectionchange', function () {
     clearTimeout(selTimer);
+    if (Date.now() - barDown < 900) return;
     selTimer = setTimeout(function () {
+      if (Date.now() - barDown < 900) return;
       var p = segsFromSelection();
       if (p) { current = null; pending = p; show(p.rect, null); }
       else if (pending) hide();
@@ -222,10 +229,10 @@
     show(m.getBoundingClientRect(), h);
   }, true);
   document.addEventListener('pointerdown', function (e) {
-    if (bar && !bar.hidden && !bar.contains(e.target) && current && !e.target.closest('mark.hl')) hide();
+    if (bar && !bar.hidden && !bar.contains(e.target) && current && !e.target.closest('mark.hl')) setTimeout(hide, 0);
   });
   addEventListener('hashchange', hide);
-  addEventListener('scroll', function () { if (current) hide(); }, { passive: true });
+  addEventListener('scroll', function () { if (current && !touch) hide(); }, { passive: true });
 
   /* ---------- Раздел в «Заметках» ---------- */
   var filter = 'all';
