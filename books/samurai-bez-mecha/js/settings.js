@@ -52,7 +52,7 @@
       '<div class="sp-row"><span>Шрифт</span>' + seg('font', [['auto', 'Как задумано'], ['serif', 'С засечками'], ['sans', 'Без засечек']], prefs.font) + '</div>' +
       '<div class="sp-row"><span>Скорость чтения</span>' + seg('rate', [[0.8, '0.8×'], [1, '1×'], [1.25, '1.25×'], [1.5, '1.5×']], prefs.rate) + '</div>' +
       (supported ? '<div class="sp-row"><span>Голос</span><select id="voiceSel"></select></div>' : '<p class="muted" style="margin:0">Озвучка в этом браузере недоступна.</p>') +
-      '<div class="sp-row end"><button class="link-btn" data-reset>Сбросить</button><button class="btn small primary" data-close>Готово</button></div>';
+      '<div class="sp-row end"><button class="link-btn" data-reset>Сбросить</button><button class="link-btn" data-howto>Как пользоваться?</button><button class="btn small primary" data-close>Готово</button></div>';
     renderVoices();
   }
   function open(on) {
@@ -78,6 +78,7 @@
       else if (b.dataset.set) prefs[b.dataset.set] = b.dataset.set === 'rate' ? +b.dataset.val : b.dataset.val;
       else if (b.hasAttribute('data-reset')) prefs = Object.assign({}, def);
       else if (b.hasAttribute('data-close')) { open(false); return; }
+      else if (b.hasAttribute('data-howto')) { open(false); if (window.Onboarding) Onboarding.open(0); return; }
       save(); apply(); render();
     });
   }
