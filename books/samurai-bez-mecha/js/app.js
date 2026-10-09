@@ -23,7 +23,7 @@
     return b.closest('article') || app;
   }
   app.addEventListener('click', function (e) {
-    var b = e.target.closest('.say');
+    var b = e.target.closest('.say[data-say]');
     if (!b || !window.Player) return;
     e.preventDefault(); e.stopPropagation();
     Player.toggle(sayScope(b), b);
@@ -98,6 +98,7 @@
         card('#/people', (window.PEOPLE || []).length + ' человек', 'Люди Хидэёси', 'Нобунага, Нэнэ, Хидэнага, Хамбэй, соперники и бывшие враги — кто есть кто.', ART.people) +
         card('#/era', '7 ступеней', 'Эпоха', 'Социальная лестница феодальной Японии и краткая история самураев.', ART.mountain) +
         card('#/life', 'Хронология', 'Жизнь Хидэёси', 'От деревни Накамура до замка Фусими — ' + LIFE.length + ' событий с иллюстрациями.', ART.castle) +
+        (window.Film ? card('#/film', 'Мультфильм · ~' + Film.minutes + ' мин', 'Фильм', 'Все эпизоды подряд как мультфильм: движение камеры, реплики, субтитры и озвучка.', ART.lantern) : '') +
         card('#/comic', COMIC.length + ' эпизодов', 'Комикс', 'Ключевые моменты жизни Хидэёси в картинках, с пересказом каждого эпизода.', ART.sword) +
         card('#/lessons', LESSONS.length + ' тем', 'Уроки', 'Каждый принцип — история, суть, практика и вопрос для размышления.', ART.scroll) +
         card('#/quiz', QUIZ.length + ' вопросов', 'Проверь себя', 'Короткий тест по событиям и идеям книги.', ART.enso) +
@@ -147,6 +148,7 @@
   function comicList() {
     return '<div class="fade-in"><div class="eyebrow">Манхва по мотивам книги</div><h1>Комикс</h1>' +
       '<p class="lead">' + COMIC.length + ' эпизодов из жизни Хидэёси: картинки, реплики и подробный пересказ каждого момента.</p>' +
+      (window.Film ? '<a class="film-cta" href="#/film"><span class="fc-play">▶</span><span><b>Смотреть как фильм</b><small>Все эпизоды подряд · около ' + Film.minutes + ' мин · озвучка и субтитры</small></span></a>' : '') +
       '<div class="grid">' + COMIC.map(function (e, i) {
         return '<a class="card" href="#/comic/' + e.id + '"><div class="thumb comic-thumb">' + Comic.render(e.panels[0], true) + '</div>' +
           '<div class="num">' + (i + 1) + ' · ' + esc(e.year) + '</div><h3>' + esc(e.title) + '</h3><p>' + esc(e.intro) + '</p></a>';
@@ -160,6 +162,7 @@
       '<a href="#/comic" class="muted">← Все эпизоды</a>' +
       '<div class="eyebrow" style="margin-top:20px">Эпизод ' + (i + 1) + ' · ' + esc(e.year) + '</div>' +
       '<h1>' + esc(e.title) + '</h1><p class="lead">' + esc(e.intro) + '</p>' +
+      (window.Film ? '<div class="say-row"><a class="btn film-ep" href="#/film/' + (i + 1) + '"><span aria-hidden="true">▶</span> Смотреть эпизод как фильм</a></div>' : '') +
       '<div class="strip">' + e.panels.map(function (p, k) {
         return '<figure class="panel' + (e.panels.length % 2 && k === 0 ? ' span2' : '') + '">' + Comic.render(p) +
           '<figcaption><b>' + (k + 1) + '.</b> ' + esc(p.cap) + '</figcaption></figure>';
@@ -696,6 +699,7 @@
       case 'home': html = home(); break;
       case 'life': html = life(); bind = bindLife; break;
       case 'comic': html = parts[1] ? comicEpisode(parts[1]) : comicList(); break;
+      case 'film': html = Film.view(parts[1]); bind = function () { Film.bind(parts[1]); }; break;
       case 'lessons': html = lessons(); break;
       case 'lesson': html = lesson(parts[1]); if (lessonById(parts[1])) bind = function () { bindLesson(parts[1]); }; break;
       case 'book': html = bookView(); break;
@@ -708,13 +712,14 @@
       case 'reader': html = readerView(parts[1] != null && parts[1] !== '' ? +parts[1] : null); if (bookLoaded) bind = bindReader; break;
       default: html = notFound();
     }
+    document.body.classList.toggle('film-mode', r === 'film');
     app.innerHTML = html;
     if (bind) bind();
     var navKey = r === 'lesson' ? 'lessons' : (r === 'chapter' || r === 'cards' || r === 'era') ? 'book' : r;
     nav.querySelectorAll('a').forEach(function (a) { a.classList.toggle('active', a.dataset.route === navKey); });
     nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false');
     if (!keepScroll && !(r === 'chapter' && parts[2])) { scrollTo(0, 0); app.focus({ preventScroll: true }); }
-    var titles = { book: 'Книга', cards: 'Карточки', people: 'Люди', era: 'Эпоха', comic: 'Комикс', life: 'Жизнь', lessons: 'Уроки', quiz: 'Тест', notes: 'Заметки', reader: 'Читать' };
+    var titles = { film: 'Фильм', book: 'Книга', cards: 'Карточки', people: 'Люди', era: 'Эпоха', comic: 'Комикс', life: 'Жизнь', lessons: 'Уроки', quiz: 'Тест', notes: 'Заметки', reader: 'Читать' };
     var l = r === 'lesson' && lessonById(parts[1]);
     var cc = r === 'chapter' && CH.find(function (x) { return x.n === (+parts[1] || 0); });
     if (cc) l = cc;
