@@ -29,47 +29,6 @@
     return voices.find(function (v) { return v.name === prefs.voice; }) ||
       voices.find(function (v) { return /google|yandex|milena|natural|online/i.test(v.name); }) || voices[0];
   }
-  // Длинный текст режем на фразы: некоторые браузеры обрывают длинные реплики
-  function chunks(text) {
-    var parts = String(text).replace(/\s+/g, ' ').match(/[^.!?…]+[.!?…»"]*\s*/g) || [text], out = [], buf = '';
-    parts.forEach(function (p) {
-      if ((buf + p).length > 220 && buf) { out.push(buf); buf = p; } else buf += p;
-    });
-    if (buf.trim()) out.push(buf);
-    return out;
-  }
-  function setBtn(btn, on) {
-    if (!btn) return;
-    btn.classList.toggle('playing', on);
-    btn.setAttribute('aria-label', on ? 'Остановить' : 'Слушать');
-    var ic = btn.querySelector('.ic'); if (ic) ic.textContent = on ? '■' : '▶';
-  }
-  function stop() {
-    queue = [];
-    if (supported) synth.cancel();
-    setBtn(curBtn, false); curBtn = null;
-  }
-  function next() {
-    if (!queue.length) { setBtn(curBtn, false); curBtn = null; return; }
-    var u = new SpeechSynthesisUtterance(queue.shift());
-    var v = pickVoice();
-    if (v) u.voice = v;
-    u.lang = v ? v.lang : 'ru-RU';
-    u.rate = prefs.rate;
-    u.onend = next;
-    u.onerror = function (e) { if (e.error !== 'interrupted' && e.error !== 'canceled') next(); };
-    synth.speak(u);
-  }
-  function speak(text, btn) {
-    if (!supported) { alert('Этот браузер не умеет читать вслух. Попробуйте Chrome или Safari.'); return; }
-    var same = btn && btn === curBtn;
-    stop();
-    if (same) return; // повторное нажатие — стоп
-    curBtn = btn; setBtn(btn, true);
-    queue = chunks(text);
-    next();
-  }
-  addEventListener('hashchange', stop);
 
   /* ---------- Панель настроек ---------- */
   var panel, btn;
@@ -124,5 +83,5 @@
   }
 
   window.Prefs = { get: function () { return prefs; } };
-  window.TTS = { speak: speak, stop: stop, supported: supported };
+  window.TTS = { supported: supported, voice: pickVoice };
 })();

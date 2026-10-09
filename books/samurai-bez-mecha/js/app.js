@@ -9,47 +9,24 @@
     });
   }
   function sayBtn(key, label) {
-    if (!window.TTS || !TTS.supported) return '';
+    if (!window.Player || !Player.supported) return '';
     return '<button class="say' + (label ? ' wide' : '') + '" type="button" data-say="' + esc(key) + '" aria-label="Слушать"><span class="ic" aria-hidden="true">▶</span>' + (label ? '<span>' + esc(label) + '</span>' : '') + '</button>';
   }
-  function sayText(key) {
-    var k = key.split(':'), id = k.slice(1).join(':'), out = [];
-    if (k[0] === 'secret' || k[0] === 'secretfull') {
-      var s = secretById(id), x = (window.SX || {})[id];
-      if (!s) return '';
-      out.push(s.name + '. ' + s.rule + '.');
-      if (x && k[0] === 'secret') {
-        out.push('Ситуация. ' + x.sit, 'Что он сделал. ' + x.do.map(function (d, i) { return (i + 1) + '. ' + d + '.'; }).join(' '), 'Итог. ' + x.res);
-      } else out = out.concat(s.story);
-      out.push('Суть. ' + s.key);
-    } else if (k[0] === 'chapter') {
-      var c = CH.find(function (x) { return x.n === +id; });
-      if (!c) return '';
-      out.push((c.n ? 'Глава ' + c.n + '. ' : '') + c.title + '. ' + c.sub + '.');
-      out = out.concat(c.intro);
-      (c.sections || []).forEach(function (sc) { out.push(sc.h + '.'); out = out.concat(sc.p); });
-      (c.secrets || []).forEach(function (sc, i) { out.push('Секрет ' + (i + 1) + '. ' + sc.name + ': ' + sc.rule + '. ' + sc.key); });
-      if (c.outro) out.push(c.outro.h + '. ' + c.outro.p);
-    } else if (k[0] === 'lesson') {
-      var l = lessonById(id);
-      if (l) out.push(l.title + '. ' + l.summary, l.story, 'Принцип. ' + l.points.join(' '));
-    } else if (k[0] === 'comic') {
-      var e = COMIC.find(function (x) { return x.id === id; });
-      if (e) out = [e.title + '. ' + e.intro].concat(e.detail);
-    } else if (k[0] === 'person') {
-      var pp = (window.PEOPLE || []).find(function (x) { return x.id === id; });
-      if (pp) out.push(pp.name + ', ' + pp.role + '. ' + pp.t);
-    } else if (k[0] === 'life') {
-      var ev = LIFE[+id];
-      if (ev) out.push(ev.year + '. ' + ev.title + '. ' + ev.text);
-    }
-    return out.join(' ');
+  // Область, которую читает кнопка ▶: текст берётся прямо со страницы
+  function sayScope(b) {
+    var k = b.dataset.say.split(':')[0];
+    if (k === 'secret') return b.closest('.secret');
+    if (k === 'secretfull') return b.closest('.more');
+    if (k === 'person') return b.closest('.person');
+    if (k === 'life') return b.closest('.t-item');
+    if (k === 'reader') return b.closest('.reader-text');
+    return b.closest('article') || app;
   }
   app.addEventListener('click', function (e) {
     var b = e.target.closest('.say');
-    if (!b) return;
+    if (!b || !window.Player) return;
     e.preventDefault(); e.stopPropagation();
-    TTS.speak(sayText(b.dataset.say), b);
+    Player.toggle(sayScope(b), b);
   });
 
   function lessonById(id) { return LESSONS.find(function (l) { return l.id === id; }); }
@@ -559,7 +536,8 @@
       '<p class="lead">Мысли и выводы хранятся только в этом браузере.</p>' +
       '<textarea id="noteText" placeholder="Что вы вынесли из прочитанного?"></textarea>' +
       '<div class="btn-row"><button class="btn primary" id="noteAdd">Сохранить заметку</button>' +
-      (list.length || reflections.length ? '<button class="btn" id="noteExport">Скачать .txt</button>' : '') + '</div>' +
+      (list.length || reflections.length || (window.Highlights && Highlights.count()) ? '<button class="btn" id="noteExport">Скачать .txt</button>' : '') + '</div>' +
+      (window.Highlights ? Highlights.notesHtml() : '') +
       '<section>' + (list.length ? list.slice().reverse().map(function (n) {
         return '<div class="card note"><div class="meta"><span>' + esc(new Date(n.d).toLocaleString('ru-RU')) + '</span><button class="link-btn" data-del="' + n.d + '">удалить</button></div><p>' + esc(n.t) + '</p></div>';
       }).join('') : '<p class="muted">Пока нет заметок.</p>') + '</section>' +
@@ -568,6 +546,7 @@
       }).join('') + '</section>' : '') + '</div>';
   }
   function bindNotes() {
+    if (window.Highlights) Highlights.bindNotes(function () { render(true); });
     document.getElementById('noteAdd').addEventListener('click', function () {
       var t = document.getElementById('noteText').value.trim();
       if (!t) return;
@@ -587,6 +566,7 @@
       }).concat(CH.map(function (c) {
         var v = Store.get('reflect-ch-' + c.n, ''); return v ? 'Глава ' + c.n + '. ' + c.title + ' — ' + c.reflect + '\n' + v : '';
       })).filter(Boolean).join('\n\n');
+      if (window.Highlights && Highlights.count()) txt += '\n\n' + Highlights.exportText();
       var a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain;charset=utf-8' }));
       a.download = 'samurai-zametki.txt'; a.click();
@@ -625,6 +605,7 @@
         return '<a href="#/reader/' + k + '" class="' + (k === i ? 'active ' : '') + (x.level > 1 ? 'lvl2' : '') + '">' + esc(x.title) + '</a>';
       }).join('') + '</nav>' +
       '<article class="reader-text"><div class="eyebrow">Глава ' + (i + 1) + ' из ' + book.chapters.length + '</div><h2>' + esc(c.title) + '</h2>' +
+        '<div class="say-row">' + sayBtn('reader:' + i, 'Слушать главу') + '</div>' +
         c.blocks.map(function (b) {
           var t = hl(b.text, q);
           return b.t === 'h' ? '<h3>' + t + '</h3>' : '<p' + (b.t === 'epi' ? ' class="epigraph"' : '') + '>' + t + '</p>';
@@ -738,6 +719,7 @@
     var cc = r === 'chapter' && CH.find(function (x) { return x.n === (+parts[1] || 0); });
     if (cc) l = cc;
     document.title = (l ? l.title + ' · ' : titles[r] ? titles[r] + ' · ' : '') + 'Самурай без меча';
+    if (window.Highlights) Highlights.restore();
   }
   addEventListener('hashchange', function () { render(); });
   render();
