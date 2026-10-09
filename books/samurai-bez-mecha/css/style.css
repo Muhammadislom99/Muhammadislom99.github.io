@@ -679,3 +679,37 @@ body.film-mode main { max-width: none; padding: 0; min-height: 0; }
 .panel .stage .bubble { z-index: 2; pointer-events: none; }
 .view-toggle { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; }
 .view-toggle .muted { font-size: .85rem; margin-left: 6px; }
+
+/* Мини-игра */
+.game-wrap { max-width: 980px; margin: 0 auto; }
+.game-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-bottom: 10px; }
+.game-head b { font-family: var(--serif); font-size: 1.1rem; }
+.game-head .muted:last-child { margin-left: auto; font-size: .88rem; }
+.game-stage { position: relative; width: 100%; border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; background: #14131b; touch-action: none; user-select: none; }
+.game-stage canvas { display: block; width: 100%; }
+.game-overlay { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px; text-align: center; color: #f6ecd0; background: rgba(10,9,16,.78); }
+.game-overlay h2 { color: #f6ecd0; margin: 0; }
+.game-overlay p { max-width: 460px; margin: 0; opacity: .9; }
+.game-overlay .btn { background: rgba(255,255,255,.1); color: #f6ecd0; border-color: rgba(255,255,255,.3); }
+.game-overlay .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.game-overlay .stars { font-size: 2.4rem; color: #e5b84a; letter-spacing: 6px; }
+.game-overlay .stars span { opacity: .25; }
+.game-pad { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 12px; }
+.game-pad .pad-move, .game-pad .pad-act { display: flex; gap: 10px; }
+.game-pad button { min-width: 64px; height: 56px; padding: 0 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); font-size: 1.05rem; touch-action: none; user-select: none; -webkit-user-select: none; }
+.game-pad button.on, .game-pad button:active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.game-keys { font-size: .85rem; margin-top: 10px; }
+@media (max-width: 560px) { .game-pad button { min-width: 54px; height: 52px; padding: 0 10px; font-size: .95rem; } }
+
+/* Анимация комикса «Силуэт» */
+@keyframes sil-bob { 0%, 100% { transform: translateY(0) scaleY(1); } 50% { transform: translateY(-1.6px) scaleY(1.012); } }
+@keyframes sil-scarf { 0%, 100% { transform: rotate(0deg) skewY(0deg); } 50% { transform: rotate(-9deg) skewY(5deg); } }
+@keyframes sil-ring { 0% { transform: scale(.55); opacity: 0; } 25% { opacity: .8; } 100% { transform: scale(1.35); opacity: 0; } }
+@keyframes sil-flick { 0%, 100% { transform: scale(1, 1); opacity: 1; } 30% { transform: scale(.94, 1.1); opacity: .92; } 60% { transform: scale(1.05, .93); opacity: 1; } }
+@keyframes sil-sun { 0%, 100% { opacity: .14; } 50% { opacity: .26; } }
+.sil-idle { animation: sil-bob 3.4s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+.sil-scarf { animation: sil-scarf 1.9s ease-in-out infinite; transform-box: view-box; }
+.sil-ring { animation: sil-ring 1.6s ease-out infinite; }
+.sil-flick { animation: sil-flick .7s ease-in-out infinite; }
+.sil-sun { animation: sil-sun 5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .sil-idle, .sil-scarf, .sil-ring, .sil-flick, .sil-sun { animation: none; } }
