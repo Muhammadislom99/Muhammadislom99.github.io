@@ -493,3 +493,10 @@ mark.hl.flash { animation: hlflash 1.4s ease 2; }
 .hl-comment { font-family: var(--sans) !important; font-size: .95rem; color: var(--muted); margin: 0 0 6px !important; }
 .hl-src { font-size: .9rem; }
 .btn-row + section { margin-top: 32px; }
+
+/* Панель маркеров на телефоне — внизу экрана */
+.hl-bar.dock { left: 50%; right: auto; top: auto; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom)); }
+body.has-player .hl-bar.dock { bottom: calc(96px + env(safe-area-inset-bottom)); }
+.hl-bar.dock .hl-dot { min-width: 64px; }
+.hl-bar.dock .hl-dot i { width: 34px; height: 34px; }
+.build { opacity: .7; }
