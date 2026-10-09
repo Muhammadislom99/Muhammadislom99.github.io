@@ -99,6 +99,7 @@
         card('#/era', '7 ступеней', 'Эпоха', 'Социальная лестница феодальной Японии и краткая история самураев.', ART.mountain) +
         card('#/life', 'Хронология', 'Жизнь Хидэёси', 'От деревни Накамура до замка Фусими — ' + LIFE.length + ' событий с иллюстрациями.', ART.castle) +
         (window.Film ? card('#/film', 'Мультфильм · ~' + Film.minutes + ' мин', 'Фильм', 'Все эпизоды подряд как мультфильм: движение камеры, реплики, субтитры и озвучка.', ART.lantern) : '') +
+        card('#/game', '4 уровня', 'Игра «Тень Хидэёси»', 'Стелс-платформер: крадись мимо стражи, прячься в тени, отвлекай камнями.', ART.sword) +
         card('#/comic', COMIC.length + ' эпизодов', 'Комикс', 'Ключевые моменты жизни Хидэёси в картинках, с пересказом каждого эпизода.', ART.sword) +
         card('#/lessons', LESSONS.length + ' тем', 'Уроки', 'Каждый принцип — история, суть, практика и вопрос для размышления.', ART.scroll) +
         card('#/quiz', QUIZ.length + ' вопросов', 'Проверь себя', 'Короткий тест по событиям и идеям книги.', ART.enso) +
@@ -705,10 +706,12 @@
     var parts = location.hash.replace(/^#\/?/, '').split('/');
     var r = parts[0] || 'home', html, bind;
     Comic.style = viewMode() === 'sil' ? 'sil' : null;
+    if (window.Game) Game.stop();
     switch (r) {
       case 'home': html = home(); break;
       case 'life': html = life(); bind = bindLife; break;
       case 'comic': html = parts[1] ? comicEpisode(parts[1]) : comicList(); if (parts[1] && comicById(parts[1])) bind = function () { bindComic(parts[1]); }; break;
+      case 'game': html = Game.view(parts[1]); bind = function () { if (parts[1]) Game.bind(parts[1]); }; break;
       case 'film': html = Film.view(parts[1]); bind = function () { Film.bind(parts[1]); }; break;
       case 'lessons': html = lessons(); break;
       case 'lesson': html = lesson(parts[1]); if (lessonById(parts[1])) bind = function () { bindLesson(parts[1]); }; break;
