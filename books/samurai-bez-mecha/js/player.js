@@ -98,11 +98,10 @@
   /* Android Chrome: cancel() прямо перед speak() «съедает» новую фразу, а onend
      иногда не приходит. Поэтому: между фразами без cancel(), при перемотке —
      cancel() и пауза 250 мс, плюс сторож, который двигает очередь, если onend потерялся. */
-  var cur = null, note = '', lastCancel = 0, retryFor = -1, swaps = 0, swapFor = null;
+  var cur = null, note = '', lastCancel = 0, retryFor = -1;
   function cancelNow() { if (supported && (synth.speaking || synth.pending)) { synth.cancel(); lastCancel = Date.now(); } }
   function speakAt(i, interrupt) {
     var my = ++token;
-    if (interrupt) swaps = 0;
     idx = i;
     if (idx >= items.length) { stop(); return; }
     var it = items[idx];
@@ -118,14 +117,15 @@
       u.lang = v ? v.lang : 'ru-RU';
       u.rate = (window.Prefs && Prefs.get().rate) || 1;
       var st = cur = { my: my, t0: Date.now(), started: false, done: false, go: go };
-      u.onstart = function () { st.started = true; };
+      u.onstart = function () { st.started = true; if (note === 'Загружаю голос…') { note = ''; updateBar(); } if (window.TTS && TTS.ok) TTS.ok(); };
       u.onend = function () { finish(st); };
       u.onerror = function (e) {
         if (e.error === 'interrupted' || e.error === 'canceled') return;
         if (e.error === 'not-allowed') { blocked(); return; }
-        if (!st.started && window.TTS && TTS.fail && /network|synthesis|unavailable|language|voice/.test(e.error || '') && swaps < 4) { swaps++; if (TTS.fail(v)) { cancelNow(); setTimeout(st.go, 260); return; } }
+        if (!st.started && /network|synthesis|unavailable|language|voice/.test(e.error || '')) { voiceFailed(v); return; }
         finish(st);
       };
+      st.voice = v;
       synth.speak(u);
       if (synth.paused) synth.resume();
     };
@@ -139,6 +139,14 @@
     st.done = true;
     speakAt(idx + 1, false);
   }
+  function voiceFailed(v) {
+    paused = true; token++;
+    cancelNow();
+    note = 'Голос не загрузился';
+    updateBar();
+    if (window.TTS && TTS.fail && v) TTS.fail(v, function () { paused = false; speakAt(idx, true); });
+    else blocked();
+  }
   function blocked() {
     paused = true; token++;
     cancelNow();
@@ -149,9 +157,9 @@
     if (!playing || paused || !cur || cur.done || cur.my !== token) return;
     var age = Date.now() - cur.t0;
     if (cur.started && age > 800 && !synth.speaking && !synth.pending) finish(cur);
-    else if (!cur.started && !synth.speaking && age > 1500 && retryFor !== idx) { retryFor = idx; var g = cur.go; cancelNow(); setTimeout(g, 260); }
-    else if (!cur.started && age > 3500 && window.TTS && TTS.fail && swaps < 4 && swapFor !== cur) { swapFor = cur; swaps++; var cv = TTS.voice(); if (cv && TTS.fail(cv)) { var g2 = cur.go; cancelNow(); setTimeout(g2, 260); } }
-    else if (!cur.started && age > 6000 && !synth.speaking) blocked();
+    else if (!cur.started && age > 700 && !note) { note = 'Загружаю голос…'; updateBar(); }
+    if (!cur.started && !synth.speaking && age > 1500 && retryFor !== idx) { retryFor = idx; var g = cur.go; cancelNow(); setTimeout(g, 260); }
+    else if (!cur.started && age > 3200) { if (cur.voice) voiceFailed(cur.voice); else if (age > 6000 && !synth.speaking) blocked(); }
   }, 600);
   function setBtn(b, on) {
     if (!b) return;
