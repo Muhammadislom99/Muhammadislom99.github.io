@@ -125,7 +125,7 @@
       // уже выделено целиком? тогда не дублируем
       segs.push({ bi: i, s: s, e: e, t: t.slice(s, e), ctx: t.slice(Math.max(0, s - 24), s) });
     });
-    return segs.length ? { segs: segs, rect: r.getBoundingClientRect(), anchor: bl[segs[0].bi] } : null;
+    return segs.length ? { segs: segs, rect: r.getBoundingClientRect(), anchor: bl[segs[0].bi], start: { node: r.startContainer, offset: r.startOffset } } : null;
   }
   function context(block) {
     var sec = block.closest('.secret'), title = document.title.replace(/\s*·\s*Самурай без меча$/, '') || 'Главная';
@@ -158,6 +158,7 @@
     bar.innerHTML = COLORS.map(function (c) {
       return '<button class="hl-dot hl-' + c.id + (existing && existing.c === c.id ? ' on' : '') + '" data-a="color" data-c="' + c.id + '" aria-label="' + c.name + '" title="' + c.name + '"><i></i><span>' + c.name + '</span></button>';
     }).join('') +
+      (!existing && window.Player && Player.supported ? '<button class="hl-act" data-a="say" aria-label="Слушать отсюда" title="Слушать отсюда">▶</button>' : '') +
       (!existing ? '<button class="hl-dot hl-plus" data-a="add" aria-label="Выделить с комментарием" title="Выделить с комментарием"><i>+</i><span>Заметка</span></button>' : '') +
       (existing ? '<button class="hl-act" data-a="note" aria-label="Комментарий" title="Комментарий">✎</button>' +
         '<button class="hl-act" data-a="copy" aria-label="Копировать" title="Копировать">⧉</button>' +
@@ -197,6 +198,7 @@
       }
       hide(); barDown = 0; return;
     }
+    if (pending && a === 'say') { var st = pending.start; hide(); barDown = 0; try { getSelection().removeAllRanges(); } catch (e) {} if (st && window.Player) Player.startFromNode(st.node, st.offset); return; }
     if (pending && a === 'color') create(pending, c, '');
     else if (pending && a === 'add') { var snap = pending; hide(); barDown = 0; openSheet({ sel: snap, c: 'y', n: '' }); return; }
     hide();
