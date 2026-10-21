@@ -26,7 +26,13 @@
     var b = e.target.closest('.say[data-say]');
     if (!b || !window.Player) return;
     e.preventDefault(); e.stopPropagation();
-    Player.toggle(sayScope(b), b);
+    if (b.dataset.resume) Player.resume(sayScope(b), b); else Player.toggle(sayScope(b), b);
+  });
+  if (window.Player && Player.setScopeResolver) Player.setScopeResolver(sayScope);
+  // «Продолжить слушать» с главной: переходим на страницу и запускаем с места остановки
+  app.addEventListener('click', function (e) {
+    var a = e.target.closest('[data-autoresume]');
+    if (a) window.__autoResume = a.dataset.autoresume;
   });
 
   function lessonById(id) { return LESSONS.find(function (l) { return l.id === id; }); }
@@ -66,9 +72,14 @@
   }, { passive: true });
 
   /* ---------- Главная ---------- */
+  function resumeCard() {
+    var L = window.Player && Player.last && Player.last();
+    if (!L) return '';
+    return '<a class="resume-card" href="' + esc(L.hash) + '" data-autoresume="' + esc(L.key) + '"><span class="rc-ic" aria-hidden="true">⏵</span><span><b>Продолжить слушать</b><small>' + esc(L.title) + ' · предложение ' + (L.idx + 1) + ' из ' + L.total + '</small></span></a>';
+  }
   function home() {
     var B = window.BOOK, done = readSet().length;
-    return '<div class="fade-in">' +
+    return '<div class="fade-in">' + resumeCard() +
       '<div class="hero"><div>' +
         '<div class="eyebrow">' + esc(B.author) + '</div>' +
         '<h1>' + esc(B.title) + '</h1>' +
@@ -728,6 +739,14 @@
     document.body.classList.toggle('film-mode', r === 'film');
     app.innerHTML = html;
     if (bind) bind();
+    if (window.Player && Player.decorate) Player.decorate(app);
+    if (window.__autoResume) {
+      var arKey = window.__autoResume; window.__autoResume = null;
+      var arTries = 0, arIv = setInterval(function () {
+        var rb = app.querySelector('.say.resume[data-say="' + arKey + '"]') || app.querySelector('.say.wide[data-say="' + arKey + '"]');
+        if (rb) { clearInterval(arIv); rb.click(); } else if (++arTries > 14) clearInterval(arIv);
+      }, 250);
+    }
     var navKey = r === 'lesson' ? 'lessons' : (r === 'chapter' || r === 'cards' || r === 'era') ? 'book' : r;
     nav.querySelectorAll('a').forEach(function (a) { a.classList.toggle('active', a.dataset.route === navKey); });
     nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false');

@@ -13,7 +13,7 @@
   var SKIP = '.more, .s-actions, .pager, .say-row, .facts-row, figure.diagram, .comic-note, textarea, .q-meta, .hl-bar';
 
   var items = [], idx = 0, token = 0, playing = false, paused = false, btn = null, scope = null, title = '';
-  var lastUser = 0, bar = null, curBlock = null;
+  var lastUser = 0, bar = null, curBlock = null, scopeKey = '';
 
   /* ---------- Сбор текста ---------- */
   function skipped(el, sc) {
@@ -94,6 +94,55 @@
   ['wheel', 'touchmove'].forEach(function (ev) { addEventListener(ev, function () { if (playing) lastUser = Date.now(); }, { passive: true }); });
   addEventListener('keydown', function (e) { if (playing && /^(Arrow|Page|Home|End| )/.test(e.key) && !e.target.closest('input, textarea')) lastUser = Date.now(); });
 
+  /* ---------- Запоминание места ---------- */
+  function posMap() { try { return Store.get('listen', {}) || {}; } catch (e) { return {}; } }
+  function getPos(key) { var p = key && posMap()[key]; return p && p.idx > 0 && p.total > 1 ? p : null; }
+  function savePos() {
+    if (!scopeKey || !items[idx]) return;
+    var m = posMap();
+    m[scopeKey] = { idx: idx, total: items.length, snip: items[idx].text.slice(0, 50), title: title, hash: location.hash, t: Date.now() };
+    try { Store.set('listen', m); Store.set('listen-last', scopeKey); } catch (e) {}
+  }
+  function clearPos(key) {
+    if (!key) return;
+    var m = posMap(); delete m[key];
+    try { Store.set('listen', m); if (Store.get('listen-last', '') === key) Store.set('listen-last', ''); } catch (e) {}
+  }
+  function last() {
+    var key = ''; try { key = Store.get('listen-last', ''); } catch (e) {}
+    var p = getPos(key);
+    return p && p.hash ? Object.assign({ key: key }, p) : null;
+  }
+  /* кнопка «Продолжить» рядом с «Слушать» */
+  function decorate(root) {
+    if (!supported || !root) return;
+    root.querySelectorAll('.say.resume').forEach(function (r) { r.remove(); });
+    root.querySelectorAll('.say.wide[data-say]').forEach(function (b) {
+      var pos = getPos(b.dataset.say);
+      if (!pos || (playing && btn === b)) return;
+      var r = document.createElement('button');
+      r.type = 'button'; r.className = 'say wide resume'; r.dataset.say = b.dataset.say; r.dataset.resume = '1';
+      r.title = 'С места остановки: «' + pos.snip + '…»';
+      r.setAttribute('aria-label', 'Продолжить с места остановки, предложение ' + (pos.idx + 1) + ' из ' + pos.total);
+      r.innerHTML = '<span class="ic" aria-hidden="true">⏵</span><span>Продолжить · ' + (pos.idx + 1) + ' из ' + pos.total + '</span>';
+      b.insertAdjacentElement('afterend', r);
+    });
+  }
+  function refresh() { decorate(document.getElementById('app')); }
+  /* индекс предложения по месту в тексте */
+  function indexAt(list, node, offset) {
+    var host = null;
+    list.some(function (it) { if (it.el.contains(node)) { host = it.el; return true; } });
+    if (!host) return 0;
+    var r = document.createRange(), off = 0;
+    try { r.selectNodeContents(host); r.setEnd(node, offset); off = r.toString().length; } catch (e) {}
+    var i;
+    for (i = 0; i < list.length; i++) if (list[i].el === host && off >= list[i].s && off <= list[i].e) return i;
+    for (i = 0; i < list.length; i++) if (list[i].el === host && list[i].s >= off) return i;
+    for (i = list.length - 1; i >= 0; i--) if (list[i].el === host) return i;
+    return 0;
+  }
+
   /* ---------- Воспроизведение ---------- */
   /* Android Chrome: cancel() прямо перед speak() «съедает» новую фразу, а onend
      иногда не приходит. Поэтому: между фразами без cancel(), при перемотке —
@@ -103,10 +152,11 @@
   function speakAt(i, interrupt) {
     var my = ++token;
     idx = i;
-    if (idx >= items.length) { stop(); return; }
+    if (idx >= items.length) { clearPos(scopeKey); stop(); return; }
     var it = items[idx];
     if (!document.contains(it.el)) { stop(); return; }
     mark(it);
+    savePos();
     note = '';
     updateBar();
     if (paused) return;
@@ -173,27 +223,97 @@
     items = collect(sc);
     if (!items.length) return;
     scope = sc; btn = b; playing = true; paused = false; lastUser = 0;
+    scopeKey = (b && b.dataset && b.dataset.say) || '';
+    if (typeof from === 'function') from = from(items);
+    if (!(from >= 0 && from < items.length)) from = 0;
     var h = sc.querySelector('h1, .s-rule, h3, .t-title, h2');
     title = h ? h.textContent.trim() : 'Озвучка';
-    setBtn(btn, true); showBar();
-    speakAt(from || 0, true);
+    setBtn(btn, true); showBar(); refresh();
+    speakAt(from, true);
   }
   function stop() {
     token++;
     cancelNow();
     playing = false; paused = false;
     setBtn(btn, false); btn = null; scope = null; items = [];
-    clearMark(); hideBar();
+    clearMark(); hideBar(); scopeKey = '';
+    refresh();
   }
   function toggle(sc, b) {
     if (playing && b && b === btn) { stop(); return; }
     start(sc, b);
+  }
+  function mainBtn(b) { return b.classList.contains('resume') ? (b.parentElement.querySelector('.say.wide:not(.resume)[data-say="' + b.dataset.say + '"]') || b) : b; }
+  function resume(sc, b) {
+    var main = mainBtn(b), pos = getPos(main.dataset.say);
+    if (playing && btn === main) { return; }
+    start(sc, main, function (list) {
+      if (!pos) return 0;
+      if (list[pos.idx] && list[pos.idx].text.slice(0, 50) === pos.snip) return pos.idx;
+      for (var i = 0; i < list.length; i++) if (list[i].text.slice(0, 50) === pos.snip) return i;
+      return Math.min(pos.idx, list.length - 1);
+    });
+  }
+  function startAt(sc, b, node, offset) {
+    var main = mainBtn(b);
+    start(sc, main, function (list) { return indexAt(list, node, offset); });
   }
   function pause() {
     if (!playing) return;
     paused = !paused;
     if (paused) { token++; cancelNow(); updateBar(); }
     else speakAt(idx, true);
+  }
+  var resolver = null, chip = null, chipT = 0, chipCtx = null;
+  function scopeAt(t) {
+    if (!resolver) return null;
+    var best = null;
+    document.querySelectorAll('#app .say.wide[data-say]:not(.resume)').forEach(function (b) {
+      var sc = resolver(b);
+      if (sc && sc.contains(t) && (!best || best.sc.contains(sc))) best = { sc: sc, b: b };
+    });
+    return best;
+  }
+  function caretAt(x, y) {
+    if (document.caretPositionFromPoint) { var p = document.caretPositionFromPoint(x, y); return p && p.offsetNode ? { node: p.offsetNode, offset: p.offset } : null; }
+    if (document.caretRangeFromPoint) { var r = document.caretRangeFromPoint(x, y); return r ? { node: r.startContainer, offset: r.startOffset } : null; }
+    return null;
+  }
+  function hideChip() { clearTimeout(chipT); if (chip) chip.hidden = true; chipCtx = null; }
+  function showChip(x, y, ctx) {
+    if (!chip) {
+      chip = document.createElement('button'); chip.type = 'button'; chip.className = 'say-chip'; chip.hidden = true;
+      chip.addEventListener('click', function (e) {
+        e.stopPropagation(); var c = chipCtx; hideChip();
+        if (c) startAt(c.sc, c.b, c.node, c.offset);
+      });
+      document.body.appendChild(chip);
+    }
+    chipCtx = ctx;
+    chip.innerHTML = '<span aria-hidden="true">▶</span> ' + (playing ? 'Читать отсюда' : 'Слушать отсюда');
+    chip.hidden = false;
+    var w = chip.offsetWidth || 150;
+    chip.style.left = Math.max(8, Math.min(innerWidth - w - 8, x - w / 2)) + 'px';
+    chip.style.top = (y > 110 ? y - 58 : y + 22) + 'px';
+    clearTimeout(chipT); chipT = setTimeout(hideChip, 4500);
+  }
+  document.addEventListener('click', function (e) {
+    if (!supported || !(e.target instanceof Element)) return;
+    var t = e.target;
+    if (chip && chip.contains(t)) return;
+    hideChip();
+    if (t.closest('a, button, summary, input, textarea, select, label, .player, .hl-bar, .prefs-panel, .tts-notice, .tour, .film, .t-head, .say-row, mark.hl, [data-nohl]')) return;
+    var sel = window.getSelection && getSelection(); if (sel && !sel.isCollapsed) return;
+    if (!t.closest(READ)) return;
+    var sc = scopeAt(t); if (!sc) return;
+    var pos = caretAt(e.clientX, e.clientY); if (!pos) return;
+    showChip(e.clientX, e.clientY, { sc: sc.sc, b: sc.b, node: pos.node, offset: pos.offset });
+  });
+  addEventListener('scroll', hideChip, { passive: true });
+  function startFromNode(node, offset) {
+    var el = node && (node.nodeType === 1 ? node : node.parentElement); if (!el) return false;
+    var sc = scopeAt(el); if (!sc) return false;
+    startAt(sc.sc, sc.b, node, offset); return true;
   }
   addEventListener('hashchange', stop);
   addEventListener('beforeunload', function () { if (supported) synth.cancel(); });
@@ -232,5 +352,9 @@
     p.textContent = paused ? '▶' : '❚❚'; p.setAttribute('aria-label', paused ? 'Продолжить' : 'Пауза');
   }
 
-  window.Player = { supported: supported, toggle: toggle, stop: stop, isPlaying: function () { return playing; } };
+  window.Player = {
+    supported: supported, toggle: toggle, stop: stop, isPlaying: function () { return playing; },
+    resume: resume, startAt: startAt, startFromNode: startFromNode, decorate: decorate, last: last,
+    setScopeResolver: function (f) { resolver = f; }
+  };
 })();
