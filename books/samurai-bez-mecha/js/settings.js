@@ -24,59 +24,87 @@
     renderVoices();
   }
   if (supported) { loadVoices(); synth.onvoiceschanged = loadVoices; }
-  /* Онлайн-голоса (Microsoft «Online/Natural», Google) ходят в облако: при блокировке сети,
-     VPN или фаерволе они молчат. Поэтому: по умолчанию — голоса устройства, а голос, который
-     не отозвался, помечаем «плохим» и переходим к следующему. */
+  /* Онлайн-голоса (Microsoft «Online/Natural», Google) ходят в облако: если служба речи
+     недоступна (интернет, VPN, фаервол), голос не загружается. Мы это ПОКАЗЫВАЕМ: окно с
+     причиной и кнопками «Повторить» / «Взять другой голос». Выбранный голос молча не меняем. */
   var bad = {};
   try { bad = JSON.parse(sessionStorage.getItem('sbm-badvoices') || '{}'); } catch (e) { bad = {}; }
+  function saveBad() { try { sessionStorage.setItem('sbm-badvoices', JSON.stringify(bad)); } catch (e) {} }
   function isLocal(v) { return !!v && (v.localService === true || (v.localService === undefined && !/online|natural|google|yandex/i.test(v.name))); }
-  function candidates() { var c = voices.filter(function (v) { return !bad[v.name]; }); return c.length ? c : voices; }
+  var PREF = /irina|svetlana|milena|katya|pavel|ирина|светлана|павел/i;
+  function best(list) {
+    return list.filter(isLocal).sort(function (a, b) { return (PREF.test(b.name) ? 1 : 0) - (PREF.test(a.name) ? 1 : 0); })[0] ||
+      list.find(function (v) { return /google|yandex/i.test(v.name); }) || list[0] || null;
+  }
   function pickVoice() {
-    var c = candidates();
-    if (!c.length) return null;
-    return c.find(function (v) { return v.name === prefs.voice; }) ||
-      c.filter(isLocal).sort(function (a, b) { return (/irina|svetlana|milena|katya|pavel/i.test(b.name) ? 1 : 0) - (/irina|svetlana|milena|katya|pavel/i.test(a.name) ? 1 : 0); })[0] ||
-      c.find(function (v) { return /google|yandex/i.test(v.name); }) || c[0];
+    if (!voices.length) return null;
+    var sel = voices.find(function (v) { return v.name === prefs.voice; });
+    if (sel) return sel;
+    var ok = voices.filter(function (v) { return !bad[v.name]; });
+    return best(ok.length ? ok : voices);
   }
-  var toastT;
-  function toast(msg) {
-    var t = document.getElementById('ttsToast');
-    if (!t) { t = document.createElement('div'); t.id = 'ttsToast'; t.className = 'tts-toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
-    t.textContent = msg; t.classList.add('on');
-    clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove('on'); }, 7000);
+  function altVoice(name) {
+    var rest = voices.filter(function (v) { return v.name !== name; });
+    return best(rest.filter(function (v) { return !bad[v.name]; })) || best(rest);
   }
-  /* голос не отозвался: помечаем и переключаемся на другой; возвращает новый голос или null */
-  function failVoice(v, silent) {
-    if (!v) return pickVoice();
-    bad[v.name] = true;
-    try { sessionStorage.setItem('sbm-badvoices', JSON.stringify(bad)); } catch (e) {}
-    var next = pickVoice();
-    if (next && next.name !== v.name) {
-      prefs.voice = next.name; save(); renderVoices();
-      if (!silent) toast('Голос «' + v.name.replace(/^Microsoft\s+/, '') + '» не отвечает (онлайн-голосам нужен интернет и доступ к службе речи). Переключил на «' + next.name.replace(/^Microsoft\s+/, '') + '».');
-      return next;
+  function short(n) { return String(n).replace(/^Microsoft\s+/, ''); }
+
+  var noticeEl = null, resumeCb = null, noticeVoice = '', noticeAlt = '';
+  function hideNotice() { if (noticeEl) noticeEl.classList.remove('on'); resumeCb = null; }
+  function showNotice(v, resume) {
+    if (!noticeEl) {
+      noticeEl = document.createElement('div'); noticeEl.id = 'ttsNotice'; noticeEl.className = 'tts-notice'; noticeEl.setAttribute('role', 'alert');
+      document.body.appendChild(noticeEl);
+      noticeEl.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-tn]'); if (!b) return;
+        var act = b.dataset.tn, cb = resumeCb;
+        if (act === 'retry') { delete bad[noticeVoice]; saveBad(); hideNotice(); renderVoices(); if (cb) cb(); }
+        else if (act === 'alt') { prefs.voice = noticeAlt; save(); delete bad[noticeAlt]; saveBad(); hideNotice(); renderVoices(); if (cb) cb(); }
+        else if (act === 'open') { hideNotice(); var pb = document.getElementById('prefsBtn'); if (pb) pb.click(); }
+        else hideNotice();
+      });
     }
-    if (!silent) toast('Ни один голос не отвечает. Проверьте звук системы и вкладки, а в настройках Windows — «Речь» и русский голос.');
-    return null;
+    var alt = altVoice(v.name);
+    noticeVoice = v.name; noticeAlt = alt ? alt.name : ''; resumeCb = resume || null;
+    var why = isLocal(v)
+      ? 'Голос установлен на устройстве, но не заговорил. Проверьте, что звук включён в системе и именно в этой вкладке браузера, и что выбран нужный выход звука.'
+      : 'Это онлайн-голос: ему нужен интернет и доступ к службе речи (Microsoft или Google). Её могут блокировать VPN, фаервол, антивирус или сеть.';
+    noticeEl.innerHTML = '<b>Голос «' + short(v.name).replace(/</g, '&lt;') + '» не загрузился</b><span>' + why + '</span><div class="tn-btns">' +
+      '<button data-tn="retry">Повторить</button>' +
+      (alt ? '<button data-tn="alt">Взять «' + short(alt.name).replace(/</g, '&lt;') + '» · ' + (isLocal(alt) ? 'на устройстве' : 'онлайн') + '</button>' : '') +
+      '<button data-tn="open">Настройки голоса</button><button data-tn="x" class="tn-x" aria-label="Закрыть">✕</button></div>';
+    noticeEl.classList.add('on');
   }
-  function testVoice(done) {
-    if (!supported) { done('none'); return; }
+  /* голос не заговорил: показываем это; resume — что сделать после выбора пользователя */
+  function failVoice(v, resume) {
+    if (!v) return;
+    bad[v.name] = true; saveBad(); renderVoices();
+    showNotice(v, resume);
+  }
+  function okVoice() { if (noticeEl && noticeEl.classList.contains('on')) hideNotice(); }
+
+  /* проверка: сначала выбранный голос; если не отвечает — ищем рабочий и предлагаем его */
+  function testVoice(progress, done) {
+    if (!supported) { done({ results: [] }); return; }
     try { synth.cancel(); } catch (e) {}
-    var tries = 0;
-    (function attempt() {
-      var v = pickVoice();
-      if (!v) { done('none'); return; }
-      var u = new SpeechSynthesisUtterance('Проверка голоса. Если вы это слышите, всё работает.'), started = false, over = false;
+    var order = [], results = [];
+    var cur = pickVoice(); if (cur) order.push(cur);
+    voices.forEach(function (v) { if (order.indexOf(v) < 0) order.push(v); });
+    order = order.slice(0, 5);
+    (function step(i) {
+      if (i >= order.length) { done({ results: results }); return; }
+      var v = order[i], started = false, over = false;
+      progress('Проверяю «' + short(v.name) + '»…');
+      var u = new SpeechSynthesisUtterance('Проверка голоса. Если вы это слышите, всё работает.');
       u.voice = v; u.lang = v.lang; u.rate = prefs.rate || 1;
-      function next() { if (over) return; over = true; try { synth.cancel(); } catch (e) {} failVoice(v, true); if (++tries < Math.max(2, Math.min(voices.length, 5)) && !allBad()) setTimeout(attempt, 300); else done('fail'); }
+      function end(ok) { if (over) return; over = true; try { synth.cancel(); } catch (e) {} results.push({ v: v, ok: ok }); if (ok || i === order.length - 1) { done({ results: results }); } else setTimeout(function () { step(i + 1); }, 250); }
       u.onstart = function () { started = true; };
-      u.onend = function () { if (over) return; over = true; done('ok', v); };
-      u.onerror = function (e) { if (e.error === 'interrupted' || e.error === 'canceled') return; next(); };
+      u.onend = function () { end(true); };
+      u.onerror = function (e) { if (e.error === 'interrupted' || e.error === 'canceled') return; end(false); };
       synth.speak(u);
-      setTimeout(function () { if (!started && !over) next(); }, 3500);
-    })();
+      setTimeout(function () { if (!started && !over) end(false); }, 3500);
+    })(0);
   }
-  function allBad() { return voices.length > 0 && voices.every(function (v) { return bad[v.name]; }); }
 
   /* ---------- Панель настроек ---------- */
   var panel, btn;
@@ -89,7 +117,7 @@
     var sel = panel && panel.querySelector('#voiceSel');
     if (!sel) return;
     sel.innerHTML = voices.length
-      ? voices.map(function (v) { return '<option value="' + v.name.replace(/"/g, '&quot;') + '"' + (v === pickVoice() ? ' selected' : '') + '>' + v.name + (isLocal(v) ? ' · на устройстве' : ' · онлайн') + (bad[v.name] ? ' · не отвечает' : '') + '</option>'; }).join('')
+      ? voices.map(function (v) { return '<option value="' + v.name.replace(/"/g, '&quot;') + '"' + (v === pickVoice() ? ' selected' : '') + '>' + v.name + (isLocal(v) ? ' · на устройстве' : ' · онлайн') + (bad[v.name] ? ' · не загрузился' : '') + '</option>'; }).join('')
       : '<option>Русский голос не найден в системе</option>';
   }
   function render() {
@@ -100,7 +128,7 @@
       '<div class="sp-row"><span>Шрифт</span>' + seg('font', [['auto', 'Как задумано'], ['serif', 'С засечками'], ['sans', 'Без засечек']], prefs.font) + '</div>' +
       '<div class="sp-row"><span>Скорость чтения</span>' + seg('rate', [[0.8, '0.8×'], [1, '1×'], [1.25, '1.25×'], [1.5, '1.5×']], prefs.rate) + '</div>' +
       (supported ? '<div class="sp-row"><span>Голос</span><select id="voiceSel"></select></div>' +
-        '<div class="sp-row"><button class="btn small" data-voicetest>🔊 Проверить голос</button><span id="voiceStat" class="muted" aria-live="polite" style="font-size:.85rem"></span></div>' : '<p class="muted" style="margin:0">Озвучка в этом браузере недоступна.</p>') +
+        '<div class="sp-row"><button class="btn small" data-voicetest>🔊 Проверить голос</button><span id="voiceStat" class="muted" aria-live="polite" style="font-size:.85rem;line-height:1.5"></span></div>' : '<p class="muted" style="margin:0">Озвучка в этом браузере недоступна.</p>') +
       '<div class="sp-row end"><button class="link-btn" data-reset>Сбросить</button><button class="link-btn" data-howto>Как пользоваться?</button><button class="btn small primary" data-close>Готово</button></div>';
     renderVoices();
   }
@@ -124,13 +152,19 @@
       e.stopPropagation(); // панель перерисовывается, а целевая кнопка исчезает из DOM
       var b = e.target.closest('button'); if (!b) return;
       if (b.hasAttribute('data-voicetest')) {
-        var st = panel.querySelector('#voiceStat'); if (st) st.textContent = 'Проверяю…';
-        testVoice(function (r, v) {
-          var st2 = panel.querySelector('#voiceStat'); renderVoices();
-          if (st2) st2.textContent = r === 'ok' ? 'Работает: «' + v.name.replace(/^Microsoft\s+/, '') + '»' : r === 'none' ? 'Русский голос не найден в системе' : 'Ни один голос не ответил. Проверьте звук системы и вкладки.';
+        var st = panel.querySelector('#voiceStat');
+        testVoice(function (m) { var x = panel.querySelector('#voiceStat'); if (x) x.textContent = m; }, function (r) {
+          var x = panel.querySelector('#voiceStat'); if (!x) return;
+          if (!r.results.length) { x.textContent = 'Русский голос не найден в системе'; return; }
+          var out = [], good = null;
+          r.results.forEach(function (it) { if (it.ok) { good = it.v; out.push('✓ «' + short(it.v.name) + '» работает'); } else { bad[it.v.name] = true; out.push('✗ «' + short(it.v.name) + '» не загрузился'); } });
+          saveBad(); renderVoices();
+          x.innerHTML = out.join('<br>') + (good && good.name !== (pickVoice() || {}).name ? '<br><button class="link-btn" data-usevoice="' + good.name.replace(/"/g, '&quot;') + '">Использовать «' + short(good.name) + '»</button>' : '') +
+            (!good ? '<br>Ни один голос не ответил. Проверьте звук в системе и в этой вкладке, а в Windows — «Речь» и русский голос.' : '');
         });
         return;
       }
+      if (b.dataset.usevoice) { prefs.voice = b.dataset.usevoice; delete bad[prefs.voice]; saveBad(); save(); render(); return; }
       if (b.dataset.fs) prefs.fs = Math.round(Math.max(0.85, Math.min(1.5, prefs.fs + (+b.dataset.fs) * 0.05)) * 100) / 100;
       else if (b.dataset.set) prefs[b.dataset.set] = b.dataset.set === 'rate' ? +b.dataset.val : b.dataset.val;
       else if (b.hasAttribute('data-reset')) prefs = Object.assign({}, def);
@@ -141,5 +175,5 @@
   }
 
   window.Prefs = { get: function () { return prefs; } };
-  window.TTS = { supported: supported, voice: pickVoice, fail: failVoice, test: testVoice, isLocal: isLocal, toast: toast };
+  window.TTS = { supported: supported, voice: pickVoice, fail: failVoice, ok: okVoice, test: testVoice, isLocal: isLocal };
 })();

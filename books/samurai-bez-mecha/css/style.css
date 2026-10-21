@@ -744,3 +744,16 @@ body.film-mode main { max-width: none; padding: 0; min-height: 0; }
 /* Сообщение о смене голоса */
 .tts-toast { position: fixed; left: 50%; bottom: 20px; transform: translate(-50%, 20px); max-width: min(92vw, 520px); padding: 12px 16px; border-radius: 12px; background: #2b2925; color: #f3eee4; font-size: .9rem; line-height: 1.4; box-shadow: 0 8px 28px rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 200; }
 .tts-toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+/* Окно «голос не загрузился» */
+.tts-notice { position: fixed; left: 50%; bottom: 18px; transform: translate(-50%, 24px); width: min(94vw, 560px); padding: 14px 16px 14px; border-radius: 14px; background: #2b1d1a; color: #f6e9e4; border: 1px solid #b23a2b; box-shadow: 0 12px 34px rgba(0,0,0,.45); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 300; display: grid; gap: 6px; }
+.tts-notice.on { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.tts-notice b { font-size: 1rem; color: #ffd9cf; }
+.tts-notice span { font-size: .88rem; line-height: 1.45; color: #e9d3cc; }
+.tn-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; align-items: center; }
+.tn-btns button { padding: 8px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,.28); background: rgba(255,255,255,.08); color: #fff; font-size: .88rem; }
+.tn-btns button[data-tn="retry"] { background: #d4553f; border-color: #d4553f; }
+.tn-btns .tn-x { margin-left: auto; padding: 8px 12px; }
+.fl-voice { position: absolute; top: 56px; left: 50%; transform: translateX(-50%); padding: 6px 14px; border-radius: 999px; background: rgba(13,12,10,.78); color: #f3eee4; font-size: .85rem; z-index: 6; }
+.fl-voice[hidden] { display: none; }
+#voiceStat { text-transform: none !important; letter-spacing: normal !important; font-weight: 400 !important; display: block; margin-top: 4px; }

@@ -103,23 +103,32 @@
     function fin() { if (finished || my !== token) return; finished = true; clearInterval(watch); done(); }
     var fallback = Math.max(2600, text.length * 62 / rate());
     if (muted || !canSpeak) { setTimeout(fin, fallback); return; }
-    var started = false, t0, retried = false, swapped = false, swaps = 0;
+    var started = false, t0, retried = false, shownLoad = false, usedVoice = null;
     function go() {
       if (my !== token) return;
       var u = new SpeechSynthesisUtterance(text), v = window.TTS && TTS.voice && TTS.voice();
+      usedVoice = v;
       if (v) u.voice = v;
       u.lang = v ? v.lang : 'ru-RU';
       u.rate = rate() * (opts.voice === 'say' ? 1.05 : 1);
       u.pitch = opts.voice === 'say' ? 1.15 : opts.voice === 'think' ? 0.9 : 1;
-      u.onstart = function () { started = true; };
+      u.onstart = function () { started = true; voiceNote(''); if (window.TTS && TTS.ok) TTS.ok(); };
       u.onend = fin;
       u.onerror = function (e) {
         if (e.error === 'interrupted' || e.error === 'canceled') return;
-        if (!started && window.TTS && TTS.fail && /network|synthesis|unavailable|language|voice/.test(e.error || '') && swaps < 4) { swaps++; if (TTS.fail(v)) { cancel(); retried = true; setTimeout(go, 260); return; } }
+        if (!started && /network|synthesis|unavailable|language|voice/.test(e.error || '')) { voiceFailed(); return; }
         fin();
       };
       t0 = Date.now();
       synth.speak(u);
+    }
+    function voiceFailed() {
+      if (my !== token) return;
+      clearInterval(watch); finished = true;
+      playing = false; token++; cancel(); talk(-1);
+      root.classList.add('paused'); updateUi(); showUi();
+      voiceNote('Голос не загрузился');
+      if (window.TTS && TTS.fail && usedVoice) TTS.fail(usedVoice, function () { voiceNote(''); play(); });
     }
     var wait = 260 - (Date.now() - lastCancel);
     if (wait > 0) setTimeout(go, wait); else go();
@@ -128,10 +137,15 @@
       if (my !== token || finished) { clearInterval(watch); return; }
       var age = Date.now() - (t0 || Date.now());
       if (started && age > 800 && !synth.speaking && !synth.pending) fin();
-      else if (!started && age > 1500 && !retried) { retried = true; cancel(); setTimeout(go, 260); }
-      else if (!started && age > 3800 && window.TTS && TTS.fail && swaps < 4 && !swapped) { swapped = true; swaps++; var cv = TTS.voice(); if (cv && TTS.fail(cv)) { cancel(); t0 = Date.now(); setTimeout(go, 260); } }
-      else if (!started && age > 4000) { clearInterval(watch); setTimeout(fin, Math.max(0, fallback - age)); }
+      else if (!started && age > 700 && !shownLoad) { shownLoad = true; voiceNote('Загружаю голос…'); }
+      if (!started && age > 1500 && !retried) { retried = true; cancel(); setTimeout(go, 260); }
+      else if (!started && age > 3200) voiceFailed();
     }, 500);
+  }
+  function voiceNote(t) {
+    if (!root) return;
+    var n = root.querySelector('.fl-voice'); if (!n) return;
+    n.textContent = t || ''; n.hidden = !t;
   }
   function rate() { return (window.Prefs && Prefs.get().rate) || 1; }
 
@@ -253,6 +267,7 @@
     var pos = Store.get('film-pos', 0), resumeEp = T[pos] ? T[pos].e : 0;
     return '<div class="film paused ui" id="film">' +
       '<div class="fl-screen" aria-live="off"></div>' +
+      '<div class="fl-voice" hidden aria-live="polite"></div>' +
       '<div class="fl-sub" aria-live="polite"></div>' +
       '<div class="fl-start">' +
         '<div class="fl-poster"><div class="fl-logo">侍</div><div class="fl-ep">Мультфильм по мотивам книги</div><h1>Самурай без меча</h1>' +
