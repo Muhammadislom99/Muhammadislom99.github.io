@@ -98,10 +98,11 @@
   /* Android Chrome: cancel() прямо перед speak() «съедает» новую фразу, а onend
      иногда не приходит. Поэтому: между фразами без cancel(), при перемотке —
      cancel() и пауза 250 мс, плюс сторож, который двигает очередь, если onend потерялся. */
-  var cur = null, note = '', lastCancel = 0, retryFor = -1;
+  var cur = null, note = '', lastCancel = 0, retryFor = -1, swaps = 0, swapFor = null;
   function cancelNow() { if (supported && (synth.speaking || synth.pending)) { synth.cancel(); lastCancel = Date.now(); } }
   function speakAt(i, interrupt) {
     var my = ++token;
+    if (interrupt) swaps = 0;
     idx = i;
     if (idx >= items.length) { stop(); return; }
     var it = items[idx];
@@ -122,6 +123,7 @@
       u.onerror = function (e) {
         if (e.error === 'interrupted' || e.error === 'canceled') return;
         if (e.error === 'not-allowed') { blocked(); return; }
+        if (!st.started && window.TTS && TTS.fail && /network|synthesis|unavailable|language|voice/.test(e.error || '') && swaps < 4) { swaps++; if (TTS.fail(v)) { cancelNow(); setTimeout(st.go, 260); return; } }
         finish(st);
       };
       synth.speak(u);
@@ -148,6 +150,7 @@
     var age = Date.now() - cur.t0;
     if (cur.started && age > 800 && !synth.speaking && !synth.pending) finish(cur);
     else if (!cur.started && !synth.speaking && age > 1500 && retryFor !== idx) { retryFor = idx; var g = cur.go; cancelNow(); setTimeout(g, 260); }
+    else if (!cur.started && age > 3500 && window.TTS && TTS.fail && swaps < 4 && swapFor !== cur) { swapFor = cur; swaps++; var cv = TTS.voice(); if (cv && TTS.fail(cv)) { var g2 = cur.go; cancelNow(); setTimeout(g2, 260); } }
     else if (!cur.started && age > 6000 && !synth.speaking) blocked();
   }, 600);
   function setBtn(b, on) {

@@ -103,7 +103,7 @@
     function fin() { if (finished || my !== token) return; finished = true; clearInterval(watch); done(); }
     var fallback = Math.max(2600, text.length * 62 / rate());
     if (muted || !canSpeak) { setTimeout(fin, fallback); return; }
-    var started = false, t0, retried = false;
+    var started = false, t0, retried = false, swapped = false, swaps = 0;
     function go() {
       if (my !== token) return;
       var u = new SpeechSynthesisUtterance(text), v = window.TTS && TTS.voice && TTS.voice();
@@ -113,7 +113,11 @@
       u.pitch = opts.voice === 'say' ? 1.15 : opts.voice === 'think' ? 0.9 : 1;
       u.onstart = function () { started = true; };
       u.onend = fin;
-      u.onerror = function (e) { if (e.error !== 'interrupted' && e.error !== 'canceled') fin(); };
+      u.onerror = function (e) {
+        if (e.error === 'interrupted' || e.error === 'canceled') return;
+        if (!started && window.TTS && TTS.fail && /network|synthesis|unavailable|language|voice/.test(e.error || '') && swaps < 4) { swaps++; if (TTS.fail(v)) { cancel(); retried = true; setTimeout(go, 260); return; } }
+        fin();
+      };
       t0 = Date.now();
       synth.speak(u);
     }
@@ -125,6 +129,7 @@
       var age = Date.now() - (t0 || Date.now());
       if (started && age > 800 && !synth.speaking && !synth.pending) fin();
       else if (!started && age > 1500 && !retried) { retried = true; cancel(); setTimeout(go, 260); }
+      else if (!started && age > 3800 && window.TTS && TTS.fail && swaps < 4 && !swapped) { swapped = true; swaps++; var cv = TTS.voice(); if (cv && TTS.fail(cv)) { cancel(); t0 = Date.now(); setTimeout(go, 260); } }
       else if (!started && age > 4000) { clearInterval(watch); setTimeout(fin, Math.max(0, fallback - age)); }
     }, 500);
   }
