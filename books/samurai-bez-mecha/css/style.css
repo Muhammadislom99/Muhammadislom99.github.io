@@ -740,3 +740,7 @@ body.film-mode main { max-width: none; padding: 0; min-height: 0; }
 .fl-thumb-art svg { position: static; width: 70%; height: auto; }
 .fl-seg.fl-gap { margin-left: 6px; }
 @media (max-width: 640px) { .fl-cols { grid-template-columns: 1fr; gap: 6px; } .fl-cols > div { padding: .6em .8em; font-size: .72rem; } .fl-chip { bottom: 22%; } }
+
+/* Сообщение о смене голоса */
+.tts-toast { position: fixed; left: 50%; bottom: 20px; transform: translate(-50%, 20px); max-width: min(92vw, 520px); padding: 12px 16px; border-radius: 12px; background: #2b2925; color: #f3eee4; font-size: .9rem; line-height: 1.4; box-shadow: 0 8px 28px rgba(0,0,0,.35); opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 200; }
+.tts-toast.on { opacity: 1; transform: translate(-50%, 0); }
