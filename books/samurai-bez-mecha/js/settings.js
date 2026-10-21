@@ -3,10 +3,12 @@
 (function () {
   var root = document.documentElement;
   var KEY = 'sbm-prefs';
-  var def = { fs: 1, align: 'left', font: 'auto', rate: 1, voice: '' };
-  var prefs;
-  try { prefs = Object.assign({}, def, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { prefs = Object.assign({}, def); }
+  var def = { fs: 1, align: 'left', font: 'auto', rate: 1, voice: '', vv: 2 };
+  var prefs, stored = {};
+  try { stored = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; prefs = Object.assign({}, def, stored); } catch (e) { prefs = Object.assign({}, def); }
 
+  // однократный сброс голоса: прежние версии могли сохранить локальный голос автоматически
+  if (stored.vv !== 2) { prefs.voice = ''; prefs.vv = 2; try { localStorage.setItem(KEY, JSON.stringify(prefs)); } catch (e) {} }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(prefs)); } catch (e) {} }
   function apply() {
     root.style.setProperty('--fs', prefs.fs);
@@ -31,10 +33,16 @@
   try { bad = JSON.parse(sessionStorage.getItem('sbm-badvoices') || '{}'); } catch (e) { bad = {}; }
   function saveBad() { try { sessionStorage.setItem('sbm-badvoices', JSON.stringify(bad)); } catch (e) {} }
   function isLocal(v) { return !!v && (v.localService === true || (v.localService === undefined && !/online|natural|google|yandex/i.test(v.name))); }
-  var PREF = /irina|svetlana|milena|katya|pavel|ирина|светлана|павел/i;
+  var LOCALPREF = /irina|svetlana|milena|katya|pavel|ирина|светлана|павел/i;
+  function bestLocal(list) {
+    var l = list.filter(isLocal);
+    return l.sort(function (a, b) { return (LOCALPREF.test(b.name) ? 1 : 0) - (LOCALPREF.test(a.name) ? 1 : 0); })[0] || null;
+  }
+  /* по умолчанию — онлайн-голос (качественнее): сначала Microsoft «Natural», затем Google/Yandex, затем голос устройства */
   function best(list) {
-    return list.filter(isLocal).sort(function (a, b) { return (PREF.test(b.name) ? 1 : 0) - (PREF.test(a.name) ? 1 : 0); })[0] ||
-      list.find(function (v) { return /google|yandex/i.test(v.name); }) || list[0] || null;
+    var online = list.filter(function (v) { return !isLocal(v); });
+    return online.find(function (v) { return /natural/i.test(v.name); }) ||
+      online.find(function (v) { return /google|yandex/i.test(v.name); }) || online[0] || bestLocal(list) || list[0] || null;
   }
   function pickVoice() {
     if (!voices.length) return null;
@@ -43,9 +51,12 @@
     var ok = voices.filter(function (v) { return !bad[v.name]; });
     return best(ok.length ? ok : voices);
   }
+  /* что предложить, если голос не загрузился: для онлайн-голоса — голос устройства (он точно без интернета) */
   function altVoice(name) {
-    var rest = voices.filter(function (v) { return v.name !== name; });
-    return best(rest.filter(function (v) { return !bad[v.name]; })) || best(rest);
+    var failed = voices.find(function (v) { return v.name === name; });
+    var rest = voices.filter(function (v) { return v.name !== name; }), ok = rest.filter(function (v) { return !bad[v.name]; });
+    if (failed && !isLocal(failed)) return bestLocal(ok) || bestLocal(rest) || best(ok) || best(rest);
+    return best(ok) || best(rest);
   }
   function short(n) { return String(n).replace(/^Microsoft\s+/, ''); }
 
