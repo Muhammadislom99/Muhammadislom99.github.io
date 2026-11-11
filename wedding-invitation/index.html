@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#efe3cf">
+<title>Фатхуллоходжа &amp; Шукронахон · 08.12.2026</title>
+<meta name="description" content="С любовью приглашаем вас на свадьбу Фатхуллоходжа и Шукронахон — 8 декабря 2026 года, 18:00, ресторан «Зикриддин».">
+<meta property="og:title" content="Фатхуллоходжа &amp; Шукронахон · 08.12.2026">
+<meta property="og:description" content="С любовью приглашаем вас разделить с нами самый счастливый день нашей жизни.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23c9a253'/%3E%3Ccircle cx='32' cy='32' r='23' fill='none' stroke='%23fff3d6' stroke-width='1.5'/%3E%3Cpath d='M32 46s-13-8-13-17a7 7 0 0 1 13-3 7 7 0 0 1 13 3c0 9-13 17-13 17z' fill='%23fff8ea'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Cormorant+SC:wght@400;500;600&family=Great+Vibes&display=swap">
+<link rel="stylesheet" href="style.css">
+
+<script>
+  /*
+   * ───────── Настройки приглашения ─────────
+   * musicSrc — путь к своему музыкальному файлу (mp3 / m4a / ogg), например: 'music/wedding.mp3'.
+   *            Если оставить пустым — играет встроенная романтическая мелодия (генерируется в браузере).
+   * mapUrl   — ссылка на карту для кнопки «Открыть на карте» (можно вставить точную ссылку из Яндекс/Google Карт).
+   * dateISO  — дата и время начала торжества (используется для обратного отсчёта).
+   */
+  window.WEDDING_CONFIG = {
+    musicSrc: '',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Ресторан Зикриддин'),
+    dateISO: '2026-12-08T18:00:00'
+  };
+</script>
+</head>
+<body class="is-intro">
+
+<!-- SVG-библиотека: розы, листья, букеты, венок, орнаменты (заполняется скриптом) -->
+<svg id="lib" width="0" height="0" aria-hidden="true" focusable="false"></svg>
+
+<!-- ─── Фон: бумага, блики, параллакс-флора ─── -->
+<div class="backdrop" aria-hidden="true">
+  <div class="bg-flora px" data-depth="-16">
+    <svg class="bgf bgf-tl" viewBox="0 0 320 320"><use href="#bouquet"/></svg>
+    <svg class="bgf bgf-br" viewBox="0 0 320 320"><use href="#bouquet"/></svg>
+    <svg class="bgf bgf-tr" viewBox="0 0 320 320"><use href="#bouquet"/></svg>
+    <svg class="bgf bgf-bl" viewBox="0 0 320 320"><use href="#bouquet"/></svg>
+  </div>
+  <div class="glow g1"></div>
+  <div class="glow g2"></div>
+  <div class="glow g3"></div>
+  <div class="vignette"></div>
+</div>
+
+<canvas id="fx-back" aria-hidden="true"></canvas>
+
+<!-- ─── Сцены ─── -->
+<main id="stage">
+
+  <!-- Сцена 1 · Приглашение -->
+  <section class="scene s-invite" data-i="0" aria-label="Приглашение" aria-hidden="true">
+    <div class="card">
+      <div class="frame"></div>
+      <div class="kb">
+        <div class="flora f-top-l px" data-depth="6"><svg viewBox="0 0 320 320"><use href="#bouquet"/></svg></div>
+        <div class="flora f-top-r px" data-depth="6"><svg viewBox="0 0 320 320"><use href="#bouquet"/></svg></div>
+        <div class="content">
+          <p class="eyebrow r" style="--d:.0s">Свадебное приглашение</p>
+          <div class="monogram r" style="--d:.15s">
+            <svg class="mono-ring" viewBox="0 0 120 120" aria-hidden="true"><use href="#ring"/></svg>
+            <span class="mono-txt">Ф<em>&amp;</em>Ш</span>
+          </div>
+          <div class="divider r" style="--d:.35s"><svg viewBox="0 0 240 24" aria-hidden="true"><use href="#divider"/></svg></div>
+          <p class="lead r" style="--d:.5s">С&nbsp;любовью приглашаем вас разделить с&nbsp;нами самый счастливый день нашей жизни</p>
+          <div class="divider r" style="--d:.7s"><svg viewBox="0 0 240 24" aria-hidden="true"><use href="#divider"/></svg></div>
+          <p class="mini-date r" style="--d:.85s">08 · 12 · 2026</p>
+        </div>
+        <div class="flora f-bot-c px" data-depth="4"><svg viewBox="0 0 320 320"><use href="#bouquet"/></svg></div>
+      </div>
+      <div class="swipe-hint r" style="--d:1.6s"><span>Листайте</span><i></i></div>
+      <div class="shade"></div>
+    </div>
+  </section>
+
+  <!-- Сцена 2 · Имена -->
+  <section class="scene s-names" data-i="1" aria-label="Имена молодожёнов" aria-hidden="true">
+    <div class="card">
+      <div class="frame"></div>
+      <div class="kb">
+        <div class="flora f-tl px" data-depth="8"><svg viewBox="0 0 320 320"><use href="#bouquet"/></svg></div>
+        <div class="flora f-br px" data-depth="8"><svg viewBox="0 0 320 320"><use href="#bouquet"/></svg></div>
+        <div class="content">
+          <p class="eyebrow r" style="--d:.0s">История нашей любви</p>
+          <h1 class="names">
+            <span class="name write" style="--d:.25s">Фатхуллоходжа</span>
+            <span class="amp r" style="--d:1.5s" aria-hidden="false"><i class="amp-ring"></i><b>&amp;</b></span>
+            <span class="name write" style="--d:1.9s">Шукронахон</span>
+          </h1>
+          <div class="divider r" style="--d:3.2s"><svg viewBox="0 0 240 24" aria-hidden="true"><use href="#divider"/></svg></div>
+          <p class="caption r" style="--d:3.4s">две судьбы — одна история</p>
+        </div>
+      </div>
+      <div class="shade"></div>
+    </div>
+  </section>
+
+  <!-- Сцена 3 · Дата -->
+  <section class="scene s-date" data-i="2" aria-label="Дата торжества" aria-hidden="true">
+    <div class="card">
+      <div class="frame"></div>
+      <div class="kb">
+        <div class="flora f-tl sm px" data-depth="6"><svg viewBox="0 0 320 320"><use href="#bouquet"/></svg></div>
+        <div class="flora f-tr sm px" data-depth="6"><svg viewBox="0 0 320 320"><use href="#bouquet"/></svg></div>
+        <div class="content">
+          <p class="eyebrow r" style="--d:0s">Сохраните дату</p>
+          <div class="date" aria-label="08.12.2026">
+            <span class="grp"><span class="dg"><b style="--k:0">0</b></span><span class="dg"><b style="--k:1">8</b></span></span>
+            <i class="sep" style="--k:2"></i>
+            <span class="grp"><span class="dg"><b style="--k:3">1</b></span><span class="dg"><b style="--k:4">2</b></span></span>
+            <i class="sep" style="--k:5"></i>
+            <span class="grp"><span class="dg"><b style="--k:6">2</b></span><span class="dg"><b style="--k:7">0</b></span><span class="dg"><b style="--k:8">2</b></span><span class="dg"><b style="--k:9">6</b></span></span>
+          </div>
+          <p class="weekday r" style="--d:1.5s">вторник · 18:00</p>
+          <div class="divider r" style="--d:1.7s"><svg viewBox="0 0 240 24" aria-hidden="true"><use href="#divider"/></svg></div>
+          <p class="quote r" style="--d:1.9s">День, который мы хотим разделить с&nbsp;вами</p>
+          <div class="countdown r" style="--d:2.3s" aria-live="off">
+            <div class="cd"><b data-cd="d">00</b><span data-cdl="d">дней</span></div>
+            <div class="cd"><b data-cd="h">00</b><span data-cdl="h">часов</span></div>
+            <div class="cd"><b data-cd="m">00</b><span data-cdl="m">минут</span></div>
+            <div class="cd"><b data-cd="s">00</b><span data-cdl="s">секунд</span></div>
+          </div>
+        </div>
+        <div class="flora f-bot-c px" data-depth="4"><svg viewBox="0 0 320 320"><use href="#bouquet"/></svg></div>
+      </div>
+      <div class="shade"></div>
+    </div>
+  </section>
+
+  <!-- Сцена 4 · Место -->
+  <section class="scene s-venue" data-i="3" aria-label="Место проведения" aria-hidden="true">
+    <div class="card">
+      <div class="frame"></div>
+      <div class="kb">
+        <div class="content">
+          <p class="eyebrow r" style="--d:0s">Место проведения торжества</p>
+          <p class="venue-quote r" style="--d:.15s">«С&nbsp;нетерпением ждём встречи с&nbsp;вами!»</p>
+          <div class="venue-card r" style="--d:.4s">
+            <div class="vc-frame"></div>
+            <div class="flora vf-tr px" data-depth="5"><svg viewBox="0 0 320 320"><use href="#bouquet"/></svg></div>
+            <div class="flora vf-bl px" data-depth="5"><svg viewBox="0 0 320 320"><use href="#bouquet"/></svg></div>
+            <ul class="vinfo">
+              <li class="r" style="--d:.9s">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="1.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="M12 12.6l.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2-1.45-1.4 2-.3z" class="fill"/></svg>
+                <span>08 декабря 2026 года</span>
+              </li>
+              <li class="r" style="--d:1.05s">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>
+                <span>Начало торжества — 18:00</span>
+              </li>
+            </ul>
+            <span class="vc-line r" style="--d:1.2s"></span>
+            <svg class="venue-pin r" style="--d:1.3s" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg>
+            <p class="venue-name write" style="--d:1.4s"><small>Ресторан</small><span class="gq">«</span>Зикриддин<span class="gq">»</span></p>
+          </div>
+          <p class="venue-names r" style="--d:2.5s">Фатхуллоходжа &amp; Шукронахон</p>
+          <p class="venue-quote2 r" style="--d:2.7s">«Будем счастливы разделить этот незабываемый день вместе с&nbsp;вами!»</p>
+          <a class="btn r" style="--d:3s" id="mapBtn" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg>
+            Открыть на карте
+          </a>
+        </div>
+      </div>
+      <div class="shade"></div>
+    </div>
+  </section>
+
+  <!-- Сцена 5 · Финал -->
+  <section class="scene s-final" data-i="4" aria-label="Финальное приглашение" aria-hidden="true">
+    <div class="card">
+      <div class="frame"></div>
+      <div class="kb">
+        <div class="content">
+          <div class="wreath r" style="--d:0s">
+            <svg class="wreath-svg" viewBox="0 0 300 300" aria-hidden="true"><use href="#wreath"/></svg>
+            <div class="wreath-in">
+              <span class="w-name">Фатхуллоходжа</span>
+              <span class="w-amp">&amp;</span>
+              <span class="w-name">Шукронахон</span>
+            </div>
+          </div>
+          <p class="final-date r" style="--d:.6s">08 · 12 · 2026 <span>· 18:00</span></p>
+          <p class="final-text r" style="--d:.9s">Будем счастливы видеть вас среди наших дорогих гостей!</p>
+          <div class="divider r" style="--d:1.2s"><svg viewBox="0 0 240 24" aria-hidden="true"><use href="#divider"/></svg></div>
+          <div class="sign r" style="--d:1.4s">
+            <span class="sign-pre">С любовью,</span>
+            <span class="sign-names">Фатхуллоходжа &amp; Шукронахон</span>
+          </div>
+          <div class="final-actions r" style="--d:2s">
+            <button class="link-btn" id="replayBtn" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg>
+              Сначала
+            </button>
+            <button class="link-btn" id="shareBtn" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>
+              Поделиться
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="shade"></div>
+    </div>
+  </section>
+
+  <div class="sweep" aria-hidden="true"></div>
+</main>
+
+<!-- ─── Кинематографичное открытие: конверт ─── -->
+<div id="opening">
+  <div class="fog f1"></div><div class="fog f2"></div><div class="fog f3"></div>
+  <div class="op-inner">
+    <p class="op-eyebrow">Вам письмо</p>
+    <button class="envelope" id="envelope" type="button" aria-label="Открыть конверт с приглашением">
+      <span class="env-back"></span>
+      <span class="env-letter">
+        <svg viewBox="0 0 240 24" aria-hidden="true"><use href="#divider"/></svg>
+        <span class="el-txt">Приглашение</span>
+      </span>
+      <span class="env-left"></span>
+      <span class="env-right"></span>
+      <span class="env-bottom"><span class="env-to">Фатхуллоходжа &amp; Шукронахон</span></span>
+      <span class="env-flap-wrap">
+        <span class="env-flap"></span>
+        <svg class="env-flap-line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,0 50,100 100,0"/></svg>
+      </span>
+      <span class="seal" id="seal">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#seal"/></svg>
+        <span class="seal-sheen"></span>
+      </span>
+    </button>
+    <p class="op-hint"><span class="pulse"></span>Нажмите на&nbsp;конверт, чтобы открыть</p>
+  </div>
+</div>
+
+<canvas id="fx-front" aria-hidden="true"></canvas>
+
+<!-- ─── Интерфейс ─── -->
+<nav id="nav" aria-label="Навигация по приглашению">
+  <button class="nav-arrow" id="prevBtn" type="button" aria-label="Предыдущая сцена">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+  </button>
+  <div class="dots" role="tablist"></div>
+  <button class="nav-arrow" id="nextBtn" type="button" aria-label="Следующая сцена">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+  </button>
+</nav>
+
+<button id="musicBtn" type="button" aria-label="Включить музыку" aria-pressed="false">
+  <span class="mb-ring"></span>
+  <svg class="ico-note" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l11-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg>
+  <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+</button>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="music.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
