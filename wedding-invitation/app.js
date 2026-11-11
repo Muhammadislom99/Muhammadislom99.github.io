@@ -740,7 +740,7 @@
     if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
     return many;
   }
-  var target = new Date(CFG.dateISO || '2026-12-08T00:00:00').getTime();
+  var target = new Date(CFG.dateISO || '2026-12-08T18:00:00').getTime();
   var cdEls = {}, cdLbl = {};
   ['d', 'h', 'm', 's'].forEach(function (k) {
     cdEls[k] = $('[data-cd="' + k + '"]');
@@ -769,7 +769,7 @@
   setInterval(tickCountdown, 1000);
 
   var mapBtn = $('#mapBtn');
-  mapBtn.href = CFG.mapUrl || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Туйхони Зикриддин'));
+  mapBtn.href = CFG.mapUrl || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Ресторан Зикриддин'));
 
   var toastEl = $('#toast'), toastT = 0;
   function toast(msg) {
@@ -782,7 +782,7 @@
   $('#shareBtn').addEventListener('click', function () {
     var data = {
       title: 'Фатхуллоходжа & Шукронахон · 08.12.2026',
-      text: 'С любовью приглашаем вас разделить с нами самый счастливый день нашей жизни — 08.12.2026, Туйхони Зикриддин.',
+      text: 'С любовью приглашаем вас разделить с нами самый счастливый день нашей жизни — 08.12.2026 в 18:00, ресторан «Зикриддин».',
       url: location.href
     };
     if (navigator.share) {
