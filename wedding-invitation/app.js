@@ -1,7 +1,7 @@
 /* ==========================================================================
    Фатхуллоходжа & Шукронахон · 08.12.2026
    «Шёлк и свет»: живой шёлковый фон (WebGL), занавес, вертикальная история,
-   тексты появляются анимацией сами, как только раздел на экране.
+   одна прокрутка — одна страница, тексты и цветок оживают анимацией сами.
    ========================================================================== */
 (function () {
   'use strict';
@@ -188,16 +188,28 @@
   var byId = {};
   secs.forEach(function (s) { byId[s.id] = s; });
   var vh = window.innerHeight, maxScroll = 1, track = [];
+  var story = $('#story');
+  var stops = [], stopSec = [], page = 0;   // page stops (virtual scroll positions) and their sections
 
   function measure() {
     vh = window.innerHeight;
-    var sy = window.pageYOffset;
     secs.forEach(function (s) {
-      var r = s.el.getBoundingClientRect();
-      s.top = r.top + sy;
-      s.h = r.height;
+      s.top = s.el.offsetTop;
+      s.h = s.el.offsetHeight;
     });
-    maxScroll = Math.max(1, document.documentElement.scrollHeight - vh);
+    maxScroll = Math.max(1, story.offsetHeight - vh);
+
+    // one stop per page; a page taller than the screen gets extra stops inside it
+    var keep = stopSec.length ? stopSec[page] : 0;
+    stops = []; stopSec = [];
+    secs.forEach(function (s, i) {
+      var end = Math.min(maxScroll, s.top + Math.max(0, s.h - vh)), y = Math.min(maxScroll, s.top);
+      stops.push(y); stopSec.push(i);
+      while (end - y > vh * .2) { y = Math.min(end, y + vh * .8); stops.push(y); stopSec.push(i); }
+    });
+    page = Math.max(0, stopSec.indexOf(keep));
+    tween = null; drag = 0;
+    sy = stops[page];
     var center = function (s) { return s.top + (s.h - vh) / 2; };
     var T = center(byId.time);
     track = [
@@ -217,29 +229,25 @@
 
   /* ---- S-line: swings from side to side, one swing per screen ---- */
   var vine = $('#vine'), vinePath = $('#vinePath'), vineEcho = $('#vineEcho');
-  var leaf = $('#leaf'), leafSway = $('#leafSway');
-  var vineLen = 0, vineTop = 0, vineBot = 0, leafS = -1, leafScale = 1.35;
+  var vineLen = 0, vineTop = 0, vineBot = 0;
 
   function buildVine() {
-    var story = $('#story');
-    var W = story.clientWidth, H = story.scrollHeight;
-    var sTop = story.getBoundingClientRect().top + window.pageYOffset;
+    var W = story.clientWidth, H = story.offsetHeight;
     vine.setAttribute('width', W);
     vine.setAttribute('height', H);
     vine.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     $('#vineGrad').setAttribute('y2', H);
 
     var narrow = W < 700;
-    leafScale = narrow ? 1.3 : 1.7;
     var L = W * (narrow ? .08 : .14), Rr = W * (narrow ? .92 : .86);
     var pts = [];
     // start softly at the top centre of the first page
-    pts.push([W * .5, byId.names.top - sTop + vh * .04]);
+    pts.push([W * .5, byId.names.top + vh * .04]);
     secs.forEach(function (s, i) {
-      pts.push([i % 2 ? Rr : L, s.top - sTop + s.h / 2]);   // beside the text while the page is in view
+      pts.push([i % 2 ? Rr : L, s.top + s.h / 2]);   // beside the text while the page is in view
     });
     var last = secs[secs.length - 1];
-    pts.push([W * .5, last.top - sTop + last.h - vh * .05]); // ends on the last page
+    pts.push([W * .5, last.top + last.h - vh * .05]); // ends on the last page
 
     var d = 'M' + pts[0][0].toFixed(1) + ' ' + pts[0][1].toFixed(1);
     var e = 'M' + (pts[0][0] + 7).toFixed(1) + ' ' + pts[0][1].toFixed(1);
@@ -254,10 +262,12 @@
     vineLen = vinePath.getTotalLength();
     vineTop = pts[0][1];
     vineBot = pts[pts.length - 1][1];
-    vineStoryTop = sTop;
-    leafS = -1;
+
+    // the flower: sized to the screen, rides the line in the lower part of the page (clear of the text)
+    bloomSize = clamp(Math.min(W, vh * .5) * .49, 128, 290);
+    if (bloomOk) Bloom.resize(bloomSize);
+    bloomY = -1;
   }
-  var vineStoryTop = 0;
 
   // y grows monotonically along the path, so find the length for a given y by bisection
   function lenAtY(y) {
@@ -269,21 +279,30 @@
     return (lo + hi) / 2;
   }
 
-  function placeLeaf(scrollY, time) {
-    if (!vineLen) return;
-    // the leaf rides at the vertical centre of the screen
-    var y = clamp(scrollY + vh * .5 - vineStoryTop, vineTop, vineBot);
-    var s = lenAtY(y);
-    if (Math.abs(s - leafS) > .2) {
-      leafS = s;
-      var p = vinePath.getPointAtLength(s);
-      var q = vinePath.getPointAtLength(Math.min(vineLen, s + 2));
-      var ang = Math.atan2(q.y - p.y, q.x - p.x) * 180 / Math.PI;
-      leaf.setAttribute('transform', 'translate(' + p.x.toFixed(1) + ' ' + p.y.toFixed(1) + ') rotate(' + ang.toFixed(1) + ') scale(' + leafScale + ')');
+  /* ---- the living flower: a bud while it travels, it blooms when the page arrives ---- */
+  var Bloom = window.WeddingBloom, bloomEl = $('#bloom');
+  var bloomOk = !!(Bloom && bloomEl && Bloom.init(bloomEl));
+  var bloomSize = 200, bloomY = -1, bloomS = 0, bloomOpen = .3, bloomTick = 0;
+  var BLOOM_AT = .88;   // where on the screen (by height) the flower rides
+
+  function placeBloom(scrollY, time, dt, moving) {
+    if (!vineLen || !bloomOk) return;
+    var y = clamp(scrollY + vh * BLOOM_AT, vineTop, vineBot);
+    if (Math.abs(y - bloomY) > .1) {
+      bloomY = y;
+      bloomS = lenAtY(y);
+      var p = vinePath.getPointAtLength(bloomS);
+      bloomEl.style.transform = 'translate3d(' + (p.x - bloomSize / 2).toFixed(1) + 'px,' + (p.y - bloomSize / 2).toFixed(1) + 'px,0)';
+      // the line pauses under the flower so it does not show through the petals
+      var gap = bloomSize * .2;
+      vinePath.setAttribute('stroke-dasharray', Math.max(0, bloomS - gap).toFixed(1) + ' ' + (gap * 2).toFixed(1) + ' ' + (vineLen + 10).toFixed(1));
     }
-    if (!REDUCED) {
-      leafSway.setAttribute('transform', 'rotate(' + (Math.sin(time * 1.3) * 9).toFixed(2) + ') scale(1 ' + (1 - Math.abs(Math.sin(time * .9)) * .25).toFixed(3) + ')');
-    }
+    var target = !opened ? .3 : moving ? .36 : 1;
+    var rate = target < bloomOpen ? 4.5 : 1.5;
+    bloomOpen += (target - bloomOpen) * Math.min(1, dt / 1000 * rate);
+    if (REDUCED) bloomOpen = opened ? 1 : .3;
+    // petals sway slowly, so redrawing every other frame is plenty
+    if ((bloomTick++ & 1) === 0) Bloom.draw(bloomOpen, REDUCED ? 0 : time, bloomS * .0016 + (REDUCED ? 0 : Math.sin(time * .4) * .05));
   }
 
   function paletteAt(y) {
@@ -353,10 +372,7 @@
     b.className = 'dot';
     b.type = 'button';
     b.setAttribute('aria-label', s.el.dataset.name || s.id);
-    b.addEventListener('click', function () {
-      var y = s.top + (s.h - vh) / 2;
-      window.scrollTo({ top: Math.max(0, y), behavior: REDUCED ? 'auto' : 'smooth' });
-    });
+    b.addEventListener('click', function () { go(stopSec.indexOf(secs.indexOf(s))); });
     rail.appendChild(b);
     dots.push(b);
   });
@@ -366,15 +382,34 @@
      4. Frame loop
      ====================================================================== */
   var sy = 0, open = 0, opened = false, running = true;
+  var tween = null, drag = 0, navLock = 0, lastStoryY = null;
   var t0 = performance.now(), tPrev = t0, slow = 0, frames = 0;
+
+  // glide to a page stop: the whole move is one smooth animation
+  function go(i) {
+    if (!opened || performance.now() < navLock) return;
+    i = clamp(i, 0, stops.length - 1);
+    var to = stops[i];
+    if (i === page && Math.abs(sy - to) < 1) return;
+    var pages = Math.abs(to - sy) / vh;
+    tween = { from: sy, to: to, t0: performance.now(), dur: REDUCED ? 1 : clamp(820 + pages * 430, 420, 2600) };
+    page = i;
+    drag = 0;
+  }
 
   function frame(now) {
     if (!running) return;
     var dt = now - tPrev; tPrev = now;
     var time = (now - t0) / 1000;
-    var target = window.pageYOffset;
-    sy += (target - sy) * (REDUCED ? 1 : Math.min(1, dt / 1000 * 9));
-    if (Math.abs(target - sy) < .05) sy = target;
+    if (tween) {
+      var tk = clamp((now - tween.t0) / tween.dur, 0, 1);
+      sy = tween.from + (tween.to - tween.from) * easeIO(tk);
+      if (tk >= 1) tween = null;
+    } else {
+      sy = stops[page] + drag;
+    }
+    var storyY = (-sy).toFixed(2);
+    if (storyY !== lastStoryY) { lastStoryY = storyY; story.style.transform = 'translate3d(0,' + storyY + 'px,0)'; }
 
     paletteAt(sy);
 
@@ -400,7 +435,7 @@
     if (clockStart < 0) setClock(0, time);
     else setClock(REDUCED ? 1 : clamp((now - clockStart) / 3800, 0, 1), time);
 
-    placeLeaf(sy, time);
+    placeBloom(sy, time, dt, !!tween || drag !== 0);
 
     draw(REDUCED ? time * .25 : time * .5, sy / vh, open);
 
@@ -422,11 +457,13 @@
   window.addEventListener('load', measure);
 
   /* ======================================================================
-     5. Opening the curtain — by the very first scroll, swipe, key or tap
+     5. Opening the curtain, then one gesture = one page
      ====================================================================== */
   function openCurtain() {
     if (opened || !root.classList.contains('ready')) return;
     opened = true;
+    navLock = performance.now() + (REDUCED ? 300 : 1500);
+    wheelLock = navLock;
     root.classList.add('opening');
     var start = performance.now(), D = REDUCED ? 600 : 2600;
     (function step(now) {
@@ -434,39 +471,100 @@
       open = easeIO(k);
       if (k < 1) requestAnimationFrame(step);
     })(start);
-    setTimeout(function () {
-      root.classList.remove('locked');
-      window.scrollTo(0, 0);
-      measure();
-      root.classList.add('opened');
-    }, REDUCED ? 200 : 1100);
-    removeOpeners();
+    setTimeout(function () { root.classList.add('opened'); }, REDUCED ? 200 : 1100);
   }
-  var tStartY = null;
-  function onWheel(e) { if (!opened) { e.preventDefault(); if (Math.abs(e.deltaY) + Math.abs(e.deltaX) > 2) openCurtain(); } }
-  function onTouchStart(e) { tStartY = e.touches[0].clientY; }
-  function onTouchMove(e) {
-    if (opened) return;
+  $('#gate').addEventListener('click', openCurtain);
+
+  // wheel / trackpad: one page per gesture, however long its inertia lasts
+  var wheelLock = 0, wheelAcc = 0, wheelT = 0;
+  window.addEventListener('wheel', function (e) {
+    if (e.ctrlKey) return;                       // browser zoom
+    e.preventDefault();
+    var now = performance.now();
+    var d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+    if (e.deltaMode === 1) d *= 32;
+    if (!opened) { if (Math.abs(d) > 2) openCurtain(); return; }
+    if (tween || now < wheelLock) { wheelLock = Math.max(wheelLock, now + 200); wheelAcc = 0; return; }
+    if (now - wheelT > 280) wheelAcc = 0;
+    wheelT = now;
+    wheelAcc += d;
+    if (Math.abs(wheelAcc) > 26) {
+      go(page + (wheelAcc > 0 ? 1 : -1));
+      wheelAcc = 0;
+      wheelLock = now + 420;
+    }
+  }, { passive: false });
+
+  // touch: the page follows the finger a little, then glides to the next one
+  var touch = null;
+  window.addEventListener('touchstart', function (e) {
+    if (e.touches.length !== 1) { touch = null; return; }
+    var t = e.touches[0];
+    touch = { x: t.clientX, y: t.clientY, dx: 0, dy: 0, t: performance.now() };
+  }, { passive: true });
+  window.addEventListener('touchmove', function (e) {
+    if (!touch) return;
+    if (e.touches.length > 1) { touch = null; endDrag(); return; }
     if (e.cancelable) e.preventDefault();
-    if (tStartY !== null && Math.abs(e.touches[0].clientY - tStartY) > 12) openCurtain();
-  }
-  function onKey(e) {
-    if (['ArrowDown', 'PageDown', ' ', 'Enter', 'ArrowUp', 'PageUp', 'End'].indexOf(e.key) >= 0) {
-      if (e.key !== 'Enter') e.preventDefault();
-      openCurtain();
+    var t = e.touches[0];
+    touch.dx = t.clientX - touch.x;
+    touch.dy = t.clientY - touch.y;
+    // the gesture that opens the curtain only opens it — it never turns a page as well
+    if (!opened) { if (Math.abs(touch.dy) > 12) { openCurtain(); touch.spent = true; } return; }
+    if (touch.spent || tween || performance.now() < navLock || Math.abs(touch.dy) < 6) return;
+    var dgy = -touch.dy * .3;
+    if ((page === 0 && dgy < 0) || (page === stops.length - 1 && dgy > 0)) dgy *= .35;   // soft edge
+    drag = clamp(dgy, -vh * .14, vh * .14);
+  }, { passive: false });
+  function endDrag() {
+    if (drag !== 0 && !tween) {
+      tween = { from: sy, to: stops[page], t0: performance.now(), dur: REDUCED ? 1 : 420 };
+      drag = 0;
     }
   }
-  function removeOpeners() {
-    window.removeEventListener('wheel', onWheel);
-    window.removeEventListener('touchstart', onTouchStart);
-    window.removeEventListener('touchmove', onTouchMove);
-    window.removeEventListener('keydown', onKey);
+  function touchEnd() {
+    if (!touch) return;
+    var tc = touch;
+    touch = null;
+    if (!opened || tween || tc.spent) { drag = 0; return; }
+    var ady = Math.abs(tc.dy), quick = performance.now() - tc.t < 320 && ady > 22;
+    if ((ady > 54 || quick) && ady > Math.abs(tc.dx)) go(page + (tc.dy < 0 ? 1 : -1));
+    endDrag();
   }
-  window.addEventListener('wheel', onWheel, { passive: false });
-  window.addEventListener('touchstart', onTouchStart, { passive: true });
-  window.addEventListener('touchmove', onTouchMove, { passive: false });
-  window.addEventListener('keydown', onKey);
-  $('#gate').addEventListener('click', openCurtain);
+  window.addEventListener('touchend', touchEnd, { passive: true });
+  window.addEventListener('touchcancel', function () { touch = null; endDrag(); }, { passive: true });
+
+  // keyboard
+  window.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    var k = e.key, tag = (e.target && e.target.tagName) || '', onControl = tag === 'BUTTON' || tag === 'A';
+    if (!opened) {
+      if (['ArrowDown', 'PageDown', 'ArrowUp', 'PageUp', 'End'].indexOf(k) >= 0 || (k === ' ' && !onControl)) { e.preventDefault(); openCurtain(); }
+      return;
+    }
+    if (k === 'ArrowDown' || k === 'PageDown' || (k === ' ' && !e.shiftKey && !onControl)) { e.preventDefault(); go(page + 1); }
+    else if (k === 'ArrowUp' || k === 'PageUp' || (k === ' ' && e.shiftKey && !onControl)) { e.preventDefault(); go(page - 1); }
+    else if (k === 'Home') { e.preventDefault(); go(0); }
+    else if (k === 'End') { e.preventDefault(); go(stops.length - 1); }
+  });
+
+  // keyboard focus must never scroll the document itself: turn the page instead
+  function resetNativeScroll() {
+    if (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop) {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+  }
+  window.addEventListener('scroll', resetNativeScroll, { passive: true });
+  document.addEventListener('focusin', function (e) {
+    var el = e.target && e.target.closest ? e.target.closest('.sec') : null;
+    if (el && opened) {
+      var idx = secs.indexOf(byId[el.id]);
+      if (stopSec[page] !== idx) go(stopSec.indexOf(idx));
+    }
+    resetNativeScroll();
+  });
 
   /* ======================================================================
      6. Countdown, map, share
@@ -526,9 +624,7 @@
       toast(ok ? 'Ссылка скопирована' : data.url);
     });
   });
-  $('#topBtn').addEventListener('click', function () {
-    window.scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' });
-  });
+  $('#topBtn').addEventListener('click', function () { go(0); });
 
   /* ======================================================================
      7. Boot
