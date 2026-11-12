@@ -171,6 +171,38 @@ html.opening #openBtn { transform: scale(1.7); transition: transform 1.2s var(--
 
 #story { position: relative; z-index: 2; }
 
+/* S-line through the whole story + the leaf that glides along it */
+#vine {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  overflow: visible;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 2s var(--ease) .6s;
+}
+html.opened #vine { opacity: 1; }
+#vinePath {
+  fill: none;
+  stroke: url(#vineGrad);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  opacity: .55;
+}
+#vineEcho {
+  fill: none;
+  stroke: url(#vineGrad);
+  stroke-width: .7;
+  stroke-dasharray: 1 9;
+  stroke-linecap: round;
+  opacity: .5;
+}
+#leaf { opacity: .58; }
+#leaf .leaf-body { fill: url(#leafGrad); }
+#leaf .leaf-vein { fill: none; stroke: rgba(255, 248, 225, .75); stroke-width: .9; stroke-linecap: round; }
+.sec { z-index: 1; }
+
 .sec {
   position: relative;
   min-height: 100vh;
