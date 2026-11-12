@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Фатхуллоходжа & Шукронахон · 08.12.2026
+   Fathullokhuja & Shukronakhon · 08.12.2026
    «Шёлк и свет» — вертикальная история от утра до вечера торжества
    ========================================================================== */
 
@@ -318,7 +318,7 @@ html.opened .sec.in .rings circle + circle { transition-delay: .7s; }
   display: block;
   font-family: var(--script);
   font-weight: 400;
-  font-size: min(14.6vw, 11.5svh, 148px);
+  font-size: min(16vw, 11.5svh, 148px);
   line-height: 1.2;
   white-space: nowrap;
   padding: .04em .28em .14em;
