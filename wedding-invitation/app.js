@@ -211,7 +211,79 @@
       { y: Math.min(maxScroll, center(byId.final)), p: P.wine }
     ];
     for (var i = 1; i < track.length; i++) if (track[i].y <= track[i - 1].y) track[i].y = track[i - 1].y + 1;
+    buildVine();
     sizeCanvas();
+  }
+
+  /* ---- S-line: swings from side to side, one swing per screen ---- */
+  var vine = $('#vine'), vinePath = $('#vinePath'), vineEcho = $('#vineEcho');
+  var leaf = $('#leaf'), leafSway = $('#leafSway');
+  var vineLen = 0, vineTop = 0, vineBot = 0, leafS = -1, leafScale = 1.35;
+
+  function buildVine() {
+    var story = $('#story');
+    var W = story.clientWidth, H = story.scrollHeight;
+    var sTop = story.getBoundingClientRect().top + window.pageYOffset;
+    vine.setAttribute('width', W);
+    vine.setAttribute('height', H);
+    vine.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    $('#vineGrad').setAttribute('y2', H);
+
+    var narrow = W < 700;
+    leafScale = narrow ? 1.3 : 1.7;
+    var L = W * (narrow ? .08 : .14), Rr = W * (narrow ? .92 : .86);
+    var pts = [];
+    // start softly at the top centre of the first page
+    pts.push([W * .5, byId.names.top - sTop + vh * .04]);
+    secs.forEach(function (s, i) {
+      pts.push([i % 2 ? Rr : L, s.top - sTop + s.h / 2]);   // beside the text while the page is in view
+    });
+    var last = secs[secs.length - 1];
+    pts.push([W * .5, last.top - sTop + last.h - vh * .05]); // ends on the last page
+
+    var d = 'M' + pts[0][0].toFixed(1) + ' ' + pts[0][1].toFixed(1);
+    var e = 'M' + (pts[0][0] + 7).toFixed(1) + ' ' + pts[0][1].toFixed(1);
+    for (var k = 1; k < pts.length; k++) {
+      var a = pts[k - 1], b = pts[k], dy = (b[1] - a[1]) * .55;
+      d += 'C' + a[0].toFixed(1) + ' ' + (a[1] + dy).toFixed(1) + ' ' + b[0].toFixed(1) + ' ' + (b[1] - dy).toFixed(1) + ' ' + b[0].toFixed(1) + ' ' + b[1].toFixed(1);
+      var o = k % 2 ? 9 : -9;
+      e += 'C' + (a[0] - o).toFixed(1) + ' ' + (a[1] + dy).toFixed(1) + ' ' + (b[0] + o).toFixed(1) + ' ' + (b[1] - dy).toFixed(1) + ' ' + (b[0] + o * .4).toFixed(1) + ' ' + b[1].toFixed(1);
+    }
+    vinePath.setAttribute('d', d);
+    vineEcho.setAttribute('d', e);
+    vineLen = vinePath.getTotalLength();
+    vineTop = pts[0][1];
+    vineBot = pts[pts.length - 1][1];
+    vineStoryTop = sTop;
+    leafS = -1;
+  }
+  var vineStoryTop = 0;
+
+  // y grows monotonically along the path, so find the length for a given y by bisection
+  function lenAtY(y) {
+    var lo = 0, hi = vineLen;
+    for (var n = 0; n < 22; n++) {
+      var m = (lo + hi) / 2;
+      if (vinePath.getPointAtLength(m).y < y) lo = m; else hi = m;
+    }
+    return (lo + hi) / 2;
+  }
+
+  function placeLeaf(scrollY, time) {
+    if (!vineLen) return;
+    // the leaf rides at the vertical centre of the screen
+    var y = clamp(scrollY + vh * .5 - vineStoryTop, vineTop, vineBot);
+    var s = lenAtY(y);
+    if (Math.abs(s - leafS) > .2) {
+      leafS = s;
+      var p = vinePath.getPointAtLength(s);
+      var q = vinePath.getPointAtLength(Math.min(vineLen, s + 2));
+      var ang = Math.atan2(q.y - p.y, q.x - p.x) * 180 / Math.PI;
+      leaf.setAttribute('transform', 'translate(' + p.x.toFixed(1) + ' ' + p.y.toFixed(1) + ') rotate(' + ang.toFixed(1) + ') scale(' + leafScale + ')');
+    }
+    if (!REDUCED) {
+      leafSway.setAttribute('transform', 'rotate(' + (Math.sin(time * 1.3) * 9).toFixed(2) + ') scale(1 ' + (1 - Math.abs(Math.sin(time * .9)) * .25).toFixed(3) + ')');
+    }
   }
 
   function paletteAt(y) {
@@ -327,6 +399,8 @@
     // clock: hands run by themselves from noon to 18:00
     if (clockStart < 0) setClock(0, time);
     else setClock(REDUCED ? 1 : clamp((now - clockStart) / 3800, 0, 1), time);
+
+    placeLeaf(sy, time);
 
     draw(REDUCED ? time * .25 : time * .5, sy / vh, open);
 
