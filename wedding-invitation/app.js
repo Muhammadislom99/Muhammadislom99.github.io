@@ -1,7 +1,7 @@
 /* ==========================================================================
    Фатхуллоходжа & Шукронахон · 08.12.2026
    «Шёлк и свет»: живой шёлковый фон (WebGL), занавес, вертикальная история,
-   слова, загорающиеся от прокрутки, часы, бегущие к 18:00.
+   всё раскрывается и появляется пропорционально прокрутке.
    ========================================================================== */
 (function () {
   'use strict';
@@ -187,10 +187,18 @@
   });
   var byId = {};
   secs.forEach(function (s) { byId[s.id] = s; });
-  var vh = window.innerHeight, maxScroll = 1, track = [];
+  var vh = window.innerHeight, maxScroll = 1, track = [], introH = 1;
+  var gateEl = $('#gate'), gateInner = $('.gate-inner'), lastGate = '';
+
+  /* scroll-scrubbed reveals: every element follows the scroll position */
+  var revs = $$('.rv, .write, .sc').map(function (el) {
+    var d = parseFloat(el.style.getPropertyValue('--d')) || 0;
+    return { el: el, sec: el.closest('.sec'), start: Math.min(.2 + d * .14, .62), p: -1, cur: 0 };
+  });
 
   function measure() {
     vh = window.innerHeight;
+    introH = $('#intro').offsetHeight || vh;
     var sy = window.pageYOffset;
     secs.forEach(function (s) {
       var r = s.el.getBoundingClientRect();
@@ -297,7 +305,7 @@
   /* ======================================================================
      4. Frame loop
      ====================================================================== */
-  var sy = 0, open = 0, opened = false, running = true;
+  var sy = 0, open = 0, running = true;
   var t0 = performance.now(), tPrev = t0, slow = 0, frames = 0;
 
   function frame(now) {
@@ -310,15 +318,34 @@
 
     paletteAt(sy);
 
-    // sections: reveal state + active dot
-    var mid = sy + vh / 2, act = 0;
-    for (var i = 0; i < secs.length; i++) {
-      var s = secs[i];
-      var vis = (Math.min(s.top + s.h, sy + vh) - Math.max(s.top, sy)) / Math.min(s.h, vh);
-      var on = s.tall ? (sy > s.top - vh * .25 && sy < s.top + s.h - vh * .75) : (s.on ? vis > .3 : vis > .55);
-      if (on !== s.on) { s.on = on; s.el.classList.toggle('in', on); }
-      if (mid >= s.top) act = i;
+    // curtain: opens as the guest scrolls through the first screen
+    var op = clamp(sy / introH, 0, 1);
+    open = REDUCED ? op : easeIO(op);
+    var gOp = clamp(1 - op * 1.8, 0, 1);
+    var gs = gOp.toFixed(3) + '|' + op.toFixed(3);
+    if (gs !== lastGate) {
+      lastGate = gs;
+      gateInner.style.opacity = gOp;
+      gateInner.style.transform = 'scale(' + (1 + op * .5).toFixed(3) + ')';
+      gateEl.style.visibility = gOp <= 0 ? 'hidden' : 'visible';
+      root.classList.toggle('opened', op > .55);
     }
+
+    // reveals proportional to scroll
+    var lerp = REDUCED ? 1 : Math.min(1, dt / 1000 * 10);
+    for (var r = 0; r < revs.length; r++) {
+      var rv = revs[r], sc = byId[rv.sec.id];
+      var secP = clamp((sy + vh - sc.top) / vh, 0, 1);
+      var tgt = smooth((secP - rv.start) / (1 - rv.start - .04));
+      rv.cur += (tgt - rv.cur) * lerp;
+      if (Math.abs(tgt - rv.cur) < .002) rv.cur = tgt;
+      var pv = Math.round(rv.cur * 1000) / 1000;
+      if (pv !== rv.p) { rv.p = pv; rv.el.style.setProperty('--p', pv); }
+    }
+
+    // active dot
+    var mid = sy + vh / 2, act = 0;
+    for (var i = 0; i < secs.length; i++) if (mid >= secs[i].top) act = i;
     if (act !== activeDot) {
       activeDot = act;
       dots.forEach(function (d, k) { d.setAttribute('aria-current', k === act ? 'true' : 'false'); });
@@ -367,46 +394,17 @@
   window.addEventListener('load', measure);
 
   /* ======================================================================
-     5. Opening the curtain
+     5. The curtain opens with the scroll
      ====================================================================== */
-  var musicTouched = false;
-  function openCurtain() {
-    if (opened) return;
-    opened = true;
-    root.classList.add('opening');
-    if (!musicTouched) window.WeddingMusic.play();
-    var start = performance.now(), D = REDUCED ? 600 : 3000;
-    (function step(now) {
-      var k = clamp((now - start) / D, 0, 1);
-      open = easeIO(k);
-      if (k < 1) requestAnimationFrame(step);
-    })(start);
-    setTimeout(function () {
-      root.classList.add('opened');
-      root.classList.remove('locked');
-      window.scrollTo(0, 0);
-      measure();
-    }, REDUCED ? 200 : 1300);
+  function scrollToNames() {
+    window.scrollTo({ top: byId.names.top, behavior: REDUCED ? 'auto' : 'smooth' });
   }
-  $('#openBtn').addEventListener('click', openCurtain);
-  $('#gate').addEventListener('click', openCurtain);
+  $('#openBtn').addEventListener('click', function (e) { e.stopPropagation(); scrollToNames(); });
+  $('#gate').addEventListener('click', scrollToNames);
 
   /* ======================================================================
-     6. Music, countdown, map, share
+     6. Countdown, map, share
      ====================================================================== */
-  var musicBtn = $('#musicBtn');
-  musicBtn.addEventListener('click', function () { musicTouched = true; window.WeddingMusic.toggle(); });
-  window.WeddingMusic.onChange(function (on) {
-    musicBtn.classList.toggle('playing', on);
-    musicBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    musicBtn.setAttribute('aria-label', on ? 'Выключить музыку' : 'Включить музыку');
-  });
-  var pausedByHide = false;
-  document.addEventListener('visibilitychange', function () {
-    if (document.hidden && window.WeddingMusic.playing) { pausedByHide = true; window.WeddingMusic.pause(); }
-    else if (!document.hidden && pausedByHide) { pausedByHide = false; window.WeddingMusic.play(); }
-  });
-
   function plural(n, one, few, many) {
     var m10 = n % 10, m100 = n % 100;
     if (m10 === 1 && m100 !== 11) return one;

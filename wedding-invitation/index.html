@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru" class="locked">
+<html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -18,13 +18,10 @@
 <script>
   /*
    * ───────── Настройки приглашения ─────────
-   * musicSrc — путь к своему музыкальному файлу (mp3 / m4a / ogg), например: 'music/wedding.mp3'.
-   *            Если оставить пустым — играет встроенная мелодия (создаётся в браузере).
    * mapUrl   — ссылка на карту для кнопки «Показать на карте» (лучше вставить точную ссылку из Яндекс/Google Карт).
    * dateISO  — дата и время начала торжества (для обратного отсчёта).
    */
   window.WEDDING_CONFIG = {
-    musicSrc: '',
     mapUrl: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Ресторан Зикриддин'),
     dateISO: '2026-12-08T18:00:00'
   };
@@ -36,8 +33,9 @@
 <div id="bgFallback" aria-hidden="true"></div>
 <canvas id="bg" aria-hidden="true"></canvas>
 
-<!-- Занавес: первое касание -->
+<!-- Занавес: раскрывается прокруткой -->
 <div id="gate">
+  <div class="gate-inner">
   <button id="openBtn" type="button" aria-label="Открыть приглашение">
     <svg class="gate-orbit" viewBox="0 0 200 200" aria-hidden="true">
       <circle cx="100" cy="100" r="96" class="o1"/>
@@ -46,8 +44,11 @@
     </svg>
     <span class="gate-mono" aria-hidden="true">Ф<i>&amp;</i>Ш</span>
   </button>
-  <p class="gate-hint" aria-hidden="true">открыть</p>
+  <p class="gate-hint" aria-hidden="true"><span>листайте</span><i></i></p>
+  </div>
 </div>
+
+<div id="intro" aria-hidden="true"></div>
 
 <main id="story">
 
@@ -59,13 +60,12 @@
         <circle cx="76" cy="30" r="22" pathLength="1"/>
       </svg>
       <h1 class="names">
-        <span class="amp" aria-hidden="true">&amp;</span>
-        <span class="nm nm-1 write" style="--d:.2s">Фатхуллоходжа</span>
+        <span class="amp sc" style="--d:.9" aria-hidden="true">&amp;</span>
+        <span class="nm nm-1 write" style="--d:.2">Фатхуллоходжа</span>
         <span class="sr">и</span>
-        <span class="nm nm-2 write" style="--d:1.5s">Шукронахон</span>
+        <span class="nm nm-2 write" style="--d:1.5">Шукронахон</span>
       </h1>
     </div>
-    <div class="cue rv" style="--d:3.4s" aria-hidden="true"><span>листайте</span><i></i></div>
   </section>
 
   <!-- 2 · Слова (загораются по мере прокрутки) -->
@@ -80,17 +80,17 @@
     <div class="poster" aria-label="8 декабря 2026 года, вторник">
       <div class="p-row p-day" data-par="-1">
         <span class="num rv">08</span>
-        <span class="tag rv" style="--d:.5s">вторник</span>
+        <span class="tag rv" style="--d:.5">вторник</span>
       </div>
       <div class="p-row p-month" data-par="1">
-        <span class="tag rv" style="--d:.65s">декабрь</span>
-        <span class="num outline rv" style="--d:.15s">12</span>
+        <span class="tag rv" style="--d:.65">декабрь</span>
+        <span class="num outline rv" style="--d:.15">12</span>
       </div>
       <div class="p-row p-year">
-        <span class="num rv" style="--d:.3s">2026</span>
+        <span class="num rv" style="--d:.3">2026</span>
       </div>
     </div>
-    <div class="countdown rv" style="--d:.9s" aria-live="off">
+    <div class="countdown rv" style="--d:.9" aria-live="off">
       <div class="cd"><b data-cd="d">00</b><span data-cdl="d">дней</span></div>
       <div class="cd"><b data-cd="h">00</b><span data-cdl="h">часов</span></div>
       <div class="cd"><b data-cd="m">00</b><span data-cdl="m">минут</span></div>
@@ -103,7 +103,7 @@
     <div class="pin">
       <div class="time-wrap">
         <p class="label rv">начало торжества</p>
-        <div class="clock rv" style="--d:.15s">
+        <div class="clock rv" style="--d:.15">
           <svg viewBox="0 0 200 200" aria-hidden="true">
             <circle cx="100" cy="100" r="97" class="c-ring"/>
             <g id="ticks"></g>
@@ -114,7 +114,7 @@
             <circle cx="100" cy="100" r="3.2" class="c-pin"/>
           </svg>
         </div>
-        <p class="readout rv" style="--d:.3s" aria-label="18:00"><span id="clockTxt">18:00</span></p>
+        <p class="readout rv" style="--d:.3" aria-label="18:00"><span id="clockTxt">18:00</span></p>
       </div>
     </div>
   </section>
@@ -123,11 +123,11 @@
   <section class="sec sec-place dark" id="place" data-name="Место">
     <div class="place-wrap">
       <p class="label rv">место проведения</p>
-      <p class="place-kind rv" style="--d:.15s">ресторан</p>
-      <h2 class="place-name write" style="--d:.35s"><span class="q">«</span>Зикриддин<span class="q">»</span></h2>
-      <span class="hair rv" style="--d:1.4s"></span>
-      <p class="place-quote rv" style="--d:1.6s">С&nbsp;нетерпением ждём встречи с&nbsp;вами!</p>
-      <a class="btn rv" style="--d:1.9s" id="mapBtn" href="#" target="_blank" rel="noopener">
+      <p class="place-kind rv" style="--d:.15">ресторан</p>
+      <h2 class="place-name write" style="--d:.35"><span class="q">«</span>Зикриддин<span class="q">»</span></h2>
+      <span class="hair rv" style="--d:1.4"></span>
+      <p class="place-quote rv" style="--d:1.6">С&nbsp;нетерпением ждём встречи с&nbsp;вами!</p>
+      <a class="btn rv" style="--d:1.9" id="mapBtn" href="#" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg>
         Показать на карте
       </a>
@@ -138,11 +138,11 @@
   <section class="sec sec-final dark" id="final" data-name="Финал">
     <div class="final-wrap">
       <p class="final-quote rv">Будем счастливы видеть вас среди наших дорогих гостей!</p>
-      <div class="sign rv" style="--d:.5s">
+      <div class="sign rv" style="--d:.5">
         <span class="sign-pre">искренне ваши</span>
         <span class="sign-mono">Ф <i>&amp;</i> Ш</span>
       </div>
-      <div class="actions rv" style="--d:.9s">
+      <div class="actions rv" style="--d:.9">
         <button class="ghost" id="shareBtn" type="button">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>
           Поделиться
@@ -159,14 +159,8 @@
 
 <nav id="rail" aria-label="Разделы приглашения"></nav>
 
-<button id="musicBtn" type="button" aria-label="Включить музыку" aria-pressed="false">
-  <svg class="ico-note" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l11-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg>
-  <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-</button>
-
 <div id="toast" role="status" aria-live="polite"></div>
 
-<script src="music.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
