@@ -1,7 +1,7 @@
 /* ==========================================================================
    Фатхуллоходжа & Шукронахон · 08.12.2026
    «Шёлк и свет»: живой шёлковый фон (WebGL), занавес, вертикальная история,
-   всё раскрывается и появляется пропорционально прокрутке.
+   тексты появляются анимацией сами, как только раздел на экране.
    ========================================================================== */
 (function () {
   'use strict';
@@ -183,22 +183,14 @@
      3. Layout metrics, palette track, sections
      ====================================================================== */
   var secs = $$('.sec').map(function (el) {
-    return { el: el, id: el.id, tall: el.classList.contains('tall'), top: 0, h: 0, on: false };
+    return { el: el, id: el.id, top: 0, h: 0, on: false };
   });
   var byId = {};
   secs.forEach(function (s) { byId[s.id] = s; });
-  var vh = window.innerHeight, maxScroll = 1, track = [], introH = 1;
-  var gateEl = $('#gate'), gateInner = $('.gate-inner'), lastGate = '';
-
-  /* scroll-scrubbed reveals: every element follows the scroll position */
-  var revs = $$('.rv, .write, .sc').map(function (el) {
-    var d = parseFloat(el.style.getPropertyValue('--d')) || 0;
-    return { el: el, sec: el.closest('.sec'), start: Math.min(.2 + d * .14, .62), p: -1, cur: 0 };
-  });
+  var vh = window.innerHeight, maxScroll = 1, track = [];
 
   function measure() {
     vh = window.innerHeight;
-    introH = $('#intro').offsetHeight || vh;
     var sy = window.pageYOffset;
     secs.forEach(function (s) {
       var r = s.el.getBoundingClientRect();
@@ -207,16 +199,14 @@
     });
     maxScroll = Math.max(1, document.documentElement.scrollHeight - vh);
     var center = function (s) { return s.top + (s.h - vh) / 2; };
-    var W = byId.words, T = byId.time;
+    var T = center(byId.time);
     track = [
       { y: 0, p: P.morning },
-      { y: W.top, p: P.morning },
-      { y: W.top + (W.h - vh), p: P.noon },
+      { y: center(byId.words), p: P.noon },
       { y: center(byId.date), p: P.gold },
-      { y: T.top - vh * .62, p: P.sunset },
-      { y: T.top + (T.h - vh) * .1, p: P.ember },
-      { y: T.top + (T.h - vh) * .5, p: P.night },
-      { y: T.top + (T.h - vh), p: P.night },
+      { y: T - vh * .6, p: P.sunset },
+      { y: T - vh * .25, p: P.ember },
+      { y: T, p: P.night },
       { y: center(byId.place), p: P.lights },
       { y: Math.min(maxScroll, center(byId.final)), p: P.wine }
     ];
@@ -249,7 +239,8 @@
             var s = document.createElement('span');
             s.className = 'w';
             s.textContent = part;
-            wordEls.push({ el: s, o: -1 });
+            s.style.setProperty('--i', wordEls.length);
+            wordEls.push(s);
             frag.appendChild(s);
           });
           node.replaceChild(frag, n);
@@ -270,9 +261,9 @@
     }
     g.innerHTML = s;
   })();
-  var lastClock = '';
+  var lastClock = '', clockStart = -1;
   function setClock(p, time) {
-    var hours = 12 + 6 * easeIO(p / .62);
+    var hours = 12 + 6 * easeIO(p);
     var mins = Math.round(hours * 60);
     var hh = Math.floor(mins / 60), mm = mins % 60;
     hHand.setAttribute('transform', 'rotate(' + ((mins / 60) % 12 * 30).toFixed(2) + ' 100 100)');
@@ -283,9 +274,6 @@
     if (txt !== lastClock) { clockTxt.textContent = txt; lastClock = txt; }
   }
 
-  /* ---- parallax rows on the date poster ---- */
-  var parEls = $$('[data-par]').map(function (el) { return { el: el, k: +el.dataset.par, v: null }; });
-
   /* ---- rail ---- */
   var rail = $('#rail'), dots = [];
   secs.forEach(function (s) {
@@ -294,7 +282,7 @@
     b.type = 'button';
     b.setAttribute('aria-label', s.el.dataset.name || s.id);
     b.addEventListener('click', function () {
-      var y = s.tall ? s.top + (s.h - vh) * (s.id === 'time' ? .7 : .85) : s.top + (s.h - vh) / 2;
+      var y = s.top + (s.h - vh) / 2;
       window.scrollTo({ top: Math.max(0, y), behavior: REDUCED ? 'auto' : 'smooth' });
     });
     rail.appendChild(b);
@@ -305,7 +293,7 @@
   /* ======================================================================
      4. Frame loop
      ====================================================================== */
-  var sy = 0, open = 0, running = true;
+  var sy = 0, open = 0, opened = false, running = true;
   var t0 = performance.now(), tPrev = t0, slow = 0, frames = 0;
 
   function frame(now) {
@@ -318,61 +306,27 @@
 
     paletteAt(sy);
 
-    // curtain: opens as the guest scrolls through the first screen
-    var op = clamp(sy / introH, 0, 1);
-    open = REDUCED ? op : easeIO(op);
-    var gOp = clamp(1 - op * 1.8, 0, 1);
-    var gs = gOp.toFixed(3) + '|' + op.toFixed(3);
-    if (gs !== lastGate) {
-      lastGate = gs;
-      gateInner.style.opacity = gOp;
-      gateInner.style.transform = 'scale(' + (1 + op * .5).toFixed(3) + ')';
-      gateEl.style.visibility = gOp <= 0 ? 'hidden' : 'visible';
-      root.classList.toggle('opened', op > .55);
-    }
-
-    // reveals proportional to scroll
-    var lerp = REDUCED ? 1 : Math.min(1, dt / 1000 * 10);
-    for (var r = 0; r < revs.length; r++) {
-      var rv = revs[r], sc = byId[rv.sec.id];
-      var secP = clamp((sy + vh - sc.top) / vh, 0, 1);
-      var tgt = smooth((secP - rv.start) / (1 - rv.start - .04));
-      rv.cur += (tgt - rv.cur) * lerp;
-      if (Math.abs(tgt - rv.cur) < .002) rv.cur = tgt;
-      var pv = Math.round(rv.cur * 1000) / 1000;
-      if (pv !== rv.p) { rv.p = pv; rv.el.style.setProperty('--p', pv); }
-    }
-
-    // active dot
+    // sections: reveal state + active dot
     var mid = sy + vh / 2, act = 0;
-    for (var i = 0; i < secs.length; i++) if (mid >= secs[i].top) act = i;
+    for (var i = 0; i < secs.length; i++) {
+      var s = secs[i];
+      var vis = (Math.min(s.top + s.h, sy + vh) - Math.max(s.top, sy)) / Math.min(s.h, vh);
+      var on = opened && (s.on ? vis > .25 : vis > .5);
+      if (on !== s.on) {
+        s.on = on;
+        s.el.classList.toggle('in', on);
+        if (s.id === 'time') clockStart = on ? now + 500 : -1;
+      }
+      if (mid >= s.top) act = i;
+    }
     if (act !== activeDot) {
       activeDot = act;
       dots.forEach(function (d, k) { d.setAttribute('aria-current', k === act ? 'true' : 'false'); });
     }
 
-    // words
-    var W = byId.words;
-    var wp = clamp((sy - W.top + vh * .35) / (W.h - vh + vh * .35), 0, 1);
-    var lit = wp / .82 * (wordEls.length + 1.5);
-    for (i = 0; i < wordEls.length; i++) {
-      var o = Math.round((.12 + .88 * clamp(lit - i, 0, 1)) * 100) / 100;
-      if (o !== wordEls[i].o) { wordEls[i].o = o; wordEls[i].el.style.opacity = o; }
-    }
-
-    // date poster parallax
-    if (!REDUCED) {
-      var D = byId.date;
-      var off = clamp((D.top + D.h / 2 - mid) / vh, -1.2, 1.2);
-      for (i = 0; i < parEls.length; i++) {
-        var v = (off * parEls[i].k * 16).toFixed(2);
-        if (v !== parEls[i].v) { parEls[i].v = v; parEls[i].el.style.transform = 'translate3d(' + v + 'vw,0,0)'; }
-      }
-    }
-
-    // clock
-    var T = byId.time;
-    if (sy > T.top - vh && sy < T.top + T.h) setClock(clamp((sy - T.top) / (T.h - vh), 0, 1), time);
+    // clock: hands run by themselves from noon to 18:00
+    if (clockStart < 0) setClock(0, time);
+    else setClock(REDUCED ? 1 : clamp((now - clockStart) / 3800, 0, 1), time);
 
     draw(REDUCED ? time * .25 : time * .5, sy / vh, open);
 
@@ -394,13 +348,51 @@
   window.addEventListener('load', measure);
 
   /* ======================================================================
-     5. The curtain opens with the scroll
+     5. Opening the curtain — by the very first scroll, swipe, key or tap
      ====================================================================== */
-  function scrollToNames() {
-    window.scrollTo({ top: byId.names.top, behavior: REDUCED ? 'auto' : 'smooth' });
+  function openCurtain() {
+    if (opened || !root.classList.contains('ready')) return;
+    opened = true;
+    root.classList.add('opening');
+    var start = performance.now(), D = REDUCED ? 600 : 2600;
+    (function step(now) {
+      var k = clamp((now - start) / D, 0, 1);
+      open = easeIO(k);
+      if (k < 1) requestAnimationFrame(step);
+    })(start);
+    setTimeout(function () {
+      root.classList.remove('locked');
+      window.scrollTo(0, 0);
+      measure();
+      root.classList.add('opened');
+    }, REDUCED ? 200 : 1100);
+    removeOpeners();
   }
-  $('#openBtn').addEventListener('click', function (e) { e.stopPropagation(); scrollToNames(); });
-  $('#gate').addEventListener('click', scrollToNames);
+  var tStartY = null;
+  function onWheel(e) { if (!opened) { e.preventDefault(); if (Math.abs(e.deltaY) + Math.abs(e.deltaX) > 2) openCurtain(); } }
+  function onTouchStart(e) { tStartY = e.touches[0].clientY; }
+  function onTouchMove(e) {
+    if (opened) return;
+    if (e.cancelable) e.preventDefault();
+    if (tStartY !== null && Math.abs(e.touches[0].clientY - tStartY) > 12) openCurtain();
+  }
+  function onKey(e) {
+    if (['ArrowDown', 'PageDown', ' ', 'Enter', 'ArrowUp', 'PageUp', 'End'].indexOf(e.key) >= 0) {
+      if (e.key !== 'Enter') e.preventDefault();
+      openCurtain();
+    }
+  }
+  function removeOpeners() {
+    window.removeEventListener('wheel', onWheel);
+    window.removeEventListener('touchstart', onTouchStart);
+    window.removeEventListener('touchmove', onTouchMove);
+    window.removeEventListener('keydown', onKey);
+  }
+  window.addEventListener('wheel', onWheel, { passive: false });
+  window.addEventListener('touchstart', onTouchStart, { passive: true });
+  window.addEventListener('touchmove', onTouchMove, { passive: false });
+  window.addEventListener('keydown', onKey);
+  $('#gate').addEventListener('click', openCurtain);
 
   /* ======================================================================
      6. Countdown, map, share

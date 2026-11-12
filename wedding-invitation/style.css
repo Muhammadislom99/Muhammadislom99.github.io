@@ -30,6 +30,7 @@ html {
   scrollbar-width: none;
 }
 html::-webkit-scrollbar { display: none; }
+html.locked, html.locked body { overflow: hidden; height: 100%; }
 
 body {
   margin: 0;
@@ -77,19 +78,13 @@ button { font: inherit; color: inherit; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 26px;
   opacity: 0;
   transition: opacity 1.6s var(--ease);
-  cursor: pointer;
 }
 html.ready #gate { opacity: 1; }
-.gate-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-  will-change: opacity, transform;
-}
-#intro { height: 100vh; height: 100svh; }
+html.opening #gate { opacity: 0; pointer-events: none; transition: opacity .9s var(--ease); }
+html.opened #gate { display: none; }
 
 #openBtn {
   position: relative;
@@ -106,6 +101,7 @@ html.ready #gate { opacity: 1; }
   transition: transform .9s var(--ease);
 }
 #openBtn:hover { transform: scale(1.04); }
+html.opening #openBtn { transform: scale(1.7); transition: transform 1.2s var(--ease-soft); }
 #openBtn::after {
   content: '';
   position: absolute;
@@ -168,12 +164,6 @@ html.ready #gate { opacity: 1; }
   animation: cueLine 2.4s var(--ease) infinite;
 }
 @keyframes breathe { from { opacity: .45; } to { opacity: 1; } }
-@keyframes cueLine {
-  0% { transform: scaleY(0); opacity: 0; }
-  35% { opacity: 1; }
-  70% { transform: scaleY(1); opacity: 1; }
-  100% { transform: scaleY(1) translateY(12px); opacity: 0; }
-}
 
 /* ==========================================================================
    Story layout
@@ -192,27 +182,28 @@ html.ready #gate { opacity: 1; }
   padding: 11svh 7vw;
   text-align: center;
 }
-.sec.tall { display: block; height: 210svh; min-height: 0; padding: 0; }
 .pin {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 9svh 7vw;
 }
 
 .light { color: var(--ink); }
 .dark { color: var(--ivory); }
 
-/* reveals follow the scroll: --p goes 0 → 1 as the section comes into view */
+/* reveal choreography */
 .rv {
-  opacity: var(--p, 0);
-  transform: translate3d(0, calc((1 - var(--p, 0)) * 44px), 0);
-  will-change: opacity, transform;
+  opacity: 0;
+  transform: translate3d(0, 30px, 0);
+  filter: blur(8px);
+  transition: opacity .6s var(--ease), transform .6s var(--ease), filter .6s var(--ease);
+}
+html.opened .sec.in .rv {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+  transition: opacity 1.3s var(--ease) var(--d, 0s), transform 1.5s var(--ease) var(--d, 0s), filter 1.3s var(--ease) var(--d, 0s);
 }
 
 /* calligraphy being written */
@@ -223,9 +214,19 @@ html.ready #gate { opacity: 1; }
   mask-size: 260% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  -webkit-mask-position: calc((1 - var(--p, 0)) * 100%) 0;
-  mask-position: calc((1 - var(--p, 0)) * 100%) 0;
-  opacity: calc(var(--p, 0) * 8);
+  -webkit-mask-position: 100% 0;
+  mask-position: 100% 0;
+  opacity: 0;
+  transition: opacity .5s var(--ease), -webkit-mask-position 0s .5s, mask-position 0s .5s;
+}
+html.opened .sec.in .write {
+  -webkit-mask-position: 0 0;
+  mask-position: 0 0;
+  opacity: 1;
+  transition:
+    opacity .5s var(--ease) var(--d, 0s),
+    -webkit-mask-position 2.4s var(--ease-soft) var(--d, 0s),
+    mask-position 2.4s var(--ease-soft) var(--d, 0s);
 }
 
 .label {
@@ -257,9 +258,11 @@ html.ready #gate { opacity: 1; }
   stroke: var(--gold);
   stroke-width: 1.3;
   stroke-dasharray: 1;
-  stroke-dashoffset: clamp(0, calc(1 - var(--p, 0) * 1.6), 1);
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0s .6s;
 }
-.rings circle + circle { stroke-dashoffset: clamp(0, calc(1.6 - var(--p, 0) * 1.6), 1); }
+html.opened .sec.in .rings circle { stroke-dashoffset: 0; transition: stroke-dashoffset 2.4s var(--ease-soft) .1s; }
+html.opened .sec.in .rings circle + circle { transition-delay: .7s; }
 
 .names {
   position: relative;
@@ -297,10 +300,19 @@ html.ready #gate { opacity: 1; }
   line-height: 1;
   color: transparent;
   -webkit-text-stroke: 1px rgba(150, 110, 45, .8);
-  transform: translate(-50%, -52%) scale(calc(.75 + var(--p, 0) * .25)) rotate(calc((1 - var(--p, 0)) * -8deg));
-  opacity: var(--p, 0);
+  transform: translate(-50%, -52%) scale(.8);
+  opacity: 0;
+  transition: opacity 2.4s var(--ease) 1.1s, transform 3.2s var(--ease) 1.1s;
   pointer-events: none;
   user-select: none;
+}
+html.opened .sec.in .amp { opacity: 1; transform: translate(-50%, -52%) scale(1); }
+
+@keyframes cueLine {
+  0% { transform: scaleY(0); opacity: 0; }
+  35% { opacity: 1; }
+  70% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(1) translateY(12px); opacity: 0; }
 }
 
 /* ==========================================================================
@@ -317,7 +329,17 @@ html.ready #gate { opacity: 1; }
   color: var(--ink);
   text-wrap: balance;
 }
-.words .w { opacity: .12; display: inline-block; will-change: opacity; }
+.words .w {
+  display: inline-block;
+  opacity: .1;
+  filter: blur(4px);
+  transition: opacity .5s var(--ease), filter .5s var(--ease);
+}
+html.opened .sec.in .words .w {
+  opacity: 1;
+  filter: blur(0);
+  transition: opacity 1.1s var(--ease) calc(.3s + var(--i) * .2s), filter 1.1s var(--ease) calc(.3s + var(--i) * .2s);
+}
 .words em {
   font-family: var(--script);
   font-style: normal;
@@ -342,7 +364,15 @@ html.ready #gate { opacity: 1; }
   font-weight: 300;
   line-height: .8;
 }
-.p-row { display: flex; align-items: flex-end; gap: min(3.5vw, 22px); will-change: transform; }
+.p-row {
+  display: flex;
+  align-items: flex-end;
+  gap: min(3.5vw, 22px);
+  transition: transform .6s var(--ease);
+}
+.p-day { transform: translate3d(-14vw, 0, 0); }
+.p-month { transform: translate3d(14vw, 0, 0); }
+html.opened .sec.in .p-day, html.opened .sec.in .p-month { transform: none; transition: transform 2.2s var(--ease) .1s; }
 .p-day { justify-content: flex-start; }
 .p-month { justify-content: flex-end; margin-top: calc(var(--n) * -.06); }
 .p-year { justify-content: center; margin-top: calc(var(--n) * .16); }
@@ -531,8 +561,9 @@ html.ready #gate { opacity: 1; }
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   overflow: hidden;
-  transition: background .45s var(--ease), color .45s var(--ease);
+  transition: background .45s var(--ease), color .45s var(--ease), transform .45s var(--ease);
 }
+html.opened .sec.in .btn.rv { transition: opacity 1.3s var(--ease) var(--d, 0s), filter 1.3s var(--ease) var(--d, 0s), transform .45s var(--ease), background .45s var(--ease), color .45s var(--ease); }
 .btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; }
 .btn::after {
   content: '';
@@ -546,7 +577,8 @@ html.ready #gate { opacity: 1; }
   animation: btnSheen 5s var(--ease) 2s infinite;
 }
 @keyframes btnSheen { 0% { left: -60%; } 30%, 100% { left: 130%; } }
-.btn:hover { background: var(--gold-l); color: #1b130a; }
+.btn:hover { background: var(--gold-l); color: #1b130a; transform: translateY(-2px); }
+.btn:active { transform: scale(.98); }
 
 /* ==========================================================================
    6 · Final
@@ -704,5 +736,7 @@ html.opened #rail { opacity: 1; pointer-events: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .rv, .write { transition-duration: .01s !important; transition-delay: 0s !important; }
   .gate-orbit, #openBtn::after, .gate-hint i, .btn::after { animation: none; }
+  .words .w { transition-duration: .01s !important; transition-delay: 0s !important; }
 }
