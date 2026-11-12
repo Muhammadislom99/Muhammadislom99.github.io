@@ -24,17 +24,17 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html {
-  overflow-x: clip;
-  -webkit-text-size-adjust: 100%;
-  scrollbar-width: none;
+/* one gesture = one page: the document itself never scrolls, the story is moved by script */
+html, body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
-html::-webkit-scrollbar { display: none; }
-html.locked, html.locked body { overflow: hidden; height: 100%; }
+html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  overflow-x: clip;
+  touch-action: none;
   background: #0c231c;
   color: var(--ink);
   font-family: var(--serif);
@@ -169,9 +169,9 @@ html.opening #openBtn { transform: scale(1.7); transition: transform 1.2s var(--
    Story layout
    ========================================================================== */
 
-#story { position: relative; z-index: 2; }
+#story { position: relative; z-index: 2; will-change: transform; }
 
-/* S-line through the whole story + the leaf that glides along it */
+/* S-line through the whole story + the living flower that glides along it */
 #vine {
   position: absolute;
   left: 0;
@@ -198,9 +198,17 @@ html.opened #vine { opacity: 1; }
   stroke-linecap: round;
   opacity: .5;
 }
-#leaf { opacity: .58; }
-#leaf .leaf-body { fill: url(#leafGrad); }
-#leaf .leaf-vein { fill: none; stroke: rgba(255, 248, 225, .75); stroke-width: .9; stroke-linecap: round; }
+#bloom {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.8s var(--ease) .9s;
+  will-change: transform;
+}
+html.opened #bloom { opacity: .6; }
 .sec { z-index: 1; }
 
 .sec {
@@ -211,7 +219,7 @@ html.opened #vine { opacity: 1; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 11svh 7vw;
+  padding: 7svh 7vw 16svh;   /* extra room below: the flower rests there */
   text-align: center;
 }
 .pin {
