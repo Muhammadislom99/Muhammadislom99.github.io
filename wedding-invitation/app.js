@@ -595,7 +595,7 @@
   tickCountdown();
   setInterval(tickCountdown, 1000);
 
-  $('#mapBtn').href = CFG.mapUrl || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Ресторан Зикриддин'));
+  $('#mapBtn').href = CFG.mapUrl || 'https://yandex.ru/maps/-/CXCtQ-Mp';
 
   var toastEl = $('#toast'), toastT = 0;
   function toast(msg) {
