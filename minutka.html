@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Цена одного «на минутку»</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117;
+  --bg2:#151b24;
+  --card:#1a2230;
+  --line:#2a3445;
+  --text:#e8edf4;
+  --muted:#93a1b5;
+  --accent:#4cc38a;
+  --warn:#f5b041;
+  --danger:#ef5b5b;
+  --blue:#5aa9ff;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+/* ---------- deck ---------- */
+.deck{position:relative;width:100vw;height:100vh}
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:6vh 8vw 10vh;
+  opacity:0;visibility:hidden;
+  transform:translateX(40px);
+  transition:opacity .5s ease, transform .5s ease, visibility .5s;
+  overflow-y:auto;
+}
+.slide.active{opacity:1;visibility:visible;transform:none}
+.slide.prev{transform:translateX(-40px)}
+.kicker{
+  font-family:var(--mono);font-size:clamp(12px,1.1vw,15px);
+  color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:2vh
+}
+h1{font-size:clamp(34px,5.6vw,84px);line-height:1.05;font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(26px,3.4vw,52px);line-height:1.12;font-weight:800;letter-spacing:-.015em;margin-bottom:3vh}
+h3{font-size:clamp(17px,1.5vw,22px);font-weight:700;margin-bottom:.6em}
+p,li{font-size:clamp(15px,1.45vw,22px);line-height:1.5;color:var(--muted)}
+strong{color:var(--text)}
+.lead{font-size:clamp(17px,1.9vw,28px);color:var(--muted);max-width:60ch;margin-top:3vh}
+.hl{color:var(--accent)}
+.warn{color:var(--warn)}
+.danger{color:var(--danger)}
+.grid{display:grid;gap:clamp(12px,1.6vw,24px)}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:clamp(16px,2vw,28px);
+}
+.card p{font-size:clamp(14px,1.25vw,19px)}
+.big{font-size:clamp(40px,6vw,96px);font-weight:800;line-height:1;letter-spacing:-.03em}
+.mid{font-size:clamp(26px,3vw,46px);font-weight:800;line-height:1.05}
+.note{font-size:clamp(12px,1vw,14px);color:var(--muted);margin-top:2.5vh;opacity:.85}
+.fade-in>*{opacity:0;transform:translateY(14px);transition:opacity .5s, transform .5s}
+.slide.active .fade-in>*{opacity:1;transform:none}
+.slide.active .fade-in>*:nth-child(2){transition-delay:.12s}
+.slide.active .fade-in>*:nth-child(3){transition-delay:.24s}
+.slide.active .fade-in>*:nth-child(4){transition-delay:.36s}
+.slide.active .fade-in>*:nth-child(5){transition-delay:.48s}
+.slide.active .fade-in>*:nth-child(6){transition-delay:.6s}
+button.btn{
+  font:inherit;font-size:clamp(14px,1.3vw,19px);font-weight:600;
+  background:var(--accent);color:#06140d;border:0;border-radius:12px;
+  padding:.8em 1.4em;cursor:pointer;transition:transform .15s, filter .15s
+}
+button.btn:hover{filter:brightness(1.1)}
+button.btn:active{transform:scale(.97)}
+button.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+button.btn.red{background:var(--danger);color:#fff}
+
+/* ---------- title ---------- */
+.title-wrap{max-width:1100px}
+.title-wrap .sub{font-size:clamp(18px,2.1vw,32px);color:var(--muted);margin-top:3vh;font-weight:500}
+.clock{
+  font-family:var(--mono);font-size:clamp(14px,1.3vw,18px);color:var(--muted);
+  margin-top:6vh;display:flex;gap:1.2em;flex-wrap:wrap
+}
+.clock span{border:1px solid var(--line);border-radius:999px;padding:.4em 1em}
+
+/* ---------- scene: context stack ---------- */
+.scene{display:grid;grid-template-columns:1.1fr 1fr;gap:4vw;align-items:center}
+.head{
+  position:relative;min-height:46vh;border:1px dashed var(--line);border-radius:20px;
+  padding:3vh 2vw;display:flex;flex-direction:column;gap:1.2vh;justify-content:flex-end;
+  overflow:hidden;background:var(--bg2)
+}
+.head .label{position:absolute;top:1.6vh;left:1.4vw;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.chip{
+  font-family:var(--mono);font-size:clamp(12px,1.1vw,16px);
+  background:var(--card);border:1px solid var(--line);border-left:4px solid var(--blue);
+  border-radius:10px;padding:.6em .9em;color:var(--text);
+  transition:transform .9s cubic-bezier(.5,-0.3,.7,1), opacity .9s
+}
+.head.broken .chip{opacity:0}
+.head .lost{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:clamp(20px,2.4vw,34px);font-weight:800;color:var(--danger);opacity:0;transition:opacity .6s .9s;pointer-events:none
+}
+.head.broken .lost{opacity:1}
+.bubble{
+  background:var(--card);border:1px solid var(--line);border-radius:18px 18px 18px 4px;
+  padding:1.2em 1.4em;font-size:clamp(17px,1.8vw,26px);color:var(--text);margin-bottom:3vh;
+  opacity:0;transform:translateY(10px);transition:.4s
+}
+.bubble.show{opacity:1;transform:none}
+
+/* ---------- guess ---------- */
+.guess-row{display:flex;gap:1vw;align-items:center;flex-wrap:wrap;margin-top:4vh}
+.guess-row input{
+  font:inherit;font-size:clamp(22px,2.6vw,40px);font-weight:700;width:6.5em;
+  background:var(--card);border:1px solid var(--line);color:var(--text);
+  border-radius:12px;padding:.3em .5em
+}
+.guess-row .cur{font-size:clamp(22px,2.6vw,40px);font-weight:700;color:var(--muted)}
+
+/* ---------- research ---------- */
+.stat .big{margin-bottom:1.5vh}
+.src{font-family:var(--mono);font-size:clamp(11px,.9vw,13px);color:var(--muted);margin-top:1.4vh;opacity:.8}
+
+/* ---------- timeline ---------- */
+.timeline{margin-top:5vh}
+.bar{display:flex;height:clamp(54px,8vh,84px);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.seg{
+  display:flex;align-items:center;justify-content:center;font-weight:700;
+  font-size:clamp(13px,1.3vw,19px);color:#111;width:0;transition:width 1.2s cubic-bezier(.2,.8,.2,1);white-space:nowrap;overflow:hidden
+}
+.seg.talk{background:var(--danger);color:#fff}
+.seg.rec{background:var(--warn)}
+.slide.active .seg.talk{width:17.9%}
+.slide.active .seg.rec{width:82.1%;transition-delay:.4s}
+.legend{display:flex;justify-content:space-between;margin-top:1.4vh;font-family:var(--mono);font-size:clamp(12px,1vw,15px);color:var(--muted)}
+.hidden-costs{margin-top:5vh}
+
+/* ---------- math steps ---------- */
+.steps{display:flex;flex-direction:column;gap:1.4vh;max-width:1000px}
+.step{
+  display:grid;grid-template-columns:2.2em 1fr auto;gap:1.2vw;align-items:center;
+  background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4vh 1.4vw;
+  opacity:.18;transition:opacity .4s, border-color .4s
+}
+.step.on{opacity:1}
+.step.last{border-color:var(--danger)}
+.step .n{font-family:var(--mono);color:var(--accent);font-weight:700;font-size:clamp(14px,1.2vw,18px)}
+.step .t{font-size:clamp(15px,1.4vw,21px);color:var(--text)}
+.step .v{font-family:var(--mono);font-weight:700;font-size:clamp(16px,1.6vw,26px);color:var(--warn);text-align:right}
+.step.last .v{color:var(--danger);font-size:clamp(20px,2.2vw,34px)}
+
+/* ---------- calculator ---------- */
+.calc{display:grid;grid-template-columns:1fr 1.05fr;gap:3vw;align-items:start}
+.field{margin-bottom:2.2vh}
+.field label{display:flex;justify-content:space-between;font-size:clamp(14px,1.2vw,18px);color:var(--muted);margin-bottom:.6vh}
+.field label b{font-family:var(--mono);color:var(--text)}
+input[type=range]{width:100%;accent-color:var(--accent);height:24px}
+.out{display:grid;grid-template-columns:1fr 1fr;gap:1.2vw}
+.out .card{padding:clamp(14px,1.6vw,22px)}
+.out .k{font-size:clamp(12px,1vw,15px);color:var(--muted)}
+.out .val{font-family:var(--mono);font-weight:700;font-size:clamp(22px,2.6vw,40px);margin-top:.6vh}
+.out .card.total{grid-column:1/-1;border-color:var(--danger)}
+.out .card.total .val{color:var(--danger);font-size:clamp(30px,4vw,64px)}
+
+/* ---------- quadrants ---------- */
+.quad{display:grid;grid-template-columns:auto 1fr 1fr;grid-template-rows:auto 1fr 1fr;gap:12px}
+.quad .ax{font-family:var(--mono);font-size:clamp(11px,.95vw,14px);color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center}
+.quad .ax.v{writing-mode:vertical-rl;transform:rotate(180deg)}
+.q{border-radius:14px;padding:clamp(12px,1.5vw,22px);border:1px solid var(--line);background:var(--card)}
+.q h3{display:flex;gap:.5em;align-items:baseline}
+.q h3 .num{font-family:var(--mono);color:var(--muted);font-size:.85em}
+.q p{font-size:clamp(13px,1.15vw,17px)}
+.q.q2{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.q.q3{border-color:var(--danger);box-shadow:0 0 0 1px var(--danger) inset}
+.tag{display:inline-block;font-size:clamp(11px,.9vw,13px);font-weight:700;border-radius:999px;padding:.2em .7em;margin-top:.8vh}
+.tag.g{background:rgba(76,195,138,.15);color:var(--accent)}
+.tag.r{background:rgba(239,91,91,.15);color:var(--danger)}
+
+/* ---------- checklist ---------- */
+.check li{list-style:none;display:flex;gap:.8em;align-items:flex-start;margin-bottom:1.6vh}
+.check li .box{
+  flex:none;width:1.4em;height:1.4em;border-radius:6px;border:2px solid var(--accent);
+  display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:800;font-size:.9em;margin-top:.15em
+}
+.urgent{border-left:4px solid var(--danger)}
+
+/* ---------- roles ---------- */
+.role .ico{font-size:clamp(26px,2.6vw,40px);margin-bottom:1vh}
+.role ul{padding-left:1.1em}
+.role li{font-size:clamp(13px,1.15vw,17px);margin-bottom:.6vh}
+
+/* ---------- final ---------- */
+.final-num{font-size:clamp(80px,14vw,220px);font-weight:800;line-height:.9;letter-spacing:-.05em;color:var(--danger)}
+.guess-back{margin-top:3vh;font-size:clamp(16px,1.6vw,24px);color:var(--muted)}
+.sources li{font-size:clamp(13px,1.1vw,16px);margin-bottom:1.2vh}
+.sources a{color:var(--blue)}
+
+/* ---------- chrome ---------- */
+.progress{position:fixed;left:0;bottom:0;height:4px;background:var(--accent);transition:width .4s;z-index:10}
+.hud{
+  position:fixed;right:2vw;bottom:2.2vh;display:flex;gap:8px;align-items:center;z-index:10;
+  font-family:var(--mono);font-size:13px;color:var(--muted)
+}
+.hud button{
+  background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;
+  width:38px;height:38px;cursor:pointer;font-size:16px
+}
+.hud button:hover{border-color:var(--accent)}
+.timer{position:fixed;left:2vw;bottom:2.2vh;font-family:var(--mono);font-size:13px;color:var(--muted);z-index:10;cursor:pointer}
+.notes{
+  position:fixed;left:0;right:0;bottom:0;max-height:32vh;overflow:auto;z-index:20;
+  background:#0a0e14ee;border-top:1px solid var(--line);padding:2vh 3vw 7vh;
+  font-size:clamp(14px,1.2vw,18px);line-height:1.5;color:#cfd8e3;
+  transform:translateY(100%);transition:transform .3s
+}
+.notes.show{transform:none}
+.notes b{color:var(--accent);font-family:var(--mono);font-size:.8em;letter-spacing:.1em}
+.help{position:fixed;top:2vh;right:2vw;font-family:var(--mono);font-size:12px;color:var(--muted);opacity:.6;z-index:10}
+
+/* ---------- responsive ---------- */
+@media (max-width:860px){
+  .slide{padding:6vh 16px 12vh;justify-content:flex-start}
+  .g2,.g3,.g4,.scene,.calc{grid-template-columns:1fr}
+  .out{grid-template-columns:1fr}
+  .quad{grid-template-columns:1fr 1fr}
+  .quad .ax{display:none}
+  .help{display:none}
+  .step{grid-template-columns:2em 1fr}
+  .step .v{grid-column:2;text-align:left}
+}
+@media print{
+  body{overflow:visible}
+  .slide{position:relative;opacity:1;visibility:visible;transform:none;page-break-after:always;height:100vh}
+  .hud,.progress,.timer,.notes,.help{display:none}
+  .step{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+<!-- 1. TITLE -->
+<section class="slide" data-notes="Представиться. Сказать: за 25 минут посчитаем, сколько компания теряет на одной безобидной фразе, и договоримся, как это исправить. Поблагодарить HR и менеджеров за то, что пришли: тема не только про разработчиков.">
+  <div class="title-wrap fade-in">
+    <div class="kicker">Мастер-класс · ~25 минут</div>
+    <h1>Цена одного<br><span class="hl">«на минутку»</span></h1>
+    <div class="sub">Как сохранить фокус разработчиков и деньги компании</div>
+    <div class="clock"><span>HR</span><span>Менеджеры</span><span>Бизнес</span><span>Аналитики</span><span>Разработчики</span></div>
+  </div>
+</section>
+
+<!-- 2. SCENE -->
+<section class="slide" data-notes="Интерактив. Сначала зачитать, что у разработчика в голове: это реальная задача, баг с двойным списанием. Потом нажать кнопку. Пауза. Спросить зал: «Знакомо?» Обычно поднимают руки и разработчики, и менеджеры.">
+  <div class="kicker">Сценка</div>
+  <h2>10:42. Разработчик ищет баг с двойным списанием</h2>
+  <div class="scene">
+    <div class="head" id="head">
+      <div class="label">// оперативная память разработчика</div>
+      <div class="chip">ретрай платежа → idempotencyKey не сохраняется?</div>
+      <div class="chip">таблица transactions, статус PENDING</div>
+      <div class="chip">ветка fix/double-charge, 3 файла открыты</div>
+      <div class="chip">гипотеза: race condition между двумя воркерами</div>
+      <div class="chip">тест #4 падает только при параллельном запуске</div>
+      <div class="chip">в логах — запросы с разницей 12 мс</div>
+      <div class="chip">почти нашёл… строка 214</div>
+      <div class="lost">контекст потерян</div>
+    </div>
+    <div>
+      <div class="bubble" id="bubble">— Слушай, есть минутка? Быстрый вопрос по отчёту…</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn red" id="interrupt">Подойти «на минутку»</button>
+        <button class="btn ghost" id="resetScene">Сбросить</button>
+      </div>
+      <p class="note" id="sceneNote" style="opacity:0;transition:opacity .5s 1.2s">Вопрос занял 3 минуты. Собрать картинку заново займёт гораздо дольше.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3. GUESS -->
+<section class="slide" data-notes="Спросить 3–4 человек из разных отделов. Записать среднее или самую смелую цифру в поле. В конце вернёмся к ней.">
+  <div class="fade-in">
+    <div class="kicker">Вопрос залу</div>
+    <h2>Сколько стоит компании<br>одно такое «на минутку»?</h2>
+    <p class="lead">Команда из <strong>5 разработчиков</strong>. Каждого отвлекают <strong>4 раза в день</strong>. Сколько это в долларах за месяц?</p>
+    <div class="guess-row">
+      <span class="cur">$</span>
+      <input type="number" id="guess" placeholder="ваша оценка" min="0">
+      <span class="note" style="margin:0">запишем и вернёмся к этому в конце</span>
+    </div>
+  </div>
+</section>
+
+<!-- 4. CONTEXT -->
+<section class="slide" data-notes="Объяснить для нетехнических коллег: код похож на карточный домик в голове. Чем сложнее задача, тем выше домик. Финтех почти всегда про сложные задачи: деньги, транзакции, регуляторка.">
+  <div class="kicker">Что происходит в голове</div>
+  <h2>Контекст — это <span class="warn">карточный домик</span></h2>
+  <div class="grid g3 fade-in">
+    <div class="card">
+      <h3>🧠 Строится долго</h3>
+      <p>Чтобы держать в голове связи между модулями, данными и гипотезой, нужно 15–30 минут погружения.</p>
+    </div>
+    <div class="card">
+      <h3>💥 Рушится мгновенно</h3>
+      <p>Рабочая память вмещает лишь несколько элементов. Новый вопрос вытесняет старые, и «стопка» рассыпается.</p>
+    </div>
+    <div class="card">
+      <h3>💸 В финтехе дороже</h3>
+      <p>Платежи, балансы, комиссии, требования регулятора. Ошибка из-за потери фокуса стоит не только времени.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5. RESEARCH -->
+<section class="slide" data-notes="Важно честно сказать: 23 минуты — среднее для офисных сотрудников в исследовании Глории Марк, не только для программистов. Исследование Парнина — именно про программистов. Цифры в вашей команде будут другими, но порядок величин такой.">
+  <div class="kicker">Что говорят исследования</div>
+  <h2>Возвращение к задаче — не мгновенное</h2>
+  <div class="grid g3 fade-in">
+    <div class="card stat">
+      <div class="big warn">~23<span style="font-size:.45em"> мин</span></div>
+      <p>в среднем проходит, прежде чем человек возвращается к прерванной задаче</p>
+      <div class="src">Mark, Gonzalez, Harris · CHI 2005 (офисные сотрудники)</div>
+    </div>
+    <div class="card stat">
+      <div class="big danger">~10%</div>
+      <p>сессий программистов возобновлялись в течение минуты после прерывания</p>
+      <div class="src">Parnin &amp; Rugaber · 2011 (~10 000 сессий)</div>
+    </div>
+    <div class="card stat">
+      <div class="big hl">10–15<span style="font-size:.45em"> мин</span></div>
+      <p>обычно нужно программисту, чтобы снова начать писать код</p>
+      <div class="src">Parnin · «Programmer, Interrupted», 2013</div>
+    </div>
+  </div>
+  <p class="note">⚠ Это средние значения из отдельных исследований. В вашей команде цифры будут другими, но порядок величин такой.</p>
+</section>
+
+<!-- 6. ICEBERG / TIMELINE -->
+<section class="slide" data-notes="Главная мысль слайда: тот, кто отвлекает, видит только красную часть. Платит компания за всю полосу.">
+  <div class="kicker">Невидимая часть</div>
+  <h2>«На минутку» = <span class="danger">5</span> + <span class="warn">23</span> минуты</h2>
+  <div class="timeline">
+    <div class="bar">
+      <div class="seg talk">5 мин</div>
+      <div class="seg rec">23 мин — восстановление контекста</div>
+    </div>
+    <div class="legend"><span>разговор: это видят все</span><span>28 минут потеряно</span></div>
+  </div>
+  <div class="grid g3 hidden-costs fade-in">
+    <div class="card"><h3>🐞 Ошибки</h3><p>После прерывания легче пропустить граничный случай в платёжной логике.</p></div>
+    <div class="card"><h3>📅 Сроки</h3><p>Мелкие потери копятся в спринте и сдвигают релиз.</p></div>
+    <div class="card"><h3>🔥 Выгорание</h3><p>Работа «урывками» утомляет и раздражает. Сильные специалисты уходят.</p></div>
+  </div>
+  <p class="note">Ошибки, сроки и выгорание здесь описаны качественно: надёжных цифр по ним для нашего случая нет.</p>
+</section>
+
+<!-- 7. MATH -->
+<section class="slide" data-notes="Нажимать → (или пробел) чтобы раскрывать шаги по одному. Объяснить, откуда $25/ч: данные Яндекса и Сбера закрыты, берём рыночную медиану middle по Москве. Курс и ставка условные. Важно: если ставка выше — потери выше.">
+  <div class="kicker">Считаем · пример</div>
+  <h2>5 разработчиков × 4 прерывания в день</h2>
+  <div class="steps" id="steps">
+    <div class="step"><span class="n">01</span><span class="t">Одно прерывание: 5 мин разговора + 23 мин восстановления</span><span class="v">28 мин ≈ 0,47 ч</span></div>
+    <div class="step"><span class="n">02</span><span class="t">Стоимость часа middle-разработчика для компании*</span><span class="v">≈ $25</span></div>
+    <div class="step"><span class="n">03</span><span class="t">Одно «на минутку» в деньгах</span><span class="v">≈ $11,7</span></div>
+    <div class="step"><span class="n">04</span><span class="t">В день: 5 человек × 4 прерывания = 20 раз</span><span class="v">9,3 ч · $233</span></div>
+    <div class="step"><span class="n">05</span><span class="t">В месяц (21 рабочий день)</span><span class="v">196 ч · $4 900</span></div>
+    <div class="step last"><span class="n">06</span><span class="t">В год. Это как ~1,2 сотрудника на зарплате, которые ничего не производят</span><span class="v">≈ $58 800</span></div>
+  </div>
+  <p class="note">* Данные Яндекса и Сбера не публичны. Ориентир: middle-разработчик в Москве ≈ 250 тыс. ₽/мес (Хабр Карьера, 2-е полугодие 2025) ≈ $3 100 по условному курсу 80 ₽/$, + ~30% страховых взносов ≈ $4 000/мес ÷ ~165 рабочих часов ≈ $25/ч. Без учёта офиса, оборудования и налогов на прибыль, поэтому оценка скорее занижена.</p>
+</section>
+
+<!-- 8. CALCULATOR -->
+<section class="slide" data-notes="Дать залу самим подвигать ползунки. Предложить: «Сколько раз в день отвлекают вас?» Подставить цифры зала. Для HR и бизнеса особенно наглядна строка «эквивалент сотрудников».">
+  <div class="kicker">Калькулятор · посчитайте свою команду</div>
+  <h2>Сколько теряет <span class="hl">ваша</span> команда?</h2>
+  <div class="calc">
+    <div>
+      <div class="field"><label>Разработчиков в команде <b id="vDevs"></b></label><input type="range" id="devs" min="1" max="50" value="5"></div>
+      <div class="field"><label>Прерываний на человека в день <b id="vInt"></b></label><input type="range" id="ints" min="1" max="15" value="4"></div>
+      <div class="field"><label>Длительность разговора, мин <b id="vTalk"></b></label><input type="range" id="talk" min="1" max="30" value="5"></div>
+      <div class="field"><label>Восстановление контекста, мин <b id="vRec"></b></label><input type="range" id="rec" min="5" max="30" value="23"></div>
+      <div class="field"><label>Стоимость часа для компании, $ <b id="vRate"></b></label><input type="range" id="rate" min="5" max="100" value="25"></div>
+    </div>
+    <div class="out">
+      <div class="card"><div class="k">Потеряно часов в день</div><div class="val warn" id="oDay"></div></div>
+      <div class="card"><div class="k">Часов в месяц</div><div class="val warn" id="oMonth"></div></div>
+      <div class="card"><div class="k">Потери в месяц</div><div class="val" id="oMoney"></div></div>
+      <div class="card"><div class="k">Эквивалент сотрудников</div><div class="val hl" id="oFte"></div></div>
+      <div class="card total"><div class="k">Потери в год</div><div class="val" id="oYear"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. COVEY Q -->
+<section class="slide" data-notes="Переход к решению. Кови, навык 3. Спросить: в какой квадрант попадает «быстрый вопрос по отчёту»? Почти всегда III: срочно для того, кто спрашивает, но не важно для того, кого отвлекают. А фокусная работа разработчика — квадрант II.">
+  <div class="kicker">Стивен Кови · Навык 3 · «Сначала делай то, что важно сначала»</div>
+  <h2>Куда попадает «на минутку»?</h2>
+  <div class="quad">
+    <div></div>
+    <div class="ax">Срочно</div>
+    <div class="ax">Не срочно</div>
+    <div class="ax v">Важно</div>
+    <div class="q"><h3><span class="num">I</span> Кризис</h3><p>Упал прод, не проходят платежи, инцидент безопасности.</p><span class="tag r">тут отвлекать можно и нужно</span></div>
+    <div class="q q2"><h3><span class="num">II</span> Фокус</h3><p>Разработка, архитектура, тесты, рефакторинг, обучение. Здесь создаётся ценность.</p><span class="tag g">защищаем это время</span></div>
+    <div class="ax v">Не важно</div>
+    <div class="q q3"><h3><span class="num">III</span> Отвлечения</h3><p>«Быстрый вопрос», «глянь одним глазком», статусы, которые можно написать в чат.</p><span class="tag r">большинство «на минутку»</span></div>
+    <div class="q"><h3><span class="num">IV</span> Пустое</h3><p>Бесконечная лента, болтовня ни о чём, лишние уведомления.</p></div>
+  </div>
+</section>
+
+<!-- 10. HABITS 5 + 4 -->
+<section class="slide" data-notes="Навык 5: прежде чем подойти, пойми ситуацию другого человека. Посмотри: он в наушниках, статус «фокус»? Навык 4: договорённости, где выигрывают оба. Спрашивающий получает ответ гарантированно, разработчик — тишину. Финтех-нюанс: чётко определить, что такое настоящее «срочно».">
+  <div class="kicker">Навыки 5 и 4 · «Сначала пойми» и «Выигрыш/выигрыш»</div>
+  <h2>Перед тем как подойти — 3 вопроса</h2>
+  <div class="grid g2">
+    <div>
+      <ul class="check">
+        <li><span class="box">1</span><span><strong>Это квадрант I?</strong> Упал прод, платежи, безопасность? → Подходи сразу.</span></li>
+        <li><span class="box">2</span><span><strong>Можно написать?</strong> Сообщение в чат человек прочитает в своём перерыве, без потери контекста.</span></li>
+        <li><span class="box">3</span><span><strong>Подождёт до окна?</strong> Задай вопрос в отведённое время или на ближайшей встрече.</span></li>
+      </ul>
+    </div>
+    <div class="grid" style="gap:12px">
+      <div class="card"><h3>🎧 Фокус-часы</h3><p>Например, 10:00–13:00 без встреч и подходов. Статус «Не беспокоить» в мессенджере.</p></div>
+      <div class="card"><h3>🕐 Окна для вопросов</h3><p>После обеда и в конце дня разработчик доступен. Спрашивающий знает, когда точно получит ответ.</p></div>
+      <div class="card urgent"><h3>🚨 Договор о «срочно»</h3><p>Письменно: что считается инцидентом и через какой канал звать. Всё остальное — асинхронно.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. ROLES -->
+<section class="slide" data-notes="Навык 1: проактивность. Не ждём, пока «руководство введёт правило». Каждый может начать с себя уже завтра. Пройтись по ролям, обратиться к каждой группе в зале.">
+  <div class="kicker">Навык 1 · «Будь проактивным»</div>
+  <h2>Что каждый может сделать <span class="hl">завтра</span></h2>
+  <div class="grid g4">
+    <div class="card role"><div class="ico">🤝</div><h3>HR</h3><ul><li>Добавить правила фокуса в онбординг</li><li>Спрашивать о прерываниях в опросах вовлечённости</li></ul></div>
+    <div class="card role"><div class="ico">📋</div><h3>Менеджеры</h3><ul><li>Собирать встречи в блоки, а не дробить день</li><li>Защищать фокус-часы команды</li><li>Статусы — в чат, а не «подойти спросить»</li></ul></div>
+    <div class="card role"><div class="ico">📊</div><h3>Бизнес и аналитики</h3><ul><li>Копить вопросы и задавать пачкой</li><li>Писать вопрос сразу с контекстом и ссылками</li></ul></div>
+    <div class="card role"><div class="ico">💻</div><h3>Разработчики</h3><ul><li>Ставить статус «фокус»</li><li>Отвечать в обещанные окна</li><li>Записывать «где остановился» перед перерывом</li></ul></div>
+  </div>
+</section>
+
+<!-- 12. FINAL -->
+<section class="slide" data-notes="Вернуться к догадке зала из слайда 3. Сравнить с $4 900 в месяц. Закончить фразой с экрана. Перейти к вопросам.">
+  <div class="fade-in">
+    <div class="kicker">Итог</div>
+    <h2>Прежде чем сказать «на минутку», вспомни:</h2>
+    <div class="final-num">28 минут</div>
+    <p class="lead">Столько на самом деле стоит одна «минутка». <strong>Ваше время, его фокус и деньги компании.</strong></p>
+    <p class="guess-back" id="guessBack"></p>
+    <p class="lead" style="margin-top:5vh;color:var(--text);font-weight:600">Вопросы?</p>
+  </div>
+</section>
+
+<!-- 13. SOURCES -->
+<section class="slide" data-notes="Слайд для тех, кто захочет проверить цифры.">
+  <div class="kicker">Источники</div>
+  <h2>Откуда цифры</h2>
+  <ul class="sources" style="padding-left:1.2em">
+    <li>Mark G., Gonzalez V., Harris J. <em>No Task Left Behind? Examining the Nature of Fragmented Work.</em> CHI 2005 — возвращение к прерванной задаче в среднем через ~23 мин.</li>
+    <li>Mark G., Gudith D., Klocke U. <em>The Cost of Interrupted Work: More Speed and Stress.</em> CHI 2008 — после прерываний люди работают быстрее, но с большим стрессом.</li>
+    <li>Parnin C., Rugaber S. <em>Resumption strategies for interrupted programming tasks.</em> Software Quality Journal, 2011 — ~10% сессий возобновляются в течение минуты.</li>
+    <li>Parnin C. <em>Programmer, Interrupted.</em> 2013 — 10–15 мин до возобновления редактирования кода.</li>
+    <li>Хабр Карьера — <a href="https://career.habr.com/salaries" target="_blank" rel="noopener">отчёт о зарплатах в IT</a>, 2-е полугодие 2025: медиана в Москве 230 тыс. ₽; Java Backend middle ≈ 242 тыс. ₽.</li>
+    <li>Стивен Кови. <em>7 навыков высокоэффективных людей.</em> 1989 — навыки 1, 3, 4, 5.</li>
+  </ul>
+  <p class="note">Ставка $25/ч — оценка автора по рыночным медианам, а не данные конкретной компании. Курс 80 ₽/$ условный.</p>
+</section>
+
+</div>
+
+<div class="progress" id="progress"></div>
+<div class="timer" id="timer" title="Клик: сброс таймера">⏱ 00:00</div>
+<div class="help">← → навигация · N заметки · F полный экран</div>
+<div class="hud">
+  <button id="prevBtn" aria-label="Назад">‹</button>
+  <span id="counter">1 / 13</span>
+  <button id="nextBtn" aria-label="Вперёд">›</button>
+  <button id="notesBtn" aria-label="Заметки" title="Заметки докладчика (N)">✎</button>
+  <button id="fsBtn" aria-label="Полный экран" title="Полный экран (F)">⛶</button>
+</div>
+<div class="notes" id="notes"><b>ЗАМЕТКИ ДОКЛАДЧИКА</b><div id="notesText"></div></div>
+
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const total=slides.length;
+  let cur=0;
+
+  // safe storage
+  const store={
+    get(k){try{return localStorage.getItem(k)}catch(e){return null}},
+    set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  };
+
+  // ---- math steps (revealed one by one on slide 7) ----
+  const stepsSlide=slides.findIndex(s=>s.querySelector('#steps'));
+  const steps=[...document.querySelectorAll('#steps .step')];
+  let stepShown=0;
+  function renderSteps(){steps.forEach((s,i)=>s.classList.toggle('on',i<stepShown))}
+
+  function go(n){
+    n=Math.max(0,Math.min(total-1,n));
+    slides.forEach((s,i)=>{
+      s.classList.toggle('active',i===n);
+      s.classList.toggle('prev',i<n);
+    });
+    cur=n;
+    document.getElementById('counter').textContent=(n+1)+' / '+total;
+    document.getElementById('progress').style.width=((n+1)/total*100)+'%';
+    document.getElementById('notesText').textContent=slides[n].dataset.notes||'';
+    if(n===stepsSlide){renderSteps()}
+    if(slides[n].querySelector('#guessBack')) showGuess();
+    try{history.replaceState(null,'','#'+(n+1))}catch(e){}
+  }
+  function next(){
+    if(cur===stepsSlide && stepShown<steps.length){stepShown++;renderSteps();return}
+    go(cur+1);
+  }
+  function prev(){
+    if(cur===stepsSlide && stepShown>0){stepShown--;renderSteps();return}
+    go(cur-1);
+  }
+
+  document.getElementById('nextBtn').onclick=next;
+  document.getElementById('prevBtn').onclick=prev;
+
+  const notes=document.getElementById('notes');
+  const toggleNotes=()=>notes.classList.toggle('show');
+  document.getElementById('notesBtn').onclick=toggleNotes;
+
+  function toggleFs(){
+    if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}
+    else{document.exitFullscreen&&document.exitFullscreen()}
+  }
+  document.getElementById('fsBtn').onclick=toggleFs;
+
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT' && e.target.type!=='range') {
+      if(e.key==='Enter'){e.target.blur()}
+      return;
+    }
+    if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();next()}
+    else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev()}
+    else if(e.key==='Home'){go(0)}
+    else if(e.key==='End'){go(total-1)}
+    else if(e.key==='n'||e.key==='N'||e.key==='т'||e.key==='Т'){toggleNotes()}
+    else if(e.key==='f'||e.key==='F'||e.key==='а'||e.key==='А'){toggleFs()}
+  });
+
+  // swipe
+  let sx=null,sy=null;
+  document.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+  document.addEventListener('touchend',e=>{
+    if(sx===null)return;
+    const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.5){dx<0?next():prev()}
+    sx=null;
+  },{passive:true});
+
+  // ---- timer ----
+  let t0=Date.now();
+  const timerEl=document.getElementById('timer');
+  timerEl.onclick=()=>{t0=Date.now()};
+  setInterval(()=>{
+    const s=Math.floor((Date.now()-t0)/1000);
+    timerEl.textContent='⏱ '+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+  },1000);
+
+  // ---- scene ----
+  const head=document.getElementById('head');
+  const chips=[...head.querySelectorAll('.chip')];
+  const bubble=document.getElementById('bubble');
+  const sceneNote=document.getElementById('sceneNote');
+  document.getElementById('interrupt').onclick=()=>{
+    bubble.classList.add('show');
+    setTimeout(()=>{
+      chips.forEach((c,i)=>{
+        const x=(Math.random()*2-1)*220, y=300+Math.random()*200, r=(Math.random()*2-1)*60;
+        c.style.transitionDelay=(i*0.06)+'s';
+        c.style.transform=`translate(${x}px,${y}px) rotate(${r}deg)`;
+      });
+      head.classList.add('broken');
+      sceneNote.style.opacity=1;
+    },500);
+  };
+  document.getElementById('resetScene').onclick=()=>{
+    bubble.classList.remove('show');
+    head.classList.remove('broken');
+    sceneNote.style.opacity=0;
+    chips.forEach(c=>{c.style.transitionDelay='0s';c.style.transform=''});
+  };
+
+  // ---- guess ----
+  const guess=document.getElementById('guess');
+  const saved=store.get('minutka-guess');
+  if(saved) guess.value=saved;
+  guess.addEventListener('input',()=>store.set('minutka-guess',guess.value));
+  function showGuess(){
+    const el=document.getElementById('guessBack');
+    const g=parseFloat(guess.value);
+    if(!isNaN(g) && g>0){
+      const real=4900;
+      const ratio=real/g;
+      let txt='Оценка зала: <strong>$'+fmt(g)+'</strong> в месяц. По расчёту: <strong class="danger">$4 900</strong>';
+      if(ratio>1.15) txt+=' — в '+ratio.toFixed(1).replace('.',',')+' раза больше.';
+      else if(ratio<0.87) txt+=' — меньше вашей оценки, но всё равно больше $58 000 в год.';
+      else txt+=' — вы почти угадали.';
+      el.innerHTML=txt;
+    } else el.innerHTML='';
+  }
+
+  // ---- calculator ----
+  const ids=['devs','ints','talk','rec','rate'];
+  const lbl={devs:'vDevs',ints:'vInt',talk:'vTalk',rec:'vRec',rate:'vRate'};
+  function fmt(n){return Math.round(n).toLocaleString('ru-RU')}
+  function fmt1(n){return n.toLocaleString('ru-RU',{maximumFractionDigits:1,minimumFractionDigits:1})}
+  function calc(){
+    const v={};
+    ids.forEach(id=>{v[id]=+document.getElementById(id).value;document.getElementById(lbl[id]).textContent=(id==='rate'?'$':'')+v[id]});
+    const hPer=(v.talk+v.rec)/60;
+    const day=v.devs*v.ints*hPer;
+    const month=day*21;
+    const money=month*v.rate;
+    document.getElementById('oDay').textContent=fmt1(day)+' ч';
+    document.getElementById('oMonth').textContent=fmt(month)+' ч';
+    document.getElementById('oMoney').textContent='$'+fmt(money);
+    document.getElementById('oFte').textContent=fmt1(month/168);
+    document.getElementById('oYear').textContent='$'+fmt(money*12);
+  }
+  ids.forEach(id=>document.getElementById(id).addEventListener('input',calc));
+  calc();
+
+  // start
+  const h=parseInt(location.hash.slice(1),10);
+  go(!isNaN(h)?h-1:0);
+})();
+</script>
+</body>
+</html>
