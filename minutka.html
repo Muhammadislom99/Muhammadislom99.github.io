@@ -3,650 +3,850 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Цена одного «на минутку»</title>
+<title>Тихо. Идёт операция</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0d1117;
-  --bg2:#151b24;
-  --card:#1a2230;
-  --line:#2a3445;
-  --text:#e8edf4;
-  --muted:#93a1b5;
-  --accent:#4cc38a;
-  --warn:#f5b041;
-  --danger:#ef5b5b;
-  --blue:#5aa9ff;
-  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --bg:#05080c;
+  --ink:#eef3f6;
+  --dim:#8a99a8;
+  --teal:#2ee6c5;
+  --teal-soft:rgba(46,230,197,.14);
+  --red:#ff4a4a;
+  --red-soft:rgba(255,74,74,.16);
+  --amber:#ffb547;
+  --panel:rgba(16,24,32,.72);
+  --edge:rgba(255,255,255,.08);
+  --display:'Unbounded',system-ui,sans-serif;
+  --body:'Onest',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:'Inter',system-ui,-apple-system,sans-serif;
-  overflow:hidden;
-  -webkit-font-smoothing:antialiased;
-}
-/* ---------- deck ---------- */
-.deck{position:relative;width:100vw;height:100vh}
-.slide{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;justify-content:center;
-  padding:6vh 8vw 10vh;
-  opacity:0;visibility:hidden;
-  transform:translateX(40px);
-  transition:opacity .5s ease, transform .5s ease, visibility .5s;
-  overflow-y:auto;
-}
-.slide.active{opacity:1;visibility:visible;transform:none}
-.slide.prev{transform:translateX(-40px)}
-.kicker{
-  font-family:var(--mono);font-size:clamp(12px,1.1vw,15px);
-  color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:2vh
-}
-h1{font-size:clamp(34px,5.6vw,84px);line-height:1.05;font-weight:800;letter-spacing:-.02em}
-h2{font-size:clamp(26px,3.4vw,52px);line-height:1.12;font-weight:800;letter-spacing:-.015em;margin-bottom:3vh}
-h3{font-size:clamp(17px,1.5vw,22px);font-weight:700;margin-bottom:.6em}
-p,li{font-size:clamp(15px,1.45vw,22px);line-height:1.5;color:var(--muted)}
-strong{color:var(--text)}
-.lead{font-size:clamp(17px,1.9vw,28px);color:var(--muted);max-width:60ch;margin-top:3vh}
-.hl{color:var(--accent)}
-.warn{color:var(--warn)}
-.danger{color:var(--danger)}
-.grid{display:grid;gap:clamp(12px,1.6vw,24px)}
-.g2{grid-template-columns:repeat(2,1fr)}
-.g3{grid-template-columns:repeat(3,1fr)}
-.g4{grid-template-columns:repeat(4,1fr)}
-.card{
-  background:var(--card);border:1px solid var(--line);border-radius:16px;
-  padding:clamp(16px,2vw,28px);
-}
-.card p{font-size:clamp(14px,1.25vw,19px)}
-.big{font-size:clamp(40px,6vw,96px);font-weight:800;line-height:1;letter-spacing:-.03em}
-.mid{font-size:clamp(26px,3vw,46px);font-weight:800;line-height:1.05}
-.note{font-size:clamp(12px,1vw,14px);color:var(--muted);margin-top:2.5vh;opacity:.85}
-.fade-in>*{opacity:0;transform:translateY(14px);transition:opacity .5s, transform .5s}
-.slide.active .fade-in>*{opacity:1;transform:none}
-.slide.active .fade-in>*:nth-child(2){transition-delay:.12s}
-.slide.active .fade-in>*:nth-child(3){transition-delay:.24s}
-.slide.active .fade-in>*:nth-child(4){transition-delay:.36s}
-.slide.active .fade-in>*:nth-child(5){transition-delay:.48s}
-.slide.active .fade-in>*:nth-child(6){transition-delay:.6s}
-button.btn{
-  font:inherit;font-size:clamp(14px,1.3vw,19px);font-weight:600;
-  background:var(--accent);color:#06140d;border:0;border-radius:12px;
-  padding:.8em 1.4em;cursor:pointer;transition:transform .15s, filter .15s
-}
-button.btn:hover{filter:brightness(1.1)}
-button.btn:active{transform:scale(.97)}
-button.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
-button.btn.red{background:var(--danger);color:#fff}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);overflow:hidden;-webkit-font-smoothing:antialiased}
 
-/* ---------- title ---------- */
-.title-wrap{max-width:1100px}
-.title-wrap .sub{font-size:clamp(18px,2.1vw,32px);color:var(--muted);margin-top:3vh;font-weight:500}
-.clock{
-  font-family:var(--mono);font-size:clamp(14px,1.3vw,18px);color:var(--muted);
-  margin-top:6vh;display:flex;gap:1.2em;flex-wrap:wrap
-}
-.clock span{border:1px solid var(--line);border-radius:999px;padding:.4em 1em}
+/* ========== BACKGROUND ========== */
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 40%,transparent 30%,rgba(0,0,0,.75) 100%)}
+.lampglow{position:fixed;left:50%;top:-30vh;width:120vw;height:110vh;transform:translateX(-50%);z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 20%,rgba(200,255,245,.16),rgba(46,230,197,.05) 40%,transparent 70%);
+  opacity:0;transition:opacity 1.2s}
+body.lamp .lampglow{opacity:1}
+body.alarm .vignette{background:radial-gradient(ellipse at 50% 40%,transparent 25%,rgba(80,0,0,.55) 100%)}
 
-/* ---------- scene: context stack ---------- */
-.scene{display:grid;grid-template-columns:1.1fr 1fr;gap:4vw;align-items:center}
-.head{
-  position:relative;min-height:46vh;border:1px dashed var(--line);border-radius:20px;
-  padding:3vh 2vw;display:flex;flex-direction:column;gap:1.2vh;justify-content:flex-end;
-  overflow:hidden;background:var(--bg2)
-}
-.head .label{position:absolute;top:1.6vh;left:1.4vw;font-family:var(--mono);font-size:13px;color:var(--muted)}
-.chip{
-  font-family:var(--mono);font-size:clamp(12px,1.1vw,16px);
-  background:var(--card);border:1px solid var(--line);border-left:4px solid var(--blue);
-  border-radius:10px;padding:.6em .9em;color:var(--text);
-  transition:transform .9s cubic-bezier(.5,-0.3,.7,1), opacity .9s
-}
-.head.broken .chip{opacity:0}
-.head .lost{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-size:clamp(20px,2.4vw,34px);font-weight:800;color:var(--danger);opacity:0;transition:opacity .6s .9s;pointer-events:none
-}
-.head.broken .lost{opacity:1}
-.bubble{
-  background:var(--card);border:1px solid var(--line);border-radius:18px 18px 18px 4px;
-  padding:1.2em 1.4em;font-size:clamp(17px,1.8vw,26px);color:var(--text);margin-bottom:3vh;
-  opacity:0;transform:translateY(10px);transition:.4s
-}
-.bubble.show{opacity:1;transform:none}
+/* ========== DECK ========== */
+.deck{position:relative;z-index:2;width:100vw;height:100vh}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+  padding:7vh 8vw 11vh;opacity:0;visibility:hidden;transition:opacity .7s ease,visibility .7s;overflow-y:auto}
+.slide.active{opacity:1;visibility:visible}
+.center{align-items:center;text-align:center}
 
-/* ---------- guess ---------- */
-.guess-row{display:flex;gap:1vw;align-items:center;flex-wrap:wrap;margin-top:4vh}
-.guess-row input{
-  font:inherit;font-size:clamp(22px,2.6vw,40px);font-weight:700;width:6.5em;
-  background:var(--card);border:1px solid var(--line);color:var(--text);
-  border-radius:12px;padding:.3em .5em
-}
-.guess-row .cur{font-size:clamp(22px,2.6vw,40px);font-weight:700;color:var(--muted)}
+h1,h2,.display{font-family:var(--display);letter-spacing:-.02em}
+h1{font-size:clamp(40px,7.2vw,120px);font-weight:900;line-height:.98}
+h2{font-size:clamp(28px,4.2vw,66px);font-weight:700;line-height:1.08}
+p{font-size:clamp(17px,1.7vw,26px);line-height:1.45;color:var(--dim)}
+.lead{font-size:clamp(19px,2.1vw,32px);color:#c9d4dd;line-height:1.4;max-width:34ch}
+.small{font-size:clamp(12px,1vw,15px);color:var(--dim);opacity:.75;line-height:1.5}
+.teal{color:var(--teal)}.red{color:var(--red)}.amber{color:var(--amber)}
+.white{color:var(--ink)}
+.mt1{margin-top:2vh}.mt2{margin-top:4vh}.mt3{margin-top:6vh}
 
-/* ---------- research ---------- */
-.stat .big{margin-bottom:1.5vh}
-.src{font-family:var(--mono);font-size:clamp(11px,.9vw,13px);color:var(--muted);margin-top:1.4vh;opacity:.8}
+/* entry animation */
+.rise{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
+.slide.active .rise{opacity:1;transform:none}
+.slide.active .rise.d1{transition-delay:.25s}
+.slide.active .rise.d2{transition-delay:.5s}
+.slide.active .rise.d3{transition-delay:.75s}
+.slide.active .rise.d4{transition-delay:1s}
 
-/* ---------- timeline ---------- */
-.timeline{margin-top:5vh}
-.bar{display:flex;height:clamp(54px,8vh,84px);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
-.seg{
-  display:flex;align-items:center;justify-content:center;font-weight:700;
-  font-size:clamp(13px,1.3vw,19px);color:#111;width:0;transition:width 1.2s cubic-bezier(.2,.8,.2,1);white-space:nowrap;overflow:hidden
-}
-.seg.talk{background:var(--danger);color:#fff}
-.seg.rec{background:var(--warn)}
-.slide.active .seg.talk{width:17.9%}
-.slide.active .seg.rec{width:82.1%;transition-delay:.4s}
-.legend{display:flex;justify-content:space-between;margin-top:1.4vh;font-family:var(--mono);font-size:clamp(12px,1vw,15px);color:var(--muted)}
-.hidden-costs{margin-top:5vh}
+/* step reveal */
+[data-step]{opacity:0;transform:translateY(16px);transition:opacity .6s,transform .6s}
+[data-step].on{opacity:1;transform:none}
 
-/* ---------- math steps ---------- */
-.steps{display:flex;flex-direction:column;gap:1.4vh;max-width:1000px}
-.step{
-  display:grid;grid-template-columns:2.2em 1fr auto;gap:1.2vw;align-items:center;
-  background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4vh 1.4vw;
-  opacity:.18;transition:opacity .4s, border-color .4s
-}
-.step.on{opacity:1}
-.step.last{border-color:var(--danger)}
-.step .n{font-family:var(--mono);color:var(--accent);font-weight:700;font-size:clamp(14px,1.2vw,18px)}
-.step .t{font-size:clamp(15px,1.4vw,21px);color:var(--text)}
-.step .v{font-family:var(--mono);font-weight:700;font-size:clamp(16px,1.6vw,26px);color:var(--warn);text-align:right}
-.step.last .v{color:var(--danger);font-size:clamp(20px,2.2vw,34px)}
+.src{position:absolute;left:8vw;bottom:4.5vh;font-size:clamp(11px,.9vw,13px);color:var(--dim);opacity:.6;max-width:60vw}
 
-/* ---------- calculator ---------- */
-.calc{display:grid;grid-template-columns:1fr 1.05fr;gap:3vw;align-items:start}
-.field{margin-bottom:2.2vh}
-.field label{display:flex;justify-content:space-between;font-size:clamp(14px,1.2vw,18px);color:var(--muted);margin-bottom:.6vh}
-.field label b{font-family:var(--mono);color:var(--text)}
-input[type=range]{width:100%;accent-color:var(--accent);height:24px}
-.out{display:grid;grid-template-columns:1fr 1fr;gap:1.2vw}
-.out .card{padding:clamp(14px,1.6vw,22px)}
-.out .k{font-size:clamp(12px,1vw,15px);color:var(--muted)}
-.out .val{font-family:var(--mono);font-weight:700;font-size:clamp(22px,2.6vw,40px);margin-top:.6vh}
-.out .card.total{grid-column:1/-1;border-color:var(--danger)}
-.out .card.total .val{color:var(--danger);font-size:clamp(30px,4vw,64px)}
+/* ========== 1 TITLE ========== */
+.title-lamp{width:clamp(180px,22vw,340px);margin-bottom:5vh;filter:drop-shadow(0 0 60px rgba(46,230,197,.35))}
+.title-tag{margin-top:4vh;font-size:clamp(15px,1.4vw,21px);color:var(--dim)}
 
-/* ---------- quadrants ---------- */
-.quad{display:grid;grid-template-columns:auto 1fr 1fr;grid-template-rows:auto 1fr 1fr;gap:12px}
-.quad .ax{font-family:var(--mono);font-size:clamp(11px,.95vw,14px);color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center}
-.quad .ax.v{writing-mode:vertical-rl;transform:rotate(180deg)}
-.q{border-radius:14px;padding:clamp(12px,1.5vw,22px);border:1px solid var(--line);background:var(--card)}
-.q h3{display:flex;gap:.5em;align-items:baseline}
-.q h3 .num{font-family:var(--mono);color:var(--muted);font-size:.85em}
-.q p{font-size:clamp(13px,1.15vw,17px)}
-.q.q2{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
-.q.q3{border-color:var(--danger);box-shadow:0 0 0 1px var(--danger) inset}
-.tag{display:inline-block;font-size:clamp(11px,.9vw,13px);font-weight:700;border-radius:999px;padding:.2em .7em;margin-top:.8vh}
-.tag.g{background:rgba(76,195,138,.15);color:var(--accent)}
-.tag.r{background:rgba(239,91,91,.15);color:var(--danger)}
+/* ========== 2 SURGEON ========== */
+.split{display:grid;grid-template-columns:1fr 1.1fr;gap:5vw;align-items:center}
+.or-scene{width:100%;max-width:560px;justify-self:center}
+.quote{font-family:var(--display);font-weight:500;font-size:clamp(20px,2.3vw,36px);line-height:1.3;color:var(--ink);
+  border-left:4px solid var(--red);padding-left:1em}
+.punch{font-family:var(--display);font-weight:700;font-size:clamp(22px,2.6vw,42px);line-height:1.2}
 
-/* ---------- checklist ---------- */
-.check li{list-style:none;display:flex;gap:.8em;align-items:flex-start;margin-bottom:1.6vh}
-.check li .box{
-  flex:none;width:1.4em;height:1.4em;border-radius:6px;border:2px solid var(--accent);
-  display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:800;font-size:.9em;margin-top:.15em
-}
-.urgent{border-left:4px solid var(--danger)}
+/* ========== 3 PEOPLE ========== */
+.rows{display:flex;flex-direction:column;gap:4.5vh;margin-top:5vh}
+.prow-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1.4vh;gap:2vw}
+.prow-head span{font-size:clamp(15px,1.4vw,21px);color:#c9d4dd}
+.prow-head b{font-family:var(--display);font-size:clamp(26px,3.4vw,54px)}
+.people{display:grid;grid-template-columns:repeat(18,1fr);gap:clamp(3px,.6vw,10px)}
+.person{width:100%;aspect-ratio:.55;opacity:.25;transition:opacity .4s, transform .4s}
+.person svg{width:100%;height:100%;fill:#9fb3c2}
+.slide.active .person{opacity:.9}
+.person.err svg{fill:var(--red)}
+.person.err{filter:drop-shadow(0 0 10px rgba(255,74,74,.7))}
 
-/* ---------- roles ---------- */
-.role .ico{font-size:clamp(26px,2.6vw,40px);margin-bottom:1vh}
-.role ul{padding-left:1.1em}
-.role li{font-size:clamp(13px,1.15vw,17px);margin-bottom:.6vh}
+/* ========== 4 NURSES ========== */
+.mega{font-family:var(--display);font-weight:900;font-size:clamp(90px,17vw,280px);line-height:.85;letter-spacing:-.05em}
+.vest{display:inline-block;margin-top:4vh;padding:.7em 1.3em;border-radius:12px;background:#ff8a1f;color:#1b0d00;
+  font-family:var(--display);font-weight:700;font-size:clamp(16px,1.6vw,24px);transform:rotate(-2deg);box-shadow:0 10px 40px rgba(255,138,31,.35)}
 
-/* ---------- final ---------- */
-.final-num{font-size:clamp(80px,14vw,220px);font-weight:800;line-height:.9;letter-spacing:-.05em;color:var(--danger)}
-.guess-back{margin-top:3vh;font-size:clamp(16px,1.6vw,24px);color:var(--muted)}
-.sources li{font-size:clamp(13px,1.1vw,16px);margin-bottom:1.2vh}
-.sources a{color:var(--blue)}
+/* ========== 5 PILOTS ========== */
+.alt{position:relative;height:42vh;margin-top:5vh;border-left:1px dashed rgba(255,255,255,.2)}
+.alt .line{position:absolute;left:0;right:0;top:35%;border-top:2px solid var(--teal)}
+.alt .line span{position:absolute;right:0;top:-2.2em;font-family:var(--display);font-size:clamp(13px,1.2vw,18px);color:var(--teal)}
+.alt .zone{position:absolute;left:0;right:0;top:35%;bottom:0;background:linear-gradient(180deg,var(--teal-soft),transparent)}
+.alt .zone p{position:absolute;left:2vw;top:3vh;color:#c9d4dd;max-width:32ch}
+.plane{position:absolute;width:clamp(50px,5vw,80px);left:-5%;top:6%;transition:none}
+.slide.active .plane{animation:land 6s cubic-bezier(.4,0,.6,1) .4s forwards}
+@keyframes land{0%{left:-5%;top:6%;transform:scaleX(-1) rotate(-8deg)}100%{left:92%;top:88%;transform:scaleX(-1) rotate(-14deg)}}
 
-/* ---------- chrome ---------- */
-.progress{position:fixed;left:0;bottom:0;height:4px;background:var(--accent);transition:width .4s;z-index:10}
-.hud{
-  position:fixed;right:2vw;bottom:2.2vh;display:flex;gap:8px;align-items:center;z-index:10;
-  font-family:var(--mono);font-size:13px;color:var(--muted)
-}
-.hud button{
-  background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;
-  width:38px;height:38px;cursor:pointer;font-size:16px
-}
-.hud button:hover{border-color:var(--accent)}
-.timer{position:fixed;left:2vw;bottom:2.2vh;font-family:var(--mono);font-size:13px;color:var(--muted);z-index:10;cursor:pointer}
-.notes{
-  position:fixed;left:0;right:0;bottom:0;max-height:32vh;overflow:auto;z-index:20;
-  background:#0a0e14ee;border-top:1px solid var(--line);padding:2vh 3vw 7vh;
-  font-size:clamp(14px,1.2vw,18px);line-height:1.5;color:#cfd8e3;
-  transform:translateY(100%);transition:transform .3s
-}
+/* ========== 6 DEVELOPER ========== */
+.dev-scene{width:100%;max-width:600px;justify-self:center}
+
+/* ========== 7 TOWER ========== */
+.tower-wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:4vw;align-items:center}
+.tower{position:relative;height:58vh;overflow:hidden}
+.blk{position:absolute;left:50%;height:calc(58vh/9);min-height:38px;padding:0 1.1em;border-radius:8px;
+  display:flex;align-items:center;font-size:clamp(12px,1.05vw,16px);font-weight:600;white-space:nowrap;
+  background:linear-gradient(180deg,#183244,#10222f);border:1px solid rgba(46,230,197,.35);color:#d9f7f1;
+  box-shadow:0 0 24px rgba(46,230,197,.12);will-change:transform}
+.blk.fall{border-color:rgba(255,74,74,.6);color:#ffd9d9;background:linear-gradient(180deg,#3a1a1f,#24121a)}
+.btn{font:inherit;font-weight:700;font-size:clamp(15px,1.4vw,20px);border:0;border-radius:999px;padding:.9em 1.7em;cursor:pointer;
+  background:var(--red);color:#fff;box-shadow:0 0 40px rgba(255,74,74,.4);transition:transform .15s}
+.btn:active{transform:scale(.96)}
+.btn.ghost{background:transparent;border:1px solid var(--edge);box-shadow:none;color:var(--dim)}
+.after{opacity:0;transition:opacity .8s 1.4s}
+.tower.broken ~ * .after,.after.show{opacity:1}
+
+/* ========== 8 GUESS ========== */
+.guess{display:flex;align-items:center;gap:.3em;margin-top:5vh;font-family:var(--display);font-weight:700;font-size:clamp(40px,6vw,96px)}
+.guess input{font:inherit;width:5.2em;background:transparent;border:0;border-bottom:3px solid var(--teal);color:var(--ink);outline:none;text-align:center}
+.guess input::placeholder{color:rgba(255,255,255,.15)}
+
+/* ========== 9 CLOCK ========== */
+.clock-wrap{display:grid;grid-template-columns:auto 1fr;gap:5vw;align-items:center}
+.ring{width:clamp(240px,32vw,480px);aspect-ratio:1}
+.ring circle{fill:none;stroke-width:16;transform:rotate(-90deg);transform-origin:50% 50%}
+.ring .track{stroke:rgba(255,255,255,.06)}
+.ring .talk{stroke:var(--red);stroke-dasharray:0 1000;transition:stroke-dasharray 1.2s ease .3s}
+.ring .rec{stroke:var(--amber);stroke-dasharray:0 1000;transition:stroke-dasharray 2.4s ease 1.5s}
+.ring text{font-family:var(--display);fill:var(--ink);text-anchor:middle}
+.legend-row{display:flex;gap:1em;align-items:baseline;margin-bottom:2.5vh}
+.legend-row .n{font-family:var(--display);font-weight:900;font-size:clamp(36px,4.6vw,76px);min-width:1.5em}
+
+/* ========== 10 MONEY ========== */
+.money{display:flex;flex-direction:column;gap:1vh;margin-top:4vh}
+.mrow{display:flex;align-items:baseline;gap:2vw;transition:opacity .6s,transform .6s,font-size .6s}
+.mrow .v{font-family:var(--display);font-weight:900;font-size:clamp(26px,3vw,46px);color:var(--dim);transition:font-size .6s,color .6s;min-width:5.5em}
+.mrow .l{font-size:clamp(15px,1.5vw,22px);color:var(--dim)}
+.mrow.cur .v{font-size:clamp(54px,8vw,130px);color:var(--ink)}
+.mrow.cur.last .v{color:var(--red);text-shadow:0 0 50px rgba(255,74,74,.45)}
+.mrow.cur .l{color:#c9d4dd}
+.team{display:flex;gap:clamp(8px,1.4vw,22px);margin-top:4vh}
+.team .person{width:clamp(30px,3.2vw,52px);opacity:.9}
+.team .person.ghost svg{fill:rgba(255,255,255,.12)}
+.team .person.ghost{transition:opacity 1s}
+
+/* ========== 11 CALC ========== */
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center;margin-top:4vh}
+.field{margin-bottom:3vh}
+.field label{display:flex;justify-content:space-between;font-size:clamp(14px,1.3vw,19px);color:#c9d4dd;margin-bottom:1vh}
+.field label b{font-family:var(--display);color:var(--teal)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:rgba(255,255,255,.12);border-radius:4px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--teal);box-shadow:0 0 16px var(--teal);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:50%;background:var(--teal);box-shadow:0 0 16px var(--teal);cursor:pointer}
+.res .k{font-size:clamp(14px,1.3vw,19px);color:var(--dim)}
+.res .big{font-family:var(--display);font-weight:900;font-size:clamp(50px,7.5vw,120px);line-height:1;color:var(--red);text-shadow:0 0 50px rgba(255,74,74,.35)}
+.res .row{display:flex;gap:3vw;margin-top:4vh}
+.res .row .v{font-family:var(--display);font-weight:700;font-size:clamp(22px,2.4vw,38px);color:var(--ink)}
+
+/* ========== 12 QUADRANTS ========== */
+.quad{position:relative;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;margin-top:4vh;
+  height:56vh;background:rgba(255,255,255,.08);border-radius:18px;overflow:hidden}
+.q{position:relative;background:rgba(8,13,18,.92);padding:clamp(14px,2vw,32px);display:flex;flex-direction:column;justify-content:flex-end}
+.q .t{font-family:var(--display);font-weight:700;font-size:clamp(18px,2vw,30px)}
+.q p{font-size:clamp(13px,1.2vw,18px);margin-top:.6vh}
+.q .ax{position:absolute;font-size:clamp(11px,.95vw,14px);color:var(--dim);opacity:.7}
+.q.q2{background:linear-gradient(160deg,rgba(46,230,197,.18),rgba(8,13,18,.92) 70%)}
+.q.q3{background:linear-gradient(160deg,rgba(255,74,74,.2),rgba(8,13,18,.92) 70%)}
+.drop{position:absolute;left:25%;top:-12%;transform:translate(-50%,-50%);padding:.5em 1em;border-radius:999px;background:var(--red);color:#fff;
+  font-weight:700;font-size:clamp(13px,1.2vw,18px);box-shadow:0 0 30px rgba(255,74,74,.6);white-space:nowrap;z-index:3}
+.slide.active .drop{animation:drop 1.6s cubic-bezier(.5,0,.4,1.4) 1s forwards}
+@keyframes drop{0%{top:-12%}100%{top:64%}}
+
+/* ========== 13 RULES ========== */
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:3vw;margin-top:5vh}
+.rule svg{width:clamp(70px,8vw,120px);height:auto;margin-bottom:2.5vh}
+.rule .t{font-family:var(--display);font-weight:700;font-size:clamp(18px,1.9vw,30px);line-height:1.15;margin-bottom:1.2vh}
+.rule p{font-size:clamp(14px,1.3vw,19px)}
+.onair{display:inline-flex;align-items:center;gap:.6em;padding:.45em 1em;border:2px solid var(--red);border-radius:8px;color:var(--red);
+  font-family:var(--display);font-weight:700;font-size:clamp(14px,1.4vw,20px);margin-bottom:2.5vh;text-shadow:0 0 12px var(--red);box-shadow:0 0 24px rgba(255,74,74,.35) inset,0 0 24px rgba(255,74,74,.25)}
+.onair i{width:.7em;height:.7em;border-radius:50%;background:var(--red);box-shadow:0 0 12px var(--red);animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.25}}
+
+/* ========== 14 ROLES ========== */
+.roles{display:grid;grid-template-columns:repeat(4,1fr);gap:2.5vw;margin-top:5vh}
+.role{border-top:2px solid var(--teal);padding-top:2vh}
+.role .t{font-family:var(--display);font-weight:700;font-size:clamp(17px,1.6vw,26px);margin-bottom:1.6vh}
+.role p{font-size:clamp(14px,1.25vw,18px);margin-bottom:1.2vh;color:#c0ccd6}
+
+/* ========== 15 FINAL ========== */
+.final-big{font-family:var(--display);font-weight:900;font-size:clamp(46px,8.5vw,140px);line-height:.95}
+.guess-back{margin-top:4vh;font-size:clamp(17px,1.7vw,25px);color:#c9d4dd}
+
+/* ========== 16 SOURCES ========== */
+.sources{margin-top:4vh;display:flex;flex-direction:column;gap:1.8vh;max-width:1100px}
+.sources p{font-size:clamp(13px,1.15vw,17px)}
+.sources a{color:var(--teal)}
+
+/* ========== CHROME ========== */
+.progress{position:fixed;left:0;bottom:0;height:3px;background:var(--teal);box-shadow:0 0 12px var(--teal);transition:width .5s;z-index:10}
+.hud{position:fixed;right:2vw;bottom:2.4vh;display:flex;gap:6px;align-items:center;z-index:10;font-size:13px;color:var(--dim)}
+.hud button{background:rgba(255,255,255,.04);color:var(--ink);border:1px solid var(--edge);border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:15px}
+.hud button:hover{border-color:var(--teal)}
+.timer{position:fixed;left:2vw;bottom:2.4vh;font-size:13px;color:var(--dim);z-index:10;cursor:pointer;opacity:.6;font-variant-numeric:tabular-nums}
+.notes{position:fixed;left:0;right:0;bottom:0;max-height:32vh;overflow:auto;z-index:20;background:rgba(3,6,9,.95);border-top:1px solid var(--edge);
+  padding:2vh 3vw 7vh;font-size:clamp(14px,1.2vw,18px);line-height:1.5;color:#cfd8e3;transform:translateY(100%);transition:transform .3s}
 .notes.show{transform:none}
-.notes b{color:var(--accent);font-family:var(--mono);font-size:.8em;letter-spacing:.1em}
-.help{position:fixed;top:2vh;right:2vw;font-family:var(--mono);font-size:12px;color:var(--muted);opacity:.6;z-index:10}
 
-/* ---------- responsive ---------- */
 @media (max-width:860px){
-  .slide{padding:6vh 16px 12vh;justify-content:flex-start}
-  .g2,.g3,.g4,.scene,.calc{grid-template-columns:1fr}
-  .out{grid-template-columns:1fr}
-  .quad{grid-template-columns:1fr 1fr}
-  .quad .ax{display:none}
-  .help{display:none}
-  .step{grid-template-columns:2em 1fr}
-  .step .v{grid-column:2;text-align:left}
+  .slide{padding:7vh 18px 13vh;justify-content:flex-start}
+  .split,.tower-wrap,.clock-wrap,.calc{grid-template-columns:1fr}
+  .rules{grid-template-columns:1fr}
+  .roles{grid-template-columns:1fr 1fr}
+  .people{grid-template-columns:repeat(9,1fr)}
+  .src{position:static;margin-top:3vh;max-width:none}
+  .tower{height:48vh}
 }
 @media print{
   body{overflow:visible}
-  .slide{position:relative;opacity:1;visibility:visible;transform:none;page-break-after:always;height:100vh}
-  .hud,.progress,.timer,.notes,.help{display:none}
-  .step{opacity:1}
+  .slide{position:relative;opacity:1;visibility:visible;page-break-after:always;height:100vh}
+  [data-step]{opacity:1;transform:none}
+  .hud,.progress,.timer,.notes{display:none}
 }
 </style>
 </head>
 <body>
 
+<canvas id="bg"></canvas>
+<div class="lampglow"></div>
+<div class="vignette"></div>
+
+<!-- reusable person glyph -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="man" viewBox="0 0 22 40">
+      <circle cx="11" cy="5" r="4.6"/>
+      <path d="M4 12h14a3 3 0 0 1 3 3v11h-4v14h-4.4V28h-1.2v12H7V26H1V15a3 3 0 0 1 3-3z"/>
+    </symbol>
+  </defs>
+</svg>
+
 <div class="deck" id="deck">
 
-<!-- 1. TITLE -->
-<section class="slide" data-notes="Представиться. Сказать: за 25 минут посчитаем, сколько компания теряет на одной безобидной фразе, и договоримся, как это исправить. Поблагодарить HR и менеджеров за то, что пришли: тема не только про разработчиков.">
-  <div class="title-wrap fade-in">
-    <div class="kicker">Мастер-класс · ~25 минут</div>
-    <h1>Цена одного<br><span class="hl">«на минутку»</span></h1>
-    <div class="sub">Как сохранить фокус разработчиков и деньги компании</div>
-    <div class="clock"><span>HR</span><span>Менеджеры</span><span>Бизнес</span><span>Аналитики</span><span>Разработчики</span></div>
+<!-- 1 -->
+<section class="slide center" data-mood="calm" data-lamp="1" data-notes="Не торопиться. Дать залу посмотреть на экран пару секунд, послушать тишину. Потом: «Сегодня поговорим о цене одной фразы. Всего одной». 25 минут.">
+  <svg class="title-lamp rise" viewBox="0 0 200 120" aria-hidden="true">
+    <defs>
+      <radialGradient id="bulb" cx="50%" cy="50%" r="50%">
+        <stop offset="0" stop-color="#ffffff"/>
+        <stop offset=".45" stop-color="#d8fff6"/>
+        <stop offset="1" stop-color="#2ee6c5" stop-opacity=".2"/>
+      </radialGradient>
+    </defs>
+    <rect x="96" y="0" width="8" height="22" fill="#2a3a46"/>
+    <ellipse cx="100" cy="62" rx="92" ry="48" fill="#13202a" stroke="#2c4352" stroke-width="2"/>
+    <ellipse cx="100" cy="62" rx="80" ry="40" fill="#0b141b"/>
+    <g fill="url(#bulb)">
+      <circle cx="100" cy="62" r="15"/>
+      <circle cx="62" cy="50" r="11"/><circle cx="138" cy="50" r="11"/>
+      <circle cx="58" cy="78" r="11"/><circle cx="142" cy="78" r="11"/>
+      <circle cx="100" cy="34" r="10"/><circle cx="100" cy="90" r="10"/>
+    </g>
+  </svg>
+  <h1 class="rise d1">Тихо.<br><span class="teal">Идёт операция.</span></h1>
+  <div class="title-tag rise d2">Почему разработчика нельзя дёргать «на минутку»</div>
+</section>
+
+<!-- 2 -->
+<section class="slide" data-mood="calm" data-lamp="1" data-notes="Клик за кликом. Сначала картинка, потом реплика. Пауза после реплики. Последняя строка: в операционной так никто не делает. А у нас делают каждый день.">
+  <div class="split">
+    <svg class="or-scene rise" viewBox="0 0 520 420" aria-hidden="true">
+      <defs>
+        <radialGradient id="cone" cx="50%" cy="0%" r="100%">
+          <stop offset="0" stop-color="#d8fff6" stop-opacity=".45"/>
+          <stop offset=".6" stop-color="#2ee6c5" stop-opacity=".06"/>
+          <stop offset="1" stop-color="#2ee6c5" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="scrub" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#1f8f86"/><stop offset="1" stop-color="#0f4f4c"/>
+        </linearGradient>
+      </defs>
+      <!-- light cone -->
+      <path d="M200 40 L60 360 L460 360 L320 40 Z" fill="url(#cone)"/>
+      <!-- lamp -->
+      <rect x="255" y="0" width="10" height="24" fill="#2a3a46"/>
+      <ellipse cx="260" cy="38" rx="70" ry="16" fill="#1a2a35"/>
+      <ellipse cx="260" cy="42" rx="58" ry="10" fill="#e9fffb" opacity=".9"/>
+      <!-- table -->
+      <rect x="110" y="300" width="300" height="16" rx="6" fill="#2b3d4a"/>
+      <rect x="250" y="316" width="20" height="80" fill="#1b2832"/>
+      <rect x="200" y="392" width="120" height="10" rx="4" fill="#1b2832"/>
+      <!-- patient -->
+      <path d="M130 300 q10-26 40-26 h190 q30 0 40 26z" fill="#9fd9ef" opacity=".55"/>
+      <circle cx="148" cy="282" r="16" fill="#c7a58b"/>
+      <!-- surgeon 1 -->
+      <g>
+        <path d="M300 300 v-90 q0-30 30-30 h30 q30 0 30 30 v90z" fill="url(#scrub)"/>
+        <circle cx="345" cy="150" r="24" fill="#c7a58b"/>
+        <path d="M321 146 q24-32 48 0 v-8 q-24-30-48 0z" fill="#1f8f86"/>
+        <rect x="325" y="152" width="40" height="18" rx="6" fill="#d9f2f5"/>
+        <path d="M310 230 q-30 30-60 58" stroke="#d9f2f5" stroke-width="12" stroke-linecap="round" fill="none"/>
+        <path d="M250 288 l-14 6" stroke="#cfd8dc" stroke-width="3" stroke-linecap="round"/>
+      </g>
+      <!-- surgeon 2 -->
+      <g opacity=".85">
+        <path d="M150 300 v-80 q0-26 26-26 h26 q26 0 26 26 v80z" fill="url(#scrub)"/>
+        <circle cx="189" cy="168" r="21" fill="#b08f78"/>
+        <path d="M168 164 q21-28 42 0 v-7 q-21-26-42 0z" fill="#1f8f86"/>
+        <rect x="172" y="170" width="34" height="15" rx="5" fill="#d9f2f5"/>
+      </g>
+      <!-- monitor -->
+      <rect x="430" y="150" width="80" height="58" rx="6" fill="#0b141b" stroke="#2c4352" stroke-width="2"/>
+      <polyline points="436,184 452,184 458,172 464,196 470,166 476,184 504,184" fill="none" stroke="#2ee6c5" stroke-width="2.5"/>
+      <rect x="466" y="208" width="8" height="90" fill="#1b2832"/>
+      <!-- door -->
+      <g id="door">
+        <rect x="0" y="120" width="70" height="280" fill="#0e171e" stroke="#2c4352" stroke-width="2"/>
+        <rect x="8" y="130" width="54" height="40" fill="#203441" opacity=".7"/>
+      </g>
+    </svg>
+    <div>
+      <p class="lead white" data-step>Хирург держит скальпель. Пациент под наркозом. Открывается дверь.</p>
+      <div class="quote mt2" data-step data-mood="alarm">Слушай, есть минутка?<br>Быстрый вопрос по отчёту.</div>
+      <div class="punch mt2" data-step data-mood="calm">Звучит дико.<br><span class="teal">В операционной так никто не делает.</span></div>
+    </div>
   </div>
 </section>
 
-<!-- 2. SCENE -->
-<section class="slide" data-notes="Интерактив. Сначала зачитать, что у разработчика в голове: это реальная задача, баг с двойным списанием. Потом нажать кнопку. Пауза. Спросить зал: «Знакомо?» Обычно поднимают руки и разработчики, и менеджеры.">
-  <div class="kicker">Сценка</div>
-  <h2>10:42. Разработчик ищет баг с двойным списанием</h2>
-  <div class="scene">
-    <div class="head" id="head">
-      <div class="label">// оперативная память разработчика</div>
-      <div class="chip">ретрай платежа → idempotencyKey не сохраняется?</div>
-      <div class="chip">таблица transactions, статус PENDING</div>
-      <div class="chip">ветка fix/double-charge, 3 файла открыты</div>
-      <div class="chip">гипотеза: race condition между двумя воркерами</div>
-      <div class="chip">тест #4 падает только при параллельном запуске</div>
-      <div class="chip">в логах — запросы с разницей 12 мс</div>
-      <div class="chip">почти нашёл… строка 214</div>
-      <div class="lost">контекст потерян</div>
+<!-- 3 -->
+<section class="slide" data-mood="calm" data-notes="Это реальный эксперимент. 18 молодых хирургов делали одну и ту же симуляцию операции. Один раз в тишине, один раз с отвлечениями: телефон, шум, вопросы. Больше всего ошибок вызывали именно вопросы. Честно: выборка маленькая, это ординаторы и симуляция. Но разница в 8 раз.">
+  <h2 class="rise">Хирургов отвлекали во время операции.<br><span class="teal">Вот что получилось.</span></h2>
+  <div class="rows">
+    <div class="rise d1">
+      <div class="prow-head"><span>В тишине</span><b class="white">1 из 18</b></div>
+      <div class="people" data-people="1"></div>
     </div>
+    <div class="rise d2">
+      <div class="prow-head"><span>С вопросами и отвлечениями</span><b class="red">8 из 18</b></div>
+      <div class="people" data-people="8"></div>
+    </div>
+  </div>
+  <p class="mt2 rise d3" style="color:#c9d4dd">Красные — серьёзная ошибка во время операции. Сильнее всего сбивали <span class="white">вопросы</span>.</p>
+  <div class="src">Feuerbacher R. et al. Archives of Surgery, 2012. Симуляция лапароскопической операции, 18 хирургов-ординаторов.</div>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-mood="calm" data-notes="Второй пример из медицины. Медсёстры во время раздачи лекарств. Наблюдали 98 медсестёр, больше 4 тысяч раздач. Каждое прерывание плюс 12,7% к риску ошибки. После таких исследований в ряде больниц медсёстры надевают яркие жилеты «Не отвлекать» на время раздачи лекарств.">
+  <p class="lead rise">Медсестра раздаёт лекарства. Каждый раз, когда её прерывают, риск ошибки растёт на</p>
+  <div class="mega red rise d1" data-count="12.7" data-suffix="%" data-dec="1">0%</div>
+  <p class="mt2 rise d2" style="max-width:40ch">Поэтому в части больниц медсёстры на это время надевают яркий жилет с надписью</p>
+  <div class="rise d3"><span class="vest">Не отвлекать. Раздаю лекарства</span></div>
+  <div class="src">Westbrook J. et al. Archives of Internal Medicine, 2010. 98 медсестёр, 4 271 раздача лекарств.</div>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-mood="calm" data-notes="Авиация пришла к этому раньше всех. Правило «стерильной кабины» с 1981 года: на взлёте и посадке, ниже 10 000 футов, пилотам запрещены любые разговоры не по делу. После катастроф, где экипаж отвлёкся на болтовню.">
+  <h2 class="rise">Пилоты договорились об этом <span class="teal">ещё в 1981 году</span></h2>
+  <div class="alt rise d1">
+    <div class="zone"><p>Ниже 10 000 футов в кабине говорят только о полёте. Правило так и называется: <span class="white">«стерильная кабина»</span>.</p></div>
+    <div class="line"><span>10 000 футов</span></div>
+    <svg class="plane" viewBox="0 0 64 32" aria-hidden="true"><path fill="#eef3f6" d="M2 16 L22 14 L34 2 L40 2 L34 14 L54 13 L60 6 L64 6 L60 16 L64 26 L60 26 L54 19 L34 18 L40 30 L34 30 L22 18 Z"/></svg>
+  </div>
+  <div class="src">FAA, правило 14 CFR 121.542 («Sterile Cockpit Rule»), 1981.</div>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-mood="calm" data-notes="Переход к нам. У разработчика тоже идёт операция, просто её не видно. Нет маски и красной лампы над дверью. Поэтому к нему и подходят.">
+  <div class="split">
+    <svg class="dev-scene rise" viewBox="0 0 520 400" aria-hidden="true">
+      <defs>
+        <radialGradient id="screenGlow" cx="50%" cy="50%" r="60%">
+          <stop offset="0" stop-color="#2ee6c5" stop-opacity=".35"/><stop offset="1" stop-color="#2ee6c5" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <ellipse cx="300" cy="150" rx="260" ry="170" fill="url(#screenGlow)"/>
+      <!-- monitor -->
+      <rect x="150" y="40" width="300" height="190" rx="10" fill="#0b141b" stroke="#2c4352" stroke-width="3"/>
+      <g stroke-linecap="round" stroke-width="7">
+        <line x1="176" y1="70" x2="250" y2="70" stroke="#c792ea"/>
+        <line x1="262" y1="70" x2="330" y2="70" stroke="#82aaff"/>
+        <line x1="196" y1="92" x2="300" y2="92" stroke="#2ee6c5"/>
+        <line x1="196" y1="114" x2="240" y2="114" stroke="#ffcb6b"/>
+        <line x1="252" y1="114" x2="380" y2="114" stroke="#8a99a8"/>
+        <line x1="216" y1="136" x2="330" y2="136" stroke="#2ee6c5"/>
+        <line x1="216" y1="158" x2="270" y2="158" stroke="#ff5370"/>
+        <line x1="196" y1="180" x2="250" y2="180" stroke="#82aaff"/>
+        <line x1="176" y1="202" x2="200" y2="202" stroke="#c792ea"/>
+      </g>
+      <rect x="280" y="150" width="3" height="18" fill="#eef3f6"><animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/></rect>
+      <rect x="285" y="230" width="30" height="40" fill="#1b2832"/>
+      <rect x="240" y="268" width="120" height="10" rx="4" fill="#1b2832"/>
+      <!-- desk -->
+      <rect x="40" y="300" width="480" height="14" rx="5" fill="#2b3d4a"/>
+      <!-- person from behind -->
+      <path d="M40 400 v-70 q0-60 70-60 h40 q70 0 70 60 v70z" fill="#22313c"/>
+      <circle cx="130" cy="225" r="40" fill="#1a252e"/>
+      <path d="M86 222 a44 44 0 0 1 88 0" stroke="#2ee6c5" stroke-width="8" fill="none"/>
+      <rect x="78" y="214" width="16" height="30" rx="6" fill="#2ee6c5"/>
+      <rect x="166" y="214" width="16" height="30" rx="6" fill="#2ee6c5"/>
+    </svg>
     <div>
-      <div class="bubble" id="bubble">— Слушай, есть минутка? Быстрый вопрос по отчёту…</div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap">
-        <button class="btn red" id="interrupt">Подойти «на минутку»</button>
-        <button class="btn ghost" id="resetScene">Сбросить</button>
+      <h2 class="rise d1">У разработчика тоже идёт операция.</h2>
+      <p class="lead mt2 rise d2">Только её не видно. Ни маски, ни лампы над дверью. Наушники и семь вещей в голове одновременно.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="slide" data-mood="calm" data-notes="Интерактив. Прочитать вслух, что в башне: это реальная задача, баг с двойным списанием денег. Потом нажать кнопку. Пусть башня упадёт. Пауза. Спросить: «Знакомо?» Обычно руки поднимают и разработчики, и менеджеры.">
+  <div class="tower-wrap">
+    <div class="tower" id="tower"></div>
+    <div>
+      <h2 class="rise" style="font-size:clamp(24px,2.9vw,46px)">10:42. Ищет, почему клиенту списали деньги дважды.</h2>
+      <p class="mt2 rise d1">В голове башня из того, что нельзя отпустить.</p>
+      <div class="mt2 rise d2" style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn" id="hit">Подойти «на минутку»</button>
+        <button class="btn ghost" id="rebuild">Собрать заново</button>
       </div>
-      <p class="note" id="sceneNote" style="opacity:0;transition:opacity .5s 1.2s">Вопрос занял 3 минуты. Собрать картинку заново займёт гораздо дольше.</p>
+      <p class="lead mt2 after" id="after" style="color:var(--ink)">Вопрос занял три минуты.<br><span class="red">Башню он будет строить снова.</span></p>
     </div>
   </div>
 </section>
 
-<!-- 3. GUESS -->
-<section class="slide" data-notes="Спросить 3–4 человек из разных отделов. Записать среднее или самую смелую цифру в поле. В конце вернёмся к ней.">
-  <div class="fade-in">
-    <div class="kicker">Вопрос залу</div>
-    <h2>Сколько стоит компании<br>одно такое «на минутку»?</h2>
-    <p class="lead">Команда из <strong>5 разработчиков</strong>. Каждого отвлекают <strong>4 раза в день</strong>. Сколько это в долларах за месяц?</p>
-    <div class="guess-row">
-      <span class="cur">$</span>
-      <input type="number" id="guess" placeholder="ваша оценка" min="0">
-      <span class="note" style="margin:0">запишем и вернёмся к этому в конце</span>
-    </div>
-  </div>
+<!-- 8 -->
+<section class="slide center" data-mood="calm" data-notes="Спросить 3–4 человек из разных отделов: HR, бизнес, разработка. Вписать самую смелую цифру. Вернёмся к ней в конце.">
+  <h2 class="rise">Сколько это стоит компании?</h2>
+  <p class="lead mt2 rise d1" style="max-width:40ch">5 разработчиков. Каждого отвлекают 4 раза в день. Один месяц.</p>
+  <div class="guess rise d2"><span class="teal">$</span><input type="number" id="guess" placeholder="?" min="0"></div>
+  <p class="small mt1 rise d3">Ваша оценка. Вернёмся к ней в конце.</p>
 </section>
 
-<!-- 4. CONTEXT -->
-<section class="slide" data-notes="Объяснить для нетехнических коллег: код похож на карточный домик в голове. Чем сложнее задача, тем выше домик. Финтех почти всегда про сложные задачи: деньги, транзакции, регуляторка.">
-  <div class="kicker">Что происходит в голове</div>
-  <h2>Контекст — это <span class="warn">карточный домик</span></h2>
-  <div class="grid g3 fade-in">
-    <div class="card">
-      <h3>🧠 Строится долго</h3>
-      <p>Чтобы держать в голове связи между модулями, данными и гипотезой, нужно 15–30 минут погружения.</p>
-    </div>
-    <div class="card">
-      <h3>💥 Рушится мгновенно</h3>
-      <p>Рабочая память вмещает лишь несколько элементов. Новый вопрос вытесняет старые, и «стопка» рассыпается.</p>
-    </div>
-    <div class="card">
-      <h3>💸 В финтехе дороже</h3>
-      <p>Платежи, балансы, комиссии, требования регулятора. Ошибка из-за потери фокуса стоит не только времени.</p>
-    </div>
-  </div>
-</section>
-
-<!-- 5. RESEARCH -->
-<section class="slide" data-notes="Важно честно сказать: 23 минуты — среднее для офисных сотрудников в исследовании Глории Марк, не только для программистов. Исследование Парнина — именно про программистов. Цифры в вашей команде будут другими, но порядок величин такой.">
-  <div class="kicker">Что говорят исследования</div>
-  <h2>Возвращение к задаче — не мгновенное</h2>
-  <div class="grid g3 fade-in">
-    <div class="card stat">
-      <div class="big warn">~23<span style="font-size:.45em"> мин</span></div>
-      <p>в среднем проходит, прежде чем человек возвращается к прерванной задаче</p>
-      <div class="src">Mark, Gonzalez, Harris · CHI 2005 (офисные сотрудники)</div>
-    </div>
-    <div class="card stat">
-      <div class="big danger">~10%</div>
-      <p>сессий программистов возобновлялись в течение минуты после прерывания</p>
-      <div class="src">Parnin &amp; Rugaber · 2011 (~10 000 сессий)</div>
-    </div>
-    <div class="card stat">
-      <div class="big hl">10–15<span style="font-size:.45em"> мин</span></div>
-      <p>обычно нужно программисту, чтобы снова начать писать код</p>
-      <div class="src">Parnin · «Programmer, Interrupted», 2013</div>
-    </div>
-  </div>
-  <p class="note">⚠ Это средние значения из отдельных исследований. В вашей команде цифры будут другими, но порядок величин такой.</p>
-</section>
-
-<!-- 6. ICEBERG / TIMELINE -->
-<section class="slide" data-notes="Главная мысль слайда: тот, кто отвлекает, видит только красную часть. Платит компания за всю полосу.">
-  <div class="kicker">Невидимая часть</div>
-  <h2>«На минутку» = <span class="danger">5</span> + <span class="warn">23</span> минуты</h2>
-  <div class="timeline">
-    <div class="bar">
-      <div class="seg talk">5 мин</div>
-      <div class="seg rec">23 мин — восстановление контекста</div>
-    </div>
-    <div class="legend"><span>разговор: это видят все</span><span>28 минут потеряно</span></div>
-  </div>
-  <div class="grid g3 hidden-costs fade-in">
-    <div class="card"><h3>🐞 Ошибки</h3><p>После прерывания легче пропустить граничный случай в платёжной логике.</p></div>
-    <div class="card"><h3>📅 Сроки</h3><p>Мелкие потери копятся в спринте и сдвигают релиз.</p></div>
-    <div class="card"><h3>🔥 Выгорание</h3><p>Работа «урывками» утомляет и раздражает. Сильные специалисты уходят.</p></div>
-  </div>
-  <p class="note">Ошибки, сроки и выгорание здесь описаны качественно: надёжных цифр по ним для нашего случая нет.</p>
-</section>
-
-<!-- 7. MATH -->
-<section class="slide" data-notes="Нажимать → (или пробел) чтобы раскрывать шаги по одному. Объяснить, откуда $25/ч: данные Яндекса и Сбера закрыты, берём рыночную медиану middle по Москве. Курс и ставка условные. Важно: если ставка выше — потери выше.">
-  <div class="kicker">Считаем · пример</div>
-  <h2>5 разработчиков × 4 прерывания в день</h2>
-  <div class="steps" id="steps">
-    <div class="step"><span class="n">01</span><span class="t">Одно прерывание: 5 мин разговора + 23 мин восстановления</span><span class="v">28 мин ≈ 0,47 ч</span></div>
-    <div class="step"><span class="n">02</span><span class="t">Стоимость часа middle-разработчика для компании*</span><span class="v">≈ $25</span></div>
-    <div class="step"><span class="n">03</span><span class="t">Одно «на минутку» в деньгах</span><span class="v">≈ $11,7</span></div>
-    <div class="step"><span class="n">04</span><span class="t">В день: 5 человек × 4 прерывания = 20 раз</span><span class="v">9,3 ч · $233</span></div>
-    <div class="step"><span class="n">05</span><span class="t">В месяц (21 рабочий день)</span><span class="v">196 ч · $4 900</span></div>
-    <div class="step last"><span class="n">06</span><span class="t">В год. Это как ~1,2 сотрудника на зарплате, которые ничего не производят</span><span class="v">≈ $58 800</span></div>
-  </div>
-  <p class="note">* Данные Яндекса и Сбера не публичны. Ориентир: middle-разработчик в Москве ≈ 250 тыс. ₽/мес (Хабр Карьера, 2-е полугодие 2025) ≈ $3 100 по условному курсу 80 ₽/$, + ~30% страховых взносов ≈ $4 000/мес ÷ ~165 рабочих часов ≈ $25/ч. Без учёта офиса, оборудования и налогов на прибыль, поэтому оценка скорее занижена.</p>
-</section>
-
-<!-- 8. CALCULATOR -->
-<section class="slide" data-notes="Дать залу самим подвигать ползунки. Предложить: «Сколько раз в день отвлекают вас?» Подставить цифры зала. Для HR и бизнеса особенно наглядна строка «эквивалент сотрудников».">
-  <div class="kicker">Калькулятор · посчитайте свою команду</div>
-  <h2>Сколько теряет <span class="hl">ваша</span> команда?</h2>
-  <div class="calc">
+<!-- 9 -->
+<section class="slide" data-mood="calm" data-notes="Главная мысль: тот, кто подошёл, видит только красную часть. 5 минут. Остальные 23 минуты никто не видит, но компания за них платит. 23 минуты — это среднее по исследованию офисных сотрудников. У программистов, по Парнину, только 1 сессия из 10 продолжалась сразу. Цифры в вашей команде будут другими, но порядок такой.">
+  <div class="clock-wrap">
+    <svg class="ring" viewBox="0 0 200 200" id="ring">
+      <circle class="track" cx="100" cy="100" r="80"/>
+      <circle class="talk" cx="100" cy="100" r="80"/>
+      <circle class="rec" cx="100" cy="100" r="80"/>
+      <text x="100" y="104" font-size="38" font-weight="900">28</text>
+      <text x="100" y="128" font-size="11" fill="#8a99a8" style="fill:#8a99a8">минут</text>
+    </svg>
     <div>
-      <div class="field"><label>Разработчиков в команде <b id="vDevs"></b></label><input type="range" id="devs" min="1" max="50" value="5"></div>
-      <div class="field"><label>Прерываний на человека в день <b id="vInt"></b></label><input type="range" id="ints" min="1" max="15" value="4"></div>
-      <div class="field"><label>Длительность разговора, мин <b id="vTalk"></b></label><input type="range" id="talk" min="1" max="30" value="5"></div>
-      <div class="field"><label>Восстановление контекста, мин <b id="vRec"></b></label><input type="range" id="rec" min="5" max="30" value="23"></div>
-      <div class="field"><label>Стоимость часа для компании, $ <b id="vRate"></b></label><input type="range" id="rate" min="5" max="100" value="25"></div>
-    </div>
-    <div class="out">
-      <div class="card"><div class="k">Потеряно часов в день</div><div class="val warn" id="oDay"></div></div>
-      <div class="card"><div class="k">Часов в месяц</div><div class="val warn" id="oMonth"></div></div>
-      <div class="card"><div class="k">Потери в месяц</div><div class="val" id="oMoney"></div></div>
-      <div class="card"><div class="k">Эквивалент сотрудников</div><div class="val hl" id="oFte"></div></div>
-      <div class="card total"><div class="k">Потери в год</div><div class="val" id="oYear"></div></div>
+      <div class="legend-row rise"><span class="n red">5</span><p class="white">минут разговор.<br><span style="color:var(--dim)">Это видят все.</span></p></div>
+      <div class="legend-row rise d1"><span class="n amber">23</span><p class="white">минуты, чтобы вернуться в задачу.<br><span style="color:var(--dim)">Этого не видит никто.</span></p></div>
+      <p class="mt2 rise d2">Программисты сразу возвращаются к коду только в <span class="white">1 случае из 10</span>.</p>
     </div>
   </div>
+  <div class="src">Mark G. et al., CHI 2005 (офисные сотрудники, ~23 мин). Parnin C., Rugaber S., Software Quality Journal, 2011 (~10 000 сессий программистов).</div>
 </section>
 
-<!-- 9. COVEY Q -->
-<section class="slide" data-notes="Переход к решению. Кови, навык 3. Спросить: в какой квадрант попадает «быстрый вопрос по отчёту»? Почти всегда III: срочно для того, кто спрашивает, но не важно для того, кого отвлекают. А фокусная работа разработчика — квадрант II.">
-  <div class="kicker">Стивен Кови · Навык 3 · «Сначала делай то, что важно сначала»</div>
-  <h2>Куда попадает «на минутку»?</h2>
-  <div class="quad">
-    <div></div>
-    <div class="ax">Срочно</div>
-    <div class="ax">Не срочно</div>
-    <div class="ax v">Важно</div>
-    <div class="q"><h3><span class="num">I</span> Кризис</h3><p>Упал прод, не проходят платежи, инцидент безопасности.</p><span class="tag r">тут отвлекать можно и нужно</span></div>
-    <div class="q q2"><h3><span class="num">II</span> Фокус</h3><p>Разработка, архитектура, тесты, рефакторинг, обучение. Здесь создаётся ценность.</p><span class="tag g">защищаем это время</span></div>
-    <div class="ax v">Не важно</div>
-    <div class="q q3"><h3><span class="num">III</span> Отвлечения</h3><p>«Быстрый вопрос», «глянь одним глазком», статусы, которые можно написать в чат.</p><span class="tag r">большинство «на минутку»</span></div>
-    <div class="q"><h3><span class="num">IV</span> Пустое</h3><p>Бесконечная лента, болтовня ни о чём, лишние уведомления.</p></div>
+<!-- 10 -->
+<section class="slide" data-mood="calm" data-notes="Клик за кликом, цифра растёт. На последнем шаге один человечек гаснет: столько стоит год таких минуток. Откуда $25 в час: данные Яндекса и Сбера закрыты, берём рыночную медиану middle-разработчика в Москве. Если у вас ставка выше, потери выше.">
+  <h2 class="rise">Считаем одну команду</h2>
+  <div class="money" id="money">
+    <div class="mrow" data-step><span class="v">$11,7</span><span class="l">одна «минутка»: 28 минут × $25 в час</span></div>
+    <div class="mrow" data-step><span class="v">$233</span><span class="l">в день: 5 человек × 4 раза</span></div>
+    <div class="mrow" data-step><span class="v">$4 900</span><span class="l">в месяц</span></div>
+    <div class="mrow last" data-step data-mood="alarm"><span class="v">$58 800</span><span class="l">в год</span></div>
   </div>
+  <div class="team" id="team">
+    <div class="person"><svg viewBox="0 0 22 40"><use href="#man"/></svg></div>
+    <div class="person"><svg viewBox="0 0 22 40"><use href="#man"/></svg></div>
+    <div class="person"><svg viewBox="0 0 22 40"><use href="#man"/></svg></div>
+    <div class="person"><svg viewBox="0 0 22 40"><use href="#man"/></svg></div>
+    <div class="person" id="ghost"><svg viewBox="0 0 22 40"><use href="#man"/></svg></div>
+  </div>
+  <p class="mt1" id="ghostText" style="opacity:0;transition:opacity .8s .6s">Как будто один человек из пяти весь год получает зарплату и не пишет ни строчки.</p>
+  <div class="src">$25/ч — наша оценка, данные Яндекса и Сбера не публичны. Middle-разработчик в Москве ≈ 250 тыс. ₽ (Хабр Карьера, 2-е полугодие 2025) ≈ $3 100 по условному курсу 80 ₽/$, плюс ~30% взносов ≈ $4 000 в месяц ÷ 165 часов.</div>
 </section>
 
-<!-- 10. HABITS 5 + 4 -->
-<section class="slide" data-notes="Навык 5: прежде чем подойти, пойми ситуацию другого человека. Посмотри: он в наушниках, статус «фокус»? Навык 4: договорённости, где выигрывают оба. Спрашивающий получает ответ гарантированно, разработчик — тишину. Финтех-нюанс: чётко определить, что такое настоящее «срочно».">
-  <div class="kicker">Навыки 5 и 4 · «Сначала пойми» и «Выигрыш/выигрыш»</div>
-  <h2>Перед тем как подойти — 3 вопроса</h2>
-  <div class="grid g2">
+<!-- 11 -->
+<section class="slide" data-mood="calm" data-notes="Дать залу подвигать ползунки. Спросить: «Сколько раз в день отвлекают вас?» Подставить цифры зала.">
+  <h2 class="rise">А теперь посчитайте свою команду</h2>
+  <div class="calc rise d1">
     <div>
-      <ul class="check">
-        <li><span class="box">1</span><span><strong>Это квадрант I?</strong> Упал прод, платежи, безопасность? → Подходи сразу.</span></li>
-        <li><span class="box">2</span><span><strong>Можно написать?</strong> Сообщение в чат человек прочитает в своём перерыве, без потери контекста.</span></li>
-        <li><span class="box">3</span><span><strong>Подождёт до окна?</strong> Задай вопрос в отведённое время или на ближайшей встрече.</span></li>
-      </ul>
+      <div class="field"><label>Разработчиков <b id="vDevs"></b></label><input type="range" id="devs" min="1" max="50" value="5"></div>
+      <div class="field"><label>«Минуток» на человека в день <b id="vInt"></b></label><input type="range" id="ints" min="1" max="15" value="4"></div>
+      <div class="field"><label>Сам разговор, мин <b id="vTalk"></b></label><input type="range" id="talk" min="1" max="30" value="5"></div>
+      <div class="field"><label>Возврат в задачу, мин <b id="vRec"></b></label><input type="range" id="rec" min="5" max="30" value="23"></div>
+      <div class="field"><label>Час разработчика для компании <b id="vRate"></b></label><input type="range" id="rate" min="5" max="100" value="25"></div>
     </div>
-    <div class="grid" style="gap:12px">
-      <div class="card"><h3>🎧 Фокус-часы</h3><p>Например, 10:00–13:00 без встреч и подходов. Статус «Не беспокоить» в мессенджере.</p></div>
-      <div class="card"><h3>🕐 Окна для вопросов</h3><p>После обеда и в конце дня разработчик доступен. Спрашивающий знает, когда точно получит ответ.</p></div>
-      <div class="card urgent"><h3>🚨 Договор о «срочно»</h3><p>Письменно: что считается инцидентом и через какой канал звать. Всё остальное — асинхронно.</p></div>
+    <div class="res">
+      <div class="k">Теряем за год</div>
+      <div class="big" id="oYear"></div>
+      <div class="row">
+        <div><div class="k">в месяц</div><div class="v" id="oMoney"></div></div>
+        <div><div class="k">часов в месяц</div><div class="v" id="oMonth"></div></div>
+        <div><div class="k">людей впустую</div><div class="v teal" id="oFte"></div></div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- 11. ROLES -->
-<section class="slide" data-notes="Навык 1: проактивность. Не ждём, пока «руководство введёт правило». Каждый может начать с себя уже завтра. Пройтись по ролям, обратиться к каждой группе в зале.">
-  <div class="kicker">Навык 1 · «Будь проактивным»</div>
-  <h2>Что каждый может сделать <span class="hl">завтра</span></h2>
-  <div class="grid g4">
-    <div class="card role"><div class="ico">🤝</div><h3>HR</h3><ul><li>Добавить правила фокуса в онбординг</li><li>Спрашивать о прерываниях в опросах вовлечённости</li></ul></div>
-    <div class="card role"><div class="ico">📋</div><h3>Менеджеры</h3><ul><li>Собирать встречи в блоки, а не дробить день</li><li>Защищать фокус-часы команды</li><li>Статусы — в чат, а не «подойти спросить»</li></ul></div>
-    <div class="card role"><div class="ico">📊</div><h3>Бизнес и аналитики</h3><ul><li>Копить вопросы и задавать пачкой</li><li>Писать вопрос сразу с контекстом и ссылками</li></ul></div>
-    <div class="card role"><div class="ico">💻</div><h3>Разработчики</h3><ul><li>Ставить статус «фокус»</li><li>Отвечать в обещанные окна</li><li>Записывать «где остановился» перед перерывом</li></ul></div>
+<!-- 12 -->
+<section class="slide" data-mood="calm" data-notes="Стивен Кови, навык 3: «Сначала делай то, что важно сначала». Четыре квадранта. Спросить зал: куда попадает «быстрый вопрос по отчёту»? Почти всегда третий: срочно для того, кто спрашивает, и не важно для того, кого отвлекают. А работа разработчика живёт во втором.">
+  <h2 class="rise">Стивен Кови делил все дела на четыре части</h2>
+  <div class="quad rise d1">
+    <div class="q">
+      <span class="ax" style="top:14px;left:18px">важно · срочно</span>
+      <div class="t">Пожар</div><p>Упал прод. Не проходят платежи. Здесь отвлекать можно и нужно.</p>
+    </div>
+    <div class="q q2">
+      <span class="ax" style="top:14px;left:18px">важно · не срочно</span>
+      <div class="t teal">Операция</div><p>Код, архитектура, тесты. Здесь компания зарабатывает.</p>
+    </div>
+    <div class="q q3">
+      <span class="ax" style="top:14px;left:18px">не важно · срочно</span>
+      <div class="t red">«На минутку»</div><p>Срочно для того, кто спрашивает. Не для того, кого отвлекают.</p>
+    </div>
+    <div class="q">
+      <span class="ax" style="top:14px;left:18px">не важно · не срочно</span>
+      <div class="t" style="color:var(--dim)">Шум</div><p>Лента, уведомления, болтовня.</p>
+    </div>
+    <div class="drop">быстрый вопрос по отчёту</div>
   </div>
 </section>
 
-<!-- 12. FINAL -->
-<section class="slide" data-notes="Вернуться к догадке зала из слайда 3. Сравнить с $4 900 в месяц. Закончить фразой с экрана. Перейти к вопросам.">
-  <div class="fade-in">
-    <div class="kicker">Итог</div>
-    <h2>Прежде чем сказать «на минутку», вспомни:</h2>
-    <div class="final-num">28 минут</div>
-    <p class="lead">Столько на самом деле стоит одна «минутка». <strong>Ваше время, его фокус и деньги компании.</strong></p>
-    <p class="guess-back" id="guessBack"></p>
-    <p class="lead" style="margin-top:5vh;color:var(--text);font-weight:600">Вопросы?</p>
+<!-- 13 -->
+<section class="slide" data-mood="calm" data-lamp="1" data-notes="Правила, которые мы предлагаем. Связь с Кови: навык 5, сначала пойми, что человек сейчас в операции. Навык 4, выигрыш/выигрыш: спрашивающий точно получит ответ, разработчик получит тишину. Отдельно договориться, что считается настоящим пожаром: в финтехе это прод, платежи и безопасность.">
+  <h2 class="rise">Три правила нашей операционной</h2>
+  <div class="rules">
+    <div class="rule rise d1">
+      <span class="onair"><i></i>ИДЁТ ОПЕРАЦИЯ</span>
+      <div class="t">С 10 до 13 не подходим</div>
+      <p>Фокус-часы. Статус «не беспокоить» в мессенджере. Встречи после обеда.</p>
+    </div>
+    <div class="rule rise d2">
+      <svg viewBox="0 0 120 90" aria-hidden="true"><rect x="4" y="4" width="100" height="62" rx="14" fill="none" stroke="#2ee6c5" stroke-width="5"/><path d="M24 66 L18 86 L44 66" fill="#2ee6c5"/><line x1="24" y1="26" x2="84" y2="26" stroke="#2ee6c5" stroke-width="5" stroke-linecap="round"/><line x1="24" y1="44" x2="64" y2="44" stroke="#2ee6c5" stroke-width="5" stroke-linecap="round" opacity=".6"/></svg>
+      <div class="t">Сначала пишем</div>
+      <p>Вопрос в чат, сразу с контекстом и ссылкой. Ответ придёт в перерыве, без потери фокуса.</p>
+    </div>
+    <div class="rule rise d3">
+      <svg viewBox="0 0 120 90" aria-hidden="true"><path d="M30 80 V48 a30 30 0 0 1 60 0 V80z" fill="none" stroke="#ff4a4a" stroke-width="5"/><rect x="20" y="78" width="80" height="8" rx="3" fill="#ff4a4a"/><line x1="60" y1="2" x2="60" y2="12" stroke="#ff4a4a" stroke-width="5" stroke-linecap="round"/><line x1="18" y1="18" x2="25" y2="25" stroke="#ff4a4a" stroke-width="5" stroke-linecap="round"/><line x1="102" y1="18" x2="95" y2="25" stroke="#ff4a4a" stroke-width="5" stroke-linecap="round"/></svg>
+      <div class="t">Звоним только при пожаре</div>
+      <p>Прод, платежи, безопасность. Список пожаров записан и все его знают.</p>
+    </div>
   </div>
 </section>
 
-<!-- 13. SOURCES -->
-<section class="slide" data-notes="Слайд для тех, кто захочет проверить цифры.">
-  <div class="kicker">Источники</div>
+<!-- 14 -->
+<section class="slide" data-mood="calm" data-notes="Кови, навык 1: будь проактивным. Не ждём приказа сверху. Обратиться к каждой группе в зале.">
+  <h2 class="rise">Что можно сделать уже завтра</h2>
+  <div class="roles">
+    <div class="role rise d1"><div class="t">HR</div><p>Рассказывать про фокус-часы на онбординге.</p><p>Спрашивать про прерывания в опросах.</p></div>
+    <div class="role rise d2"><div class="t">Менеджеры</div><p>Ставить встречи блоком, а не дробить день.</p><p>Статус узнавать в чате.</p></div>
+    <div class="role rise d3"><div class="t">Бизнес и аналитики</div><p>Копить вопросы и задавать пачкой.</p><p>Писать сразу с контекстом.</p></div>
+    <div class="role rise d4"><div class="t">Разработчики</div><p>Ставить статус «фокус».</p><p>Отвечать в обещанное время. Иначе правила не продержатся.</p></div>
+  </div>
+</section>
+
+<!-- 15 -->
+<section class="slide center" data-mood="calm" data-lamp="1" data-notes="Вернуться к оценке зала. Сравнить. Закончить фразой с экрана и замолчать на пару секунд. Потом вопросы.">
+  <p class="lead rise" style="max-width:none">Прежде чем сказать «на минутку», вспомните:</p>
+  <div class="final-big mt1 rise d1">минутка<br>стоит <span class="red">28</span></div>
+  <p class="guess-back rise d2" id="guessBack"></p>
+  <p class="lead mt3 rise d3 teal" style="max-width:none">Вопросы?</p>
+</section>
+
+<!-- 16 -->
+<section class="slide" data-mood="calm" data-notes="Для тех, кто захочет проверить цифры.">
   <h2>Откуда цифры</h2>
-  <ul class="sources" style="padding-left:1.2em">
-    <li>Mark G., Gonzalez V., Harris J. <em>No Task Left Behind? Examining the Nature of Fragmented Work.</em> CHI 2005 — возвращение к прерванной задаче в среднем через ~23 мин.</li>
-    <li>Mark G., Gudith D., Klocke U. <em>The Cost of Interrupted Work: More Speed and Stress.</em> CHI 2008 — после прерываний люди работают быстрее, но с большим стрессом.</li>
-    <li>Parnin C., Rugaber S. <em>Resumption strategies for interrupted programming tasks.</em> Software Quality Journal, 2011 — ~10% сессий возобновляются в течение минуты.</li>
-    <li>Parnin C. <em>Programmer, Interrupted.</em> 2013 — 10–15 мин до возобновления редактирования кода.</li>
-    <li>Хабр Карьера — <a href="https://career.habr.com/salaries" target="_blank" rel="noopener">отчёт о зарплатах в IT</a>, 2-е полугодие 2025: медиана в Москве 230 тыс. ₽; Java Backend middle ≈ 242 тыс. ₽.</li>
-    <li>Стивен Кови. <em>7 навыков высокоэффективных людей.</em> 1989 — навыки 1, 3, 4, 5.</li>
-  </ul>
-  <p class="note">Ставка $25/ч — оценка автора по рыночным медианам, а не данные конкретной компании. Курс 80 ₽/$ условный.</p>
+  <div class="sources">
+    <p><span class="white">Feuerbacher R. et al.</span> Realistic distractions and interruptions that impair simulated surgical performance by novice surgeons. Archives of Surgery, 2012. Серьёзные ошибки: 8 из 18 с отвлечениями против 1 из 18 без них.</p>
+    <p><span class="white">Westbrook J. et al.</span> Association of interruptions with an increased risk and severity of medication administration errors. Archives of Internal Medicine, 2010. +12,7% к клиническим ошибкам за каждое прерывание.</p>
+    <p><span class="white">FAA.</span> 14 CFR 121.542, Sterile Cockpit Rule, 1981.</p>
+    <p><span class="white">Mark G., Gonzalez V., Harris J.</span> No Task Left Behind? CHI 2005. Возврат к прерванной задаче в среднем через ~23 минуты.</p>
+    <p><span class="white">Parnin C., Rugaber S.</span> Resumption strategies for interrupted programming tasks. Software Quality Journal, 2011. ~10% сессий программистов продолжаются в течение минуты.</p>
+    <p><span class="white">Хабр Карьера.</span> <a href="https://career.habr.com/salaries" target="_blank" rel="noopener">Зарплаты в IT</a>, 2-е полугодие 2025.</p>
+    <p><span class="white">Стивен Кови.</span> 7 навыков высокоэффективных людей. Навыки 1, 3, 4, 5.</p>
+  </div>
+  <p class="small mt2">$25 в час и курс 80 ₽/$ — наши допущения, а не данные конкретной компании.</p>
 </section>
 
 </div>
 
 <div class="progress" id="progress"></div>
-<div class="timer" id="timer" title="Клик: сброс таймера">⏱ 00:00</div>
-<div class="help">← → навигация · N заметки · F полный экран</div>
+<div class="timer" id="timer" title="Клик: сброс">00:00</div>
 <div class="hud">
   <button id="prevBtn" aria-label="Назад">‹</button>
-  <span id="counter">1 / 13</span>
+  <span id="counter"></span>
   <button id="nextBtn" aria-label="Вперёд">›</button>
-  <button id="notesBtn" aria-label="Заметки" title="Заметки докладчика (N)">✎</button>
+  <button id="notesBtn" aria-label="Заметки" title="Заметки (N)">✎</button>
   <button id="fsBtn" aria-label="Полный экран" title="Полный экран (F)">⛶</button>
 </div>
-<div class="notes" id="notes"><b>ЗАМЕТКИ ДОКЛАДЧИКА</b><div id="notesText"></div></div>
+<div class="notes" id="notes"><div id="notesText"></div></div>
 
 <script>
 (function(){
-  const slides=[...document.querySelectorAll('.slide')];
-  const total=slides.length;
-  let cur=0;
-
-  // safe storage
-  const store={
-    get(k){try{return localStorage.getItem(k)}catch(e){return null}},
-    set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
-  };
-
-  // ---- math steps (revealed one by one on slide 7) ----
-  const stepsSlide=slides.findIndex(s=>s.querySelector('#steps'));
-  const steps=[...document.querySelectorAll('#steps .step')];
-  let stepShown=0;
-  function renderSteps(){steps.forEach((s,i)=>s.classList.toggle('on',i<stepShown))}
-
-  function go(n){
-    n=Math.max(0,Math.min(total-1,n));
-    slides.forEach((s,i)=>{
-      s.classList.toggle('active',i===n);
-      s.classList.toggle('prev',i<n);
-    });
-    cur=n;
-    document.getElementById('counter').textContent=(n+1)+' / '+total;
-    document.getElementById('progress').style.width=((n+1)/total*100)+'%';
-    document.getElementById('notesText').textContent=slides[n].dataset.notes||'';
-    if(n===stepsSlide){renderSteps()}
-    if(slides[n].querySelector('#guessBack')) showGuess();
-    try{history.replaceState(null,'','#'+(n+1))}catch(e){}
+/* ================= ECG BACKGROUND ================= */
+const cv=document.getElementById('bg'),cx=cv.getContext('2d');
+let W,H,DPR,buf=[],head=0,phase=0,mood='calm',moodMix=0;
+function resize(){
+  DPR=Math.min(window.devicePixelRatio||1,2);
+  W=cv.width=innerWidth*DPR;H=cv.height=innerHeight*DPR;
+  cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';
+  buf=new Array(Math.ceil(W/(2*DPR))).fill(0);head=0;
+}
+addEventListener('resize',resize);resize();
+const g=(x,m,s)=>Math.exp(-((x-m)*(x-m))/(2*s*s));
+function beat(t){ // t in [0,1)
+  return .12*g(t,.12,.025)-.12*g(t,.2,.008)+1*g(t,.225,.01)-.28*g(t,.25,.01)+.25*g(t,.45,.045);
+}
+let rate=0.011;
+function sample(){
+  const target=mood==='alarm'?1:0;
+  moodMix+=(target-moodMix)*0.03;
+  const r=rate*(1+moodMix*1.6)*(1+(Math.random()-.5)*.3*moodMix);
+  phase+=r; if(phase>=1){phase-=1}
+  let v=beat(phase);
+  if(moodMix>.05){
+    v+= (Math.random()-.5)*.5*moodMix;
+    v+= Math.sin(phase*40)*.15*moodMix;
   }
-  function next(){
-    if(cur===stepsSlide && stepShown<steps.length){stepShown++;renderSteps();return}
-    go(cur+1);
+  return v;
+}
+function draw(){
+  const step=2*DPR,n=buf.length;
+  for(let i=0;i<3;i++){buf[head]=sample();head=(head+1)%n}
+  cx.clearRect(0,0,W,H);
+  // grid
+  cx.strokeStyle='rgba(46,230,197,0.045)';cx.lineWidth=1;
+  const gs=48*DPR;
+  cx.beginPath();
+  for(let x=0;x<W;x+=gs){cx.moveTo(x,0);cx.lineTo(x,H)}
+  for(let y=0;y<H;y+=gs){cx.moveTo(0,y);cx.lineTo(W,y)}
+  cx.stroke();
+  // trace
+  const base=H*.9,amp=Math.min(H*.11,95*DPR);
+  const col=moodMix>.5?[255,74,74]:[46,230,197];
+  const mix=moodMix;
+  const r=Math.round(46+(255-46)*mix),gg=Math.round(230+(74-230)*mix),b=Math.round(197+(74-197)*mix);
+  cx.lineWidth=2.2*DPR;cx.lineJoin='round';
+  cx.shadowColor=`rgba(${r},${gg},${b},.9)`;cx.shadowBlur=14*DPR;
+  const gap=18;
+  cx.beginPath();
+  let pen=false;
+  for(let k=0;k<n;k++){
+    const idx=(head+gap+k)%n; // oldest -> newest after gap
+    const x=idx*step;
+    const age=k/n;
+    if(idx===0)pen=false;
+    const y=base-buf[idx]*amp;
+    if(!pen){cx.moveTo(x,y);pen=true}else cx.lineTo(x,y);
   }
-  function prev(){
-    if(cur===stepsSlide && stepShown>0){stepShown--;renderSteps();return}
-    go(cur-1);
+  // draw with fading by segments
+  cx.strokeStyle=`rgba(${r},${gg},${b},${.38+mix*.25})`;
+  cx.stroke();
+  // bright head dot
+  const hx=((head-1+n)%n)*step,hy=base-buf[(head-1+n)%n]*amp;
+  cx.fillStyle=`rgba(${r},${gg},${b},1)`;cx.beginPath();cx.arc(hx,hy,3.5*DPR,0,Math.PI*2);cx.fill();
+  cx.shadowBlur=0;
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+function setMood(m){mood=m;document.body.classList.toggle('alarm',m==='alarm')}
+
+/* ================= DECK ================= */
+const slides=[...document.querySelectorAll('.slide')],total=slides.length;
+let cur=0;const revealed=new Array(total).fill(0);
+const stepsOf=i=>[...slides[i].querySelectorAll('[data-step]')];
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+function applySteps(i){
+  const st=stepsOf(i);let m=slides[i].dataset.mood||'calm';
+  st.forEach((s,j)=>{const on=j<revealed[i];s.classList.toggle('on',on);if(on&&s.dataset.mood)m=s.dataset.mood});
+  if(i===cur)setMood(m);
+  // money slide specifics
+  if(slides[i].querySelector('#money')){
+    st.forEach((s,j)=>s.classList.toggle('cur',j===revealed[i]-1));
+    const done=revealed[i]===st.length;
+    document.getElementById('ghost').classList.toggle('ghost',done);
+    document.getElementById('ghostText').style.opacity=done?1:0;
   }
+}
+function go(n,dir){
+  n=Math.max(0,Math.min(total-1,n));
+  slides.forEach((s,i)=>s.classList.toggle('active',i===n));
+  cur=n;
+  revealed[n]=dir<0?stepsOf(n).length:0;
+  applySteps(n);
+  document.body.classList.toggle('lamp',!!slides[n].dataset.lamp);
+  document.getElementById('counter').textContent=(n+1)+' / '+total;
+  document.getElementById('progress').style.width=((n+1)/total*100)+'%';
+  document.getElementById('notesText').textContent=slides[n].dataset.notes||'';
+  slides[n].querySelectorAll('[data-count]').forEach(countUp);
+  if(slides[n].querySelector('#ring'))animRing();
+  if(slides[n].querySelector('#guessBack'))showGuess();
+  if(slides[n].querySelector('#tower'))buildTower();
+  try{history.replaceState(null,'','#'+(n+1))}catch(e){}
+}
+function next(){const st=stepsOf(cur);if(revealed[cur]<st.length){revealed[cur]++;applySteps(cur);return}if(cur<total-1)go(cur+1,1)}
+function prev(){if(revealed[cur]>0){revealed[cur]--;applySteps(cur);return}if(cur>0)go(cur-1,-1)}
 
-  document.getElementById('nextBtn').onclick=next;
-  document.getElementById('prevBtn').onclick=prev;
+document.getElementById('nextBtn').onclick=next;
+document.getElementById('prevBtn').onclick=prev;
+const notes=document.getElementById('notes');
+const toggleNotes=()=>notes.classList.toggle('show');
+document.getElementById('notesBtn').onclick=toggleNotes;
+function toggleFs(){if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}else{document.exitFullscreen&&document.exitFullscreen()}}
+document.getElementById('fsBtn').onclick=toggleFs;
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'&&e.target.type!=='range'){if(e.key==='Enter')e.target.blur();return}
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();next()}
+  else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prev()}
+  else if(e.key==='Home')go(0,1);
+  else if(e.key==='End')go(total-1,1);
+  else if('nNтТ'.includes(e.key))toggleNotes();
+  else if('fFаА'.includes(e.key))toggleFs();
+});
+let sx=null,sy=null;
+document.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+document.addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){dx<0?next():prev()}sx=null},{passive:true});
 
-  const notes=document.getElementById('notes');
-  const toggleNotes=()=>notes.classList.toggle('show');
-  document.getElementById('notesBtn').onclick=toggleNotes;
+let t0=Date.now();const timerEl=document.getElementById('timer');timerEl.onclick=()=>{t0=Date.now()};
+setInterval(()=>{const s=Math.floor((Date.now()-t0)/1000);timerEl.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')},1000);
 
-  function toggleFs(){
-    if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()}
-    else{document.exitFullscreen&&document.exitFullscreen()}
+/* ================= PEOPLE ================= */
+document.querySelectorAll('[data-people]').forEach(box=>{
+  const errs=+box.dataset.people;
+  const errIdx=new Set();
+  const order=[2,7,11,4,15,9,13,0,17,5];
+  for(let i=0;i<errs;i++)errIdx.add(order[i]);
+  for(let i=0;i<18;i++){
+    const d=document.createElement('div');d.className='person'+(errIdx.has(i)?' err':'');
+    d.innerHTML='<svg viewBox="0 0 22 40"><use href="#man"/></svg>';
+    d.style.transitionDelay=(0.6+i*0.04)+'s';
+    box.appendChild(d);
   }
-  document.getElementById('fsBtn').onclick=toggleFs;
+});
 
-  document.addEventListener('keydown',e=>{
-    if(e.target.tagName==='INPUT' && e.target.type!=='range') {
-      if(e.key==='Enter'){e.target.blur()}
-      return;
-    }
-    if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();next()}
-    else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev()}
-    else if(e.key==='Home'){go(0)}
-    else if(e.key==='End'){go(total-1)}
-    else if(e.key==='n'||e.key==='N'||e.key==='т'||e.key==='Т'){toggleNotes()}
-    else if(e.key==='f'||e.key==='F'||e.key==='а'||e.key==='А'){toggleFs()}
+/* ================= COUNT UP ================= */
+function countUp(el){
+  const to=parseFloat(el.dataset.count),dec=+(el.dataset.dec||0),suf=el.dataset.suffix||'';
+  const t1=performance.now(),dur=1600,delay=500;
+  function f(t){
+    const p=Math.min(1,Math.max(0,(t-t1-delay)/dur));
+    const e=1-Math.pow(1-p,3);
+    el.textContent='+'+(to*e).toFixed(dec).replace('.',',')+suf;
+    if(p<1)requestAnimationFrame(f);
+  }
+  requestAnimationFrame(f);
+}
+
+/* ================= RING ================= */
+function animRing(){
+  const C=2*Math.PI*80;
+  const talk=document.querySelector('#ring .talk'),rec=document.querySelector('#ring .rec');
+  talk.style.transition='none';rec.style.transition='none';
+  talk.style.strokeDasharray='0 '+C;rec.style.strokeDasharray='0 '+C;rec.style.strokeDashoffset=0;
+  void talk.getBoundingClientRect();
+  talk.style.transition='';rec.style.transition='';
+  const a=C*5/28,b=C*23/28;
+  requestAnimationFrame(()=>{
+    talk.style.strokeDasharray=a+' '+C;
+    rec.style.strokeDasharray=b+' '+C;
+    rec.style.strokeDashoffset=-a;
   });
+}
 
-  // swipe
-  let sx=null,sy=null;
-  document.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
-  document.addEventListener('touchend',e=>{
-    if(sx===null)return;
-    const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
-    if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.5){dx<0?next():prev()}
-    sx=null;
-  },{passive:true});
-
-  // ---- timer ----
-  let t0=Date.now();
-  const timerEl=document.getElementById('timer');
-  timerEl.onclick=()=>{t0=Date.now()};
-  setInterval(()=>{
-    const s=Math.floor((Date.now()-t0)/1000);
-    timerEl.textContent='⏱ '+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
-  },1000);
-
-  // ---- scene ----
-  const head=document.getElementById('head');
-  const chips=[...head.querySelectorAll('.chip')];
-  const bubble=document.getElementById('bubble');
-  const sceneNote=document.getElementById('sceneNote');
-  document.getElementById('interrupt').onclick=()=>{
-    bubble.classList.add('show');
-    setTimeout(()=>{
-      chips.forEach((c,i)=>{
-        const x=(Math.random()*2-1)*220, y=300+Math.random()*200, r=(Math.random()*2-1)*60;
-        c.style.transitionDelay=(i*0.06)+'s';
-        c.style.transform=`translate(${x}px,${y}px) rotate(${r}deg)`;
-      });
-      head.classList.add('broken');
-      sceneNote.style.opacity=1;
-    },500);
-  };
-  document.getElementById('resetScene').onclick=()=>{
-    bubble.classList.remove('show');
-    head.classList.remove('broken');
-    sceneNote.style.opacity=0;
-    chips.forEach(c=>{c.style.transitionDelay='0s';c.style.transform=''});
-  };
-
-  // ---- guess ----
-  const guess=document.getElementById('guess');
-  const saved=store.get('minutka-guess');
-  if(saved) guess.value=saved;
-  guess.addEventListener('input',()=>store.set('minutka-guess',guess.value));
-  function showGuess(){
-    const el=document.getElementById('guessBack');
-    const g=parseFloat(guess.value);
-    if(!isNaN(g) && g>0){
-      const real=4900;
-      const ratio=real/g;
-      let txt='Оценка зала: <strong>$'+fmt(g)+'</strong> в месяц. По расчёту: <strong class="danger">$4 900</strong>';
-      if(ratio>1.15) txt+=' — в '+ratio.toFixed(1).replace('.',',')+' раза больше.';
-      else if(ratio<0.87) txt+=' — меньше вашей оценки, но всё равно больше $58 000 в год.';
-      else txt+=' — вы почти угадали.';
-      el.innerHTML=txt;
-    } else el.innerHTML='';
+/* ================= TOWER ================= */
+const towerEl=document.getElementById('tower');
+const items=['почти нашёл: строка 214','в логах два запроса с разницей 12 мс','тест №4 падает только параллельно','гипотеза: гонка двух воркеров','ветка fix/double-charge, 3 файла','transactions, статус PENDING','ретрай не сохраняет idempotencyKey','клиент ждёт возврат денег'];
+let blocks=[],anim=null;
+function buildTower(){
+  if(anim){cancelAnimationFrame(anim);anim=null}
+  towerEl.innerHTML='';blocks=[];
+  document.getElementById('after').classList.remove('show');
+  const h=towerEl.clientHeight,bh=Math.max(38,h/9),n=items.length;
+  items.forEach((txt,i)=>{
+    const b=document.createElement('div');b.className='blk';b.textContent=txt;
+    towerEl.appendChild(b);
+    const level=n-1-i; // 0 bottom
+    const w=b.offsetWidth;
+    const off=((i*37)%23-11);
+    const o={el:b,x:towerEl.clientWidth/2-w/2+off,y:h-(level+1)*(bh+2),r:0,vx:0,vy:0,vr:0,w,h:bh};
+    b.style.height=bh+'px';b.style.left='0px';
+    blocks.push(o);place(o);
+    b.animate([{opacity:0,transform:`translate(${o.x}px,${o.y-60}px)`},{opacity:1,transform:`translate(${o.x}px,${o.y}px)`}],{duration:500,delay:(n-i)*90,easing:'cubic-bezier(.2,.8,.2,1)',fill:'backwards'});
+  });
+}
+function place(o){o.el.style.transform=`translate(${o.x}px,${o.y}px) rotate(${o.r}deg)`}
+function collapse(){
+  if(anim||!blocks.length)return;
+  setMood('alarm');
+  const h=towerEl.clientHeight,W2=towerEl.clientWidth;
+  blocks.forEach((o,i)=>{
+    o.el.classList.add('fall');
+    o.vx=(Math.random()*2-1)*(3+i*.6)+ (i<4?4:-1);
+    o.vy=-Math.random()*4-(8-i)*.4;
+    o.vr=(Math.random()*2-1)*(4+i);
+  });
+  let t=0;
+  function tick(){
+    t++;
+    blocks.forEach(o=>{
+      o.vy+=0.55;o.x+=o.vx;o.y+=o.vy;o.r+=o.vr;
+      const floor=h-o.h-2;
+      if(o.y>floor){o.y=floor;o.vy*=-.35;o.vx*=.7;o.vr*=.6;if(Math.abs(o.vy)<1)o.vy=0}
+      if(o.x<-o.w*.3){o.x=-o.w*.3;o.vx*=-.5}
+      if(o.x>W2-o.w*.7){o.x=W2-o.w*.7;o.vx*=-.5}
+      place(o);
+    });
+    if(t<160)anim=requestAnimationFrame(tick);else{anim=null;setTimeout(()=>{if(slides[cur].querySelector('#tower'))setMood('calm')},1500)}
   }
+  anim=requestAnimationFrame(tick);
+  document.getElementById('after').classList.add('show');
+}
+document.getElementById('hit').onclick=collapse;
+document.getElementById('rebuild').onclick=()=>{buildTower();setMood('calm')};
 
-  // ---- calculator ----
-  const ids=['devs','ints','talk','rec','rate'];
-  const lbl={devs:'vDevs',ints:'vInt',talk:'vTalk',rec:'vRec',rate:'vRate'};
-  function fmt(n){return Math.round(n).toLocaleString('ru-RU')}
-  function fmt1(n){return n.toLocaleString('ru-RU',{maximumFractionDigits:1,minimumFractionDigits:1})}
-  function calc(){
-    const v={};
-    ids.forEach(id=>{v[id]=+document.getElementById(id).value;document.getElementById(lbl[id]).textContent=(id==='rate'?'$':'')+v[id]});
-    const hPer=(v.talk+v.rec)/60;
-    const day=v.devs*v.ints*hPer;
-    const month=day*21;
-    const money=month*v.rate;
-    document.getElementById('oDay').textContent=fmt1(day)+' ч';
-    document.getElementById('oMonth').textContent=fmt(month)+' ч';
-    document.getElementById('oMoney').textContent='$'+fmt(money);
-    document.getElementById('oFte').textContent=fmt1(month/168);
-    document.getElementById('oYear').textContent='$'+fmt(money*12);
-  }
-  ids.forEach(id=>document.getElementById(id).addEventListener('input',calc));
-  calc();
+/* ================= GUESS ================= */
+const guess=document.getElementById('guess');
+const saved=store.get('minutka-guess');if(saved)guess.value=saved;
+guess.addEventListener('input',()=>store.set('minutka-guess',guess.value));
+const fmt=n=>Math.round(n).toLocaleString('ru-RU');
+const fmt1=n=>n.toLocaleString('ru-RU',{maximumFractionDigits:1,minimumFractionDigits:1});
+function showGuess(){
+  const el=document.getElementById('guessBack'),g=parseFloat(guess.value);
+  if(isNaN(g)||g<=0){el.innerHTML='Команда из пяти человек теряет <span class="red">$4 900</span> в месяц.';return}
+  const ratio=4900/g;
+  let t='Зал оценил в <span class="white">$'+fmt(g)+'</span>. На деле <span class="red">$4 900</span> в месяц';
+  if(ratio>1.15)t+=', в '+fmt1(ratio)+' раза больше.';
+  else if(ratio<0.87)t+='. Меньше, чем вы думали, но это всё равно $58 800 в год.';
+  else t+='. Вы почти угадали.';
+  el.innerHTML=t;
+}
 
-  // start
-  const h=parseInt(location.hash.slice(1),10);
-  go(!isNaN(h)?h-1:0);
+/* ================= CALC ================= */
+const ids=['devs','ints','talk','rec','rate'],lbl={devs:'vDevs',ints:'vInt',talk:'vTalk',rec:'vRec',rate:'vRate'};
+function calc(){
+  const v={};ids.forEach(id=>{v[id]=+document.getElementById(id).value;document.getElementById(lbl[id]).textContent=(id==='rate'?'$':'')+v[id]});
+  const month=v.devs*v.ints*(v.talk+v.rec)/60*21,money=month*v.rate;
+  document.getElementById('oMonth').textContent=fmt(month);
+  document.getElementById('oMoney').textContent='$'+fmt(money);
+  document.getElementById('oFte').textContent=fmt1(month/168);
+  document.getElementById('oYear').textContent='$'+fmt(money*12);
+}
+ids.forEach(id=>document.getElementById(id).addEventListener('input',calc));calc();
+
+const h0=parseInt(location.hash.slice(1),10);
+go(!isNaN(h0)?h0-1:0,1);
 })();
 </script>
 </body>
